@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Fichero de Fideicomiso — Pregunta y Completar</title>
+<style>
+  :root{
+    --navy: #1B3B6F;
+    --navy-dark: #12294B;
+    --gold: #B8860B;
+    --white: #FFFFFF;
+    --card: #F3F6FA;
+    --card2: #EEF1F6;
+    --red: #B03A2E;
+    --red-bg: #FBEDEB;
+    --green: #2E7D4F;
+    --green-bg: #EAF5EE;
+    --gold-bg: #FBF3E3;
+    --text: #26313F;
+    --subtext: #5A6B7A;
+    --line: #DCE3EC;
+    --font-head: Cambria, "Times New Roman", serif;
+    --font-body: Calibri, "Segoe UI", Arial, sans-serif;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+
+  html,body{
+    margin:0; padding:0;
+    background: var(--white);
+    color: var(--text);
+    font-family: var(--font-body);
+    height:100%;
+  }
+
+  body{
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+  }
+
+  /* ================= HEADER ================= */
+  .topbar{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding: 18px 16px 10px;
+  }
+  .icon-badge{
+    flex:0 0 auto;
+    width:44px; height:44px;
+    border-radius:50%;
+    background: var(--gold-bg);
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px;
+    color: var(--gold);
+  }
+  .heading .eyebrow{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.6px;
+    color: var(--gold);
+    text-transform:uppercase;
+    line-height:1.3;
+  }
+  .heading h1{
+    margin:2px 0 0;
+    font-family: var(--font-head);
+    font-weight:700;
+    font-size: 20px;
+    color: var(--navy);
+    line-height:1.15;
+  }
+
+  /* ================= CATEGORY CHIPS ================= */
+  .chips-wrap{
+    overflow-x:auto;
+    padding: 4px 16px 12px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .chips-wrap::-webkit-scrollbar{ display:none; }
+  .chips{
+    display:flex;
+    gap:8px;
+    width:max-content;
+  }
+  .chip{
+    flex:0 0 auto;
+    padding: 8px 14px;
+    border-radius: 20px;
+    background: var(--card);
+    border:1px solid var(--line);
+    font-size: 12.5px;
+    font-weight:700;
+    color: var(--navy);
+    white-space:nowrap;
+    cursor:pointer;
+    min-height:36px;
+    display:flex;
+    align-items:center;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .chip .n{
+    margin-left:6px;
+    font-weight:700;
+    color: var(--gold);
+    font-size:11px;
+  }
+  .chip.active{
+    background: var(--navy);
+    color: var(--white);
+    border-color: var(--navy);
+  }
+  .chip.active .n{ color: #E8D9A9; }
+
+  /* ================= STAGE ================= */
+  .stage{
+    flex:1;
+    padding: 4px 16px 8px;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .stage-meta{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+  }
+  .tag{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+    color: var(--gold);
+    background: var(--gold-bg);
+    border-radius: 20px;
+    padding: 5px 12px;
+  }
+  .counter{
+    font-size:12.5px;
+    font-weight:700;
+    color: var(--subtext);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .card-scene{
+    perspective: 1500px;
+    min-height: 400px;
+    flex:1;
+  }
+  .card{
+    position:relative;
+    width:100%; height:100%;
+    min-height:400px;
+    transform-style: preserve-3d;
+    transition: transform .5s cubic-bezier(.2,.7,.3,1);
+  }
+  .card.flipped{ transform: rotateY(180deg); }
+
+  .face{
+    position:absolute; inset:0;
+    -webkit-backface-visibility:hidden;
+    backface-visibility:hidden;
+    border-radius: 16px;
+    background: var(--card);
+    padding: 20px 18px 18px;
+    display:flex;
+    flex-direction:column;
+    box-shadow: 0 10px 24px rgba(27,59,111,0.14);
+    overflow-y:auto;
+  }
+  .face.back{
+    transform: rotateY(180deg);
+    background: var(--white);
+    border:1px solid var(--line);
+    cursor:auto;
+  }
+  .face.front{ cursor:pointer; }
+
+  .face .face-top{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom: 12px;
+    flex: 0 0 auto;
+  }
+  .face-dot{
+    width:28px; height:28px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px;
+    font-weight:700;
+    color: var(--white);
+    background: var(--navy);
+    flex:0 0 auto;
+  }
+  .face.back .face-dot{ background: var(--gold); }
+  .face .face-label{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.8px;
+    color: var(--navy);
+    text-transform:uppercase;
+  }
+  .face.back .face-label{ color: var(--gold); }
+
+  .question-text{
+    font-family: var(--font-head);
+    font-size: 19px;
+    line-height:1.45;
+    color: var(--navy-dark);
+    flex:1;
+  }
+  .front .hint{
+    margin-top:auto;
+    padding-top:10px;
+    font-size:11px;
+    font-style:italic;
+    color: var(--subtext);
+    flex: 0 0 auto;
+  }
+
+  .fill-text{
+    font-family: var(--font-head);
+    font-size: 15px;
+    line-height:2.3;
+    color: var(--navy-dark);
+    display:flex;
+    flex-wrap:wrap;
+    align-items:baseline;
+    gap: 0 2px;
+    margin:0;
+  }
+  .fill-text .txt{ white-space:pre-wrap; }
+
+  .blank-input{
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight:700;
+    color: var(--navy);
+    border: none;
+    border-bottom: 2px solid var(--gold);
+    background: var(--gold-bg);
+    border-radius: 6px 6px 2px 2px;
+    padding: 4px 8px;
+    margin: 3px 2px;
+    min-width: 140px;
+    max-width: 100%;
+    text-align:left;
+    outline:none;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .blank-input:focus{
+    background: #FDF1D8;
+    border-color: var(--navy);
+  }
+  .blank-input.correct{
+    background: var(--green-bg);
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .blank-input.incorrect{
+    background: var(--red-bg);
+    border-color: var(--red);
+    color: var(--red);
+  }
+
+  .result-line{
+    min-height: 20px;
+    margin-top:10px;
+    font-size:12.5px;
+    font-weight:700;
+    text-align:center;
+    flex: 0 0 auto;
+  }
+  .result-line.ok{ color: var(--green); }
+  .result-line.bad{ color: var(--red); }
+  .result-line.info{ color: var(--navy); }
+
+  .back-action-row{
+    display:flex;
+    flex-wrap: wrap;
+    gap:8px;
+    margin-top:10px;
+    flex: 0 0 auto;
+  }
+  .btn{
+    flex: 1 1 100px;
+    min-height:42px;
+    border-radius: 12px;
+    font-family: var(--font-body);
+    font-weight:700;
+    font-size:12.8px;
+    border:1px solid transparent;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:5px;
+    text-align:center;
+    padding: 0 8px;
+    transition: transform .1s ease, background .15s ease;
+  }
+  .btn:active{ transform: translateY(1px); }
+  .btn:focus-visible{ outline:3px solid var(--gold); outline-offset:2px; }
+
+  .btn-validate{ background: var(--navy); color: var(--white); flex-basis:100%; order:3; }
+  .btn-validate:active{ background: var(--navy-dark); }
+  .btn-retry{ background: var(--card2); color: var(--navy); border-color: var(--line); }
+  .btn-autofill{ background: var(--gold-bg); color: var(--gold); border-color: rgba(184,134,11,0.4); }
+
+  /* ================= PROGRESS ================= */
+  .progress-wrap{ margin-top:14px; }
+  .progress-label{
+    font-size:11.5px;
+    color: var(--subtext);
+    margin-bottom:6px;
+    display:flex;
+    justify-content:space-between;
+  }
+  .progress-bar{
+    height:8px;
+    border-radius:6px;
+    background: var(--card2);
+    overflow:hidden;
+    display:flex;
+  }
+  .seg-know{ background: var(--green); height:100%; }
+  .seg-review{ background: var(--red); height:100%; }
+
+  /* ================= UTILITY ROW ================= */
+  .utility-row{
+    display:flex;
+    justify-content:center;
+    gap: 18px;
+    padding: 10px 16px 4px;
+    flex-wrap:wrap;
+  }
+  .util-btn{
+    background:none;
+    border:none;
+    font-family: var(--font-body);
+    font-size:12.5px;
+    font-weight:700;
+    color: var(--subtext);
+    cursor:pointer;
+    padding:6px 4px;
+    min-height:36px;
+  }
+  .util-btn:hover{ color: var(--navy); }
+
+  footer.note{
+    text-align:center;
+    font-size:10.5px;
+    color: var(--subtext);
+    padding: 6px 24px 4px;
+  }
+
+  /* ================= BOTTOM NAV (fixed, mobile) ================= */
+  .bottom-nav{
+    position:fixed;
+    left:0; right:0; bottom:0;
+    background: var(--white);
+    border-top: 1px solid var(--line);
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    display:flex;
+    align-items:center;
+    gap:10px;
+    box-shadow: 0 -6px 18px rgba(27,59,111,0.08);
+  }
+  .nav-btn{
+    min-height:48px;
+    border-radius: 12px;
+    border:1px solid var(--line);
+    background: var(--card);
+    color: var(--navy);
+    font-size:20px;
+    font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+    width:52px;
+    flex:0 0 auto;
+    cursor:pointer;
+  }
+  .nav-btn-main{
+    flex:1;
+    width:auto;
+    background: var(--navy);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size:14.5px;
+    letter-spacing:0.3px;
+  }
+  .nav-btn-main:active{ background: var(--navy-dark); }
+  .nav-btn:active{ background: var(--card2); }
+
+  /* ================= DESKTOP / TABLET ENHANCEMENT ================= */
+  @media (min-width: 640px){
+    body{ align-items:center; }
+    .topbar, .chips-wrap, .stage, .utility-row, footer.note{
+      width:100%;
+      max-width: 600px;
+      align-self:center;
+      margin: 0 auto;
+    }
+    .icon-badge{ width:52px; height:52px; font-size:24px; }
+    .heading h1{ font-size:25px; }
+    .card-scene{ min-height: 440px; }
+    .card{ min-height:440px; }
+    .question-text{ font-size:22px; }
+    .fill-text{ font-size:17px; }
+    .blank-input{ min-width:180px; }
+    .bottom-nav{
+      max-width: 600px;
+      left:50%;
+      transform: translateX(-50%);
+      border-radius: 16px 16px 0 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .card, .chip{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="icon-badge">🤝</div>
+    <div class="heading">
+      <div class="eyebrow">Legislación y Ética Profesional</div>
+      <h1>Fichero de Fideicomiso</h1>
+    </div>
+  </header>
+
+  <div class="chips-wrap">
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <main class="stage">
+    <div class="stage-meta">
+      <span class="tag" id="tag">—</span>
+      <span class="counter" id="counter">0 / 0</span>
+    </div>
+
+    <div class="card-scene">
+      <div class="card" id="card">
+        <div class="face front" id="frontFace">
+          <div class="face-top">
+            <div class="face-dot">P</div>
+            <div class="face-label">Pregunta</div>
+          </div>
+          <div class="question-text" id="questionText">Cargando…</div>
+          <div class="hint">Tocá la tarjeta (o "Completar") para escribir la respuesta con tus palabras</div>
+        </div>
+        <div class="face back">
+          <div class="face-top">
+            <div class="face-dot">✎</div>
+            <div class="face-label">Completar</div>
+          </div>
+          <p class="fill-text" id="fillText"></p>
+          <div class="result-line" id="resultLine"></div>
+          <div class="back-action-row">
+            <button class="btn btn-retry" id="retryBtn">↺ Reintentar</button>
+            <button class="btn btn-autofill" id="autofillBtn">✨ Completar automático</button>
+            <button class="btn btn-validate" id="validateBtn">Validar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="progressLabel">0 correctas · 0 con errores · 0 sin intentar</span>
+        <span id="progressPercent">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="seg-know" id="segKnow" style="width:0%"></div>
+        <div class="seg-review" id="segReview" style="width:0%"></div>
+      </div>
+    </div>
+  </main>
+
+  <div class="utility-row">
+    <button class="util-btn" id="shuffleBtn">🔀 Barajar</button>
+    <button class="util-btn" id="orderBtn">🔢 Orden original</button>
+    <button class="util-btn" id="resetBtn">↺ Reiniciar todo</button>
+  </div>
+
+  <footer class="note">
+    El progreso se guarda solo durante esta sesión.
+  </footer>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn" id="prevBtn" aria-label="Anterior">‹</button>
+    <button class="nav-btn nav-btn-main" id="flipBtn">Completar →</button>
+    <button class="nav-btn" id="nextBtn" aria-label="Siguiente">›</button>
+  </nav>
+
+<script>
+(function(){
+
+  // "t" usa {{frase corta}} — cada espacio representa una frase a escribir, no una sola palabra.
+  // El texto fuera de las llaves ya viene escrito. Alternativas válidas se separan con "||".
+  const RAW = [
+
+    // ===================== SECURITIZACION =====================
+    { cat:"Securitización",
+      q:"¿Qué transforma la securitización?",
+      t:"La securitización es {{la transformación de activos no líquidos}} en {{títulos-valores negociables}}." },
+    { cat:"Securitización",
+      q:"¿Cómo se llama la securitización en distintos países, según los antecedentes?",
+      t:"Se la llama {{Security en EEUU y Titulización en España}}, {{Bursatilización en México y Titrinización en Francia}}, y {{Titularización en Colombia}}, mientras que en Argentina se la llama {{Titulización}}." },
+    { cat:"Securitización",
+      q:"¿Cuáles son los beneficios de la securitización para la economía?",
+      t:"Otorga {{liquidez a activos que no eran endosables en el mercado secundario}}, proporciona {{un instrumento de menor riesgo y mayores plazos}}, y contribuye {{al desarrollo del mercado de capitales, generando una nueva área de actividades}}." },
+    { cat:"Securitización",
+      q:"¿Cuáles son los beneficios de la securitización para la empresa?",
+      t:"Disminuye {{el costo de endeudamiento y el riesgo del negocio}}, y mejora {{los balances de la empresa}}." },
+    { cat:"Securitización",
+      q:"¿Cuáles son los beneficios de la securitización para el ahorrista?",
+      t:"Ofrece {{una opción de inversión con riesgo acotado}}, conecta {{al inversor con el tomador de fondos}}, y permite {{al pequeño ahorrista el ingreso a inversiones antes vedadas}}." },
+    { cat:"Securitización",
+      q:"¿Cuáles son los partícipes NECESARIOS del proceso de securitización?",
+      t:"Son {{el Originador y el Vehículo}}, {{el Tomador}} y {{el Inversor}}." },
+    { cat:"Securitización",
+      q:"¿Cuáles son los partícipes CONTINGENTES del proceso de securitización?",
+      t:"Son {{el Administrador de cartera y el Depositario de títulos}}, {{la Calificadora de Riesgo}}, {{el Garante y el Proveedor de fondos}}." },
+
+    // ===================== CONTRATO DE FIDEICOMISO =====================
+    { cat:"Contrato de Fideicomiso",
+      q:"Definí el contrato de fideicomiso (Art. 1666 CCC).",
+      t:"Hay contrato de fideicomiso cuando una parte llamada fiduciante {{transmite o se compromete a transmitir la propiedad de bienes}} a otra persona llamada fiduciario, que {{se obliga a ejercerla en beneficio de otra llamada beneficiario}}, y a trasmitirla al cumplimiento de un plazo o condición {{al fideicomisario}}." },
+    { cat:"Contrato de Fideicomiso",
+      q:"¿Cuál es el objeto del contrato de fideicomiso y qué queda excluido?",
+      t:"El objeto son {{bienes que están en el comercio}}; no pueden serlo {{las herencias futuras}}." },
+    { cat:"Contrato de Fideicomiso",
+      q:"¿Cuál es el plazo máximo de duración del contrato de fideicomiso?",
+      t:"El plazo máximo del contrato de fideicomiso es de {{30 años}}." },
+    { cat:"Contrato de Fideicomiso",
+      q:"¿Quiénes pueden ser fideicomisarios y quién NO puede serlo?",
+      t:"Puede ser fideicomisario {{el fiduciante, el beneficiario, o una persona distinta}}; en cambio, nunca puede serlo {{el fiduciario}}." },
+    { cat:"Contrato de Fideicomiso",
+      q:"¿Qué derecho real conserva el fiduciante y cuál recibe el fiduciario?",
+      t:"El fiduciante conserva el derecho real de {{dominio}}, mientras que el fiduciario recibe el derecho real {{menos pleno, llamado dominio fiduciario}}." },
+    { cat:"Contrato de Fideicomiso",
+      q:"Enumerá los caracteres del contrato de fideicomiso.",
+      t:"Es un contrato {{bilateral y oneroso}}, {{consensual y nominado}}, {{conmutativo y de duración}}." },
+    { cat:"Contrato de Fideicomiso",
+      q:"¿Qué tipos de contrato de fideicomiso se distinguen en las slides?",
+      t:"Se distinguen el fideicomiso de {{garantía y de inversión}}, {{de administración}}, {{los financieros y los públicos}}." },
+
+    // ===================== DOMINIO FIDUCIARIO =====================
+    { cat:"Dominio Fiduciario",
+      q:"Según el Art. 1946 CCC, ¿cuándo el dominio es imperfecto?",
+      t:"El dominio es imperfecto si está sometido a {{condición o plazo resolutorios}}, o si la cosa está gravada con {{cargas reales}}." },
+    { cat:"Dominio Fiduciario",
+      q:"Según el Art. 1964 CCC, ¿cuáles son los supuestos de dominio imperfecto?",
+      t:"Son dominios imperfectos {{el revocable}}, {{el fiduciario}} y {{el desmembrado}}." },
+    { cat:"Dominio Fiduciario",
+      q:"Definí el dominio fiduciario (Art. 1701 CCC).",
+      t:"El dominio fiduciario es el que se adquiere en razón de {{un fideicomiso constituido por contrato o por testamento}}, y está sometido a durar solamente hasta {{la extinción del fideicomiso}}." },
+    { cat:"Dominio Fiduciario",
+      q:"¿Cómo se clasifica el derecho real perfecto (Dominio)?",
+      t:"El derecho real perfecto es {{absoluto y exclusivo}}, y además {{perpetuo}}." },
+    { cat:"Dominio Fiduciario",
+      q:"¿Cómo se clasifica el derecho real imperfecto?",
+      t:"El derecho real imperfecto es {{absoluto y exclusivo}}, pero {{temporario}}." },
+
+    // ===================== FIDEICOMISO DE GARANTIA =====================
+    { cat:"Fideicomiso de Garantía",
+      q:"¿Con qué fin se constituye un fideicomiso de garantía?",
+      t:"Se constituye con el fin de garantizar {{una deuda que el fiduciante tiene con el fiduciario}} o {{con un tercero}}." },
+    { cat:"Fideicomiso de Garantía",
+      q:"En caso de incumplimiento, ¿qué hace el fiduciario en el fideicomiso de garantía?",
+      t:"El fiduciario procede a {{vender el bien}}, y con lo recaudado {{cobra su crédito o el del tercero}}; el remanente del precio {{se le entrega al deudor}}." },
+    { cat:"Fideicomiso de Garantía",
+      q:"En el esquema del fideicomiso de garantía, ¿qué rol cumple el fiduciante?",
+      t:"El fiduciante es {{propietario de bienes}} y actúa como {{deudor}}." },
+    { cat:"Fideicomiso de Garantía",
+      q:"En el esquema del fideicomiso de garantía, ¿qué rol cumple el fideicomisario?",
+      t:"El fideicomisario puede ser {{acreedor}} o {{deudor}}." },
+    { cat:"Fideicomiso de Garantía",
+      q:"¿Qué carácter tiene el fiduciario en el fideicomiso de garantía y cómo se lo elige?",
+      t:"El fiduciario es {{un tercero ajeno a la relación obligacional}}, elegido por {{acuerdo entre el acreedor y el deudor}}." },
+
+    // ===================== FIDEICOMISO DE INVERSION =====================
+    { cat:"Fideicomiso de Inversión",
+      q:"¿Quiénes aportan bienes en el fideicomiso de inversión y quién los recibe?",
+      t:"Los {{fideicomitentes aportan bienes}}, y el {{fiduciario recibe dinero y/o activos de otra especie}}." },
+    { cat:"Fideicomiso de Inversión",
+      q:"¿Cuál es el destino de los bienes recibidos en el fideicomiso de inversión?",
+      t:"El destino son {{inversiones económicamente provechosas}}." },
+    { cat:"Fideicomiso de Inversión",
+      q:"¿Quién recibe el producido y quién el remanente de bienes en el fideicomiso de inversión?",
+      t:"Los {{beneficiarios reciben el producido}}, y el {{fideicomisario recibe el remanente de los bienes}}." },
+
+    // ===================== FIDEICOMISO PUBLICO =====================
+    { cat:"Fideicomiso Público",
+      q:"En el fideicomiso público, ¿quién administra y quién actúa como fiduciario?",
+      t:"El administrador es {{el Ministerio de Economía}} y el fiduciario es {{el Banco de la Nación (agentes financieros)}}." },
+    { cat:"Fideicomiso Público",
+      q:"¿Cuáles son las funciones del fideicomiso público?",
+      t:"Sus funciones son {{atender situaciones de iliquidez}}, {{pagar activos}}, {{adelantar recursos}} y {{financiar programas}}." },
+
+    // ===================== FIDEICOMISO FINANCIERO =====================
+    { cat:"Fideicomiso Financiero",
+      q:"¿Quién cede los activos en el fideicomiso financiero y a quién los cede?",
+      t:"El {{fiduciante cede activos}} al {{fiduciario}}." },
+    { cat:"Fideicomiso Financiero",
+      q:"¿Qué hace el fideicomiso con los activos cedidos?",
+      t:"El fideicomiso realiza {{la titulización de activo}} mediante la {{emisión y colocación de títulos}}." },
+    { cat:"Fideicomiso Financiero",
+      q:"¿Quiénes adquieren los títulos emitidos por el fideicomiso financiero?",
+      t:"Los {{inversores (beneficiarios) adquieren los títulos}}." },
+    { cat:"Fideicomiso Financiero",
+      q:"¿Qué recibe el fiduciante a cambio de los activos cedidos al fideicomiso financiero?",
+      t:"El fiduciante recibe {{el producido de la colocación}}." },
+    { cat:"Fideicomiso Financiero",
+      q:"¿Qué autoridad autoriza al fiduciario a actuar como Fiduciario Financiero?",
+      t:"Lo autoriza {{la Comisión Nacional de Valores}}, como {{autoridad de aplicación}}." },
+    { cat:"Fideicomiso Financiero",
+      q:"¿Quiénes pueden ser fiduciarios en el fideicomiso financiero?",
+      t:"Solo puede serlo {{una entidad financiera}} o {{una sociedad especialmente autorizada}}." },
+    { cat:"Fideicomiso Financiero",
+      q:"¿De qué son titulares los beneficiarios del fideicomiso financiero?",
+      t:"Son titulares de {{Certificados de Participación de dominio fiduciario}}, o de {{títulos representativos de deuda garantizados con los bienes así transmitidos}}." },
+    { cat:"Fideicomiso Financiero",
+      q:"¿Cómo pueden ser los Certificados de Participación según su circulación (Art. 1690 CCC)?",
+      t:"Pueden ser {{al portador o nominados}}, y {{endosables o no endosables}}." },
+
+    // ===================== FIDEICOMISO INMOBILIARIO =====================
+    { cat:"Fideicomiso Inmobiliario",
+      q:"¿Con qué NO cuenta quien recurre a un fideicomiso inmobiliario?",
+      t:"No se cuenta con financiamiento de {{empresa (inmobiliaria, constructora u otra)}} ni de {{persona visible}}." },
+    { cat:"Fideicomiso Inmobiliario",
+      q:"¿Cómo se incursiona en el mercado de capitales en el fideicomiso inmobiliario?",
+      t:"Se incursiona colocando {{títulos-valores}}, teniendo como contraparte a {{el titular del terreno}}." },
+    { cat:"Fideicomiso Inmobiliario",
+      q:"Para colocar títulos-valores en el fideicomiso inmobiliario, ¿qué servicios se requieren?",
+      t:"Se requieren los servicios de {{la Sociedad Fiduciaria}}, autorizada por {{la Comisión Nacional de Valores}}." },
+    { cat:"Fideicomiso Inmobiliario",
+      q:"¿Qué recibe el fiduciante a cambio de transferir el dominio al fiduciario?",
+      t:"El fiduciante recibe {{Certificados de Participación de derechos}} sobre los resultados que genere el fondo para {{la construcción y venta}}." },
+    { cat:"Fideicomiso Inmobiliario",
+      q:"¿Cuál es el alcance del riesgo del fiduciante en el fideicomiso inmobiliario?",
+      t:"El riesgo del fiduciante {{se limita solo al proyecto}}." },
+    { cat:"Fideicomiso Inmobiliario",
+      q:"¿Qué funciones cumple el fiduciario respecto de los Certificados de Participación?",
+      t:"El fiduciario realiza {{el gerenciamiento del proyecto}}, {{la emisión de títulos}} y {{la colocación de títulos}}." },
+    { cat:"Fideicomiso Inmobiliario",
+      q:"Luego de constituida la Sociedad Fiduciaria, ¿qué selecciona el fiduciario?",
+      t:"El fiduciario selecciona {{la empresa constructora}} mediante {{un contrato de obra}}." },
+    { cat:"Fideicomiso Inmobiliario",
+      q:"¿Con qué garantía se emite el programa de títulos en el fideicomiso inmobiliario?",
+      t:"El programa de emisión de títulos cuenta con {{garantía hipotecaria sobre el fondo}}, para colocar entre {{inversores}}." },
+    { cat:"Fideicomiso Inmobiliario",
+      q:"En el fideicomiso inmobiliario, ¿qué dos elementos se califican en materia de riesgo?",
+      t:"Se califica el riesgo {{del proyecto}} y {{de los títulos}}." },
+    { cat:"Fideicomiso Inmobiliario",
+      q:"¿Quién coloca los títulos en el mercado y a cambio de qué?",
+      t:"El {{Banco de Inversión (mayorista)}} coloca los títulos en el mercado a cambio de {{una comisión}}." },
+    { cat:"Fideicomiso Inmobiliario",
+      q:"Al finalizar la construcción, ¿mediante qué cancelan su deuda los clientes?",
+      t:"Los clientes cancelan sus deudas mediante {{un banco minorista}}." },
+    { cat:"Fideicomiso Inmobiliario",
+      q:"Al finalizar la construcción, ¿qué se paga con el dinero que ingresa al fideicomiso?",
+      t:"Se pagan {{los títulos de los inversores}}, y se reparte el remanente entre {{los propietarios de Certificados Participantes}}." },
+    { cat:"Fideicomiso Inmobiliario",
+      q:"Al finalizar la construcción, ¿de qué queda tenedor el banco minorista?",
+      t:"El banco minorista queda como tenedor de {{hipotecas individuales}}." },
+
+    // ===================== CONTRATO DE LEASING =====================
+    { cat:"Contrato de Leasing",
+      q:"Definí el contrato de leasing (Art. 1227 CCC).",
+      t:"En el contrato de leasing, el dador conviene transferir al tomador {{la tenencia de un bien cierto y determinado}} para su {{uso y goce}}, contra el pago de {{un canon}}, confiriéndole una opción de {{compra por un precio}}." },
+    { cat:"Contrato de Leasing",
+      q:"¿Quiénes pueden ser dadores en el contrato de leasing?",
+      t:"Pueden ser dadores {{las entidades financieras}}, {{sociedades que tengan por objeto este tipo de contrato}}, y {{fabricantes e importadores}}." },
+    { cat:"Contrato de Leasing",
+      q:"¿En base a qué se fija el canon en el leasing?",
+      t:"El canon se fija teniendo en cuenta {{la amortización del valor de contabilidad}}, aceptada en {{el plazo de duración del contrato}}." },
+    { cat:"Contrato de Leasing",
+      q:"¿Qué facultad tiene el tomador respecto de la cosa en el leasing?",
+      t:"El tomador tiene la facultad de comprar la cosa mediante el pago de un precio fijado en el contrato, que responda a {{el valor residual de la cosa}}." },
+    { cat:"Contrato de Leasing",
+      q:"¿Qué bienes pueden ser objeto del contrato de leasing?",
+      t:"Pueden ser objeto del leasing {{cosas muebles e inmuebles}}, {{marcas, patentes o modelos industriales}} y {{software}}." },
+    { cat:"Contrato de Leasing",
+      q:"¿Qué roles intervienen en el Leasing Financiero?",
+      t:"Intervienen {{el proveedor}}, {{el dador (banco)}} y {{el tomador}}." },
+    { cat:"Contrato de Leasing",
+      q:"¿Qué roles intervienen en el Leasing Operativo?",
+      t:"Intervienen únicamente {{el dador}} y {{el tomador}}." },
+    { cat:"Contrato de Leasing",
+      q:"¿Qué caracteriza al Leasing Back?",
+      t:"Intervienen {{el dador}} y {{el tomador}}, sin la figura {{del proveedor}}." },
+  ];
+
+  function parseTemplate(t){
+    const parts = t.split(/\{\{(.*?)\}\}/g);
+    const segments = [];
+    const blanks = [];
+    for(let i=0;i<parts.length;i++){
+      if(i % 2 === 0){
+        segments.push(parts[i]);
+      } else {
+        blanks.push(parts[i].split('||').map(s=>s.trim()));
+      }
+    }
+    return { segments, blanks };
+  }
+
+  const DATA = RAW.map((d,i)=>{
+    const parsed = parseTemplate(d.t);
+    return { id:i, cat:d.cat, q:d.q, segments:parsed.segments, blanks:parsed.blanks };
+  });
+
+  const CATS = ["Todas", ...Array.from(new Set(DATA.map(d=>d.cat)))];
+
+  const status = {};      // id -> 'correct' | 'incorrect'
+  const attempts = {};    // id -> array of input strings
+  const autofillState = {}; // id -> { active:boolean, snapshot: [...] }
+
+  let currentCat = "Todas";
+  let order = DATA.map(d=>d.id);
+  let pos = 0;
+  let flipped = false;
+
+  const el = {
+    chips: document.getElementById('chips'),
+    card: document.getElementById('card'),
+    frontFace: document.getElementById('frontFace'),
+    questionText: document.getElementById('questionText'),
+    fillText: document.getElementById('fillText'),
+    tag: document.getElementById('tag'),
+    counter: document.getElementById('counter'),
+    resultLine: document.getElementById('resultLine'),
+    prevBtn: document.getElementById('prevBtn'),
+    nextBtn: document.getElementById('nextBtn'),
+    flipBtn: document.getElementById('flipBtn'),
+    validateBtn: document.getElementById('validateBtn'),
+    retryBtn: document.getElementById('retryBtn'),
+    autofillBtn: document.getElementById('autofillBtn'),
+    shuffleBtn: document.getElementById('shuffleBtn'),
+    orderBtn: document.getElementById('orderBtn'),
+    resetBtn: document.getElementById('resetBtn'),
+    progressLabel: document.getElementById('progressLabel'),
+    progressPercent: document.getElementById('progressPercent'),
+    segKnow: document.getElementById('segKnow'),
+    segReview: document.getElementById('segReview'),
+  };
+
+  function normalize(s){
+    return (s || "").toString().trim().toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .replace(/[^\w\s%]/g,'')
+      .replace(/\s+/g,' ');
+  }
+
+  function currentIds(){
+    if(currentCat === "Todas") return order;
+    return order.filter(id => DATA[id].cat === currentCat);
+  }
+
+  function renderChips(){
+    el.chips.innerHTML = "";
+    CATS.forEach(cat=>{
+      const count = cat === "Todas" ? DATA.length : DATA.filter(d=>d.cat===cat).length;
+      const chip = document.createElement('div');
+      chip.className = 'chip' + (cat===currentCat ? ' active' : '');
+      chip.innerHTML = cat + '<span class="n">' + count + '</span>';
+      chip.addEventListener('click', ()=>{
+        currentCat = cat;
+        pos = 0;
+        flipped = false;
+        renderChips();
+        renderCard();
+      });
+      el.chips.appendChild(chip);
+    });
+  }
+
+  function currentInputs(){
+    return Array.from(el.fillText.querySelectorAll('.blank-input'));
+  }
+
+  function buildFillText(d){
+    el.fillText.innerHTML = "";
+    const saved = attempts[d.id] || [];
+    d.segments.forEach((seg, i)=>{
+      if(seg.length){
+        const span = document.createElement('span');
+        span.className = 'txt';
+        span.textContent = seg;
+        el.fillText.appendChild(span);
+      }
+      if(i < d.blanks.length){
+        const input = document.createElement('textarea');
+        input.rows = 1;
+        input.className = 'blank-input';
+        input.setAttribute('autocomplete','off');
+        input.setAttribute('autocapitalize','off');
+        input.spellcheck = false;
+        input.dataset.index = i;
+        input.value = saved[i] || '';
+        autoSize(input);
+        input.addEventListener('click', (e)=> e.stopPropagation());
+        input.addEventListener('input', ()=>{
+          input.classList.remove('correct','incorrect');
+          autoSize(input);
+          attempts[d.id] = attempts[d.id] || [];
+          attempts[d.id][i] = input.value;
+          if(autofillState[d.id]) autofillState[d.id].active = false;
+          el.autofillBtn.textContent = '✨ Completar automático';
+        });
+        input.addEventListener('keydown', (e)=>{
+          if(e.key === 'Enter' && !e.shiftKey){
+            e.preventDefault();
+            const inputs = currentInputs();
+            const idx = inputs.indexOf(input);
+            if(idx < inputs.length - 1){
+              inputs[idx+1].focus();
+            } else {
+              validate();
+            }
+          }
+        });
+        el.fillText.appendChild(input);
+      }
+    });
+  }
+
+  function autoSize(textarea){
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+  }
+
+  function renderCard(){
+    const ids = currentIds();
+    if(ids.length === 0){
+      el.tag.textContent = "—";
+      el.counter.textContent = "0 / 0";
+      el.questionText.textContent = "No hay tarjetas en esta categoría.";
+      el.fillText.textContent = "";
+      el.resultLine.textContent = "";
+      updateProgress();
+      return;
+    }
+    if(pos >= ids.length) pos = 0;
+    if(pos < 0) pos = ids.length - 1;
+
+    const id = ids[pos];
+    const d = DATA[id];
+
+    el.card.classList.toggle('flipped', flipped);
+    el.flipBtn.textContent = flipped ? '← Pregunta' : 'Completar →';
+    el.tag.textContent = d.cat;
+    el.counter.textContent = (pos+1) + " / " + ids.length;
+    el.questionText.textContent = d.q;
+
+    buildFillText(d);
+
+    const afState = autofillState[id];
+    el.autofillBtn.textContent = (afState && afState.active) ? '↺ Deshacer autocompletar' : '✨ Completar automático';
+
+    el.resultLine.textContent = "";
+    el.resultLine.className = "result-line";
+
+    if(afState && afState.active){
+      showResult(d.blanks.length, d.blanks.length, 'info', 'Respuestas completadas automáticamente');
+    } else if(status[id]){
+      revalidateColorsOnly(d);
+    }
+
+    updateProgress();
+  }
+
+  function revalidateColorsOnly(d){
+    const inputs = currentInputs();
+    let correctCount = 0;
+    inputs.forEach((input, i)=>{
+      const val = normalize(input.value);
+      const ok = d.blanks[i].some(ans => normalize(ans) === val);
+      input.classList.toggle('correct', ok);
+      input.classList.toggle('incorrect', !ok);
+      if(ok) correctCount++;
+    });
+    showResult(correctCount, d.blanks.length);
+  }
+
+  function showResult(correct, total, forceClass, forceText){
+    if(forceText){
+      el.resultLine.textContent = forceText;
+      el.resultLine.className = "result-line " + (forceClass || "");
+      return;
+    }
+    el.resultLine.textContent = correct + " de " + total + " correctas";
+    el.resultLine.className = "result-line " + (correct === total ? "ok" : "bad");
+  }
+
+  function validate(){
+    const ids = currentIds();
+    if(ids.length === 0) return;
+    const id = ids[pos];
+    const d = DATA[id];
+    const inputs = currentInputs();
+    let correctCount = 0;
+    inputs.forEach((input, i)=>{
+      const val = normalize(input.value);
+      const ok = d.blanks[i].some(ans => normalize(ans) === val);
+      input.classList.toggle('correct', ok);
+      input.classList.toggle('incorrect', !ok);
+      if(ok) correctCount++;
+    });
+    status[id] = (correctCount === d.blanks.length) ? 'correct' : 'incorrect';
+    showResult(correctCount, d.blanks.length);
+    updateProgress();
+  }
+
+  function retry(){
+    const ids = currentIds();
+    if(ids.length === 0) return;
+    const id = ids[pos];
+    delete attempts[id];
+    delete status[id];
+    delete autofillState[id];
+    renderCard();
+    const firstInput = el.fillText.querySelector('.blank-input');
+    if(firstInput) firstInput.focus();
+  }
+
+  function toggleAutofill(){
+    const ids = currentIds();
+    if(ids.length === 0) return;
+    const id = ids[pos];
+    const d = DATA[id];
+    const inputs = currentInputs();
+    const state = autofillState[id] || { active:false, snapshot:null };
+
+    if(!state.active){
+      // Guardamos lo que había antes de autocompletar, para poder volver
+      state.snapshot = inputs.map(inp => inp.value);
+      inputs.forEach((inp, i)=>{
+        inp.value = d.blanks[i][0];
+        autoSize(inp);
+        inp.classList.remove('incorrect');
+        inp.classList.add('correct');
+      });
+      attempts[id] = inputs.map(inp => inp.value);
+      state.active = true;
+      el.autofillBtn.textContent = '↺ Deshacer autocompletar';
+      showResult(d.blanks.length, d.blanks.length, 'info', 'Respuestas completadas automáticamente');
+    } else {
+      inputs.forEach((inp, i)=>{
+        inp.value = (state.snapshot && state.snapshot[i]) || '';
+        autoSize(inp);
+        inp.classList.remove('correct','incorrect');
+      });
+      attempts[id] = inputs.map(inp => inp.value);
+      state.active = false;
+      el.autofillBtn.textContent = '✨ Completar automático';
+      if(status[id]){
+        revalidateColorsOnly(d);
+      } else {
+        el.resultLine.textContent = "";
+        el.resultLine.className = "result-line";
+      }
+    }
+    autofillState[id] = state;
+  }
+
+  function updateProgress(){
+    const total = DATA.length;
+    const correct = DATA.filter(d=>status[d.id]==='correct').length;
+    const incorrect = DATA.filter(d=>status[d.id]==='incorrect').length;
+    const none = total - correct - incorrect;
+    el.progressLabel.textContent = correct + " correctas · " + incorrect + " con errores · " + none + " sin intentar";
+    const pct = total ? Math.round((correct/total)*100) : 0;
+    el.progressPercent.textContent = pct + "%";
+    el.segKnow.style.width = (total ? (correct/total*100) : 0) + "%";
+    el.segReview.style.width = (total ? (incorrect/total*100) : 0) + "%";
+  }
+
+  function flip(){
+    flipped = !flipped;
+    el.card.classList.toggle('flipped', flipped);
+    el.flipBtn.textContent = flipped ? '← Pregunta' : 'Completar →';
+    if(flipped){
+      setTimeout(()=>{
+        const firstInput = el.fillText.querySelector('.blank-input');
+        if(firstInput) firstInput.focus({preventScroll:true});
+      }, 260);
+    }
+  }
+
+  function go(delta){
+    const ids = currentIds();
+    if(ids.length === 0) return;
+    pos = (pos + delta + ids.length) % ids.length;
+    flipped = false;
+    renderCard();
+  }
+
+  function shuffleArray(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+
+  el.frontFace.addEventListener('click', ()=>{ if(!flipped) flip(); });
+  el.flipBtn.addEventListener('click', flip);
+  el.prevBtn.addEventListener('click', ()=>go(-1));
+  el.nextBtn.addEventListener('click', ()=>go(1));
+  el.validateBtn.addEventListener('click', validate);
+  el.retryBtn.addEventListener('click', retry);
+  el.autofillBtn.addEventListener('click', toggleAutofill);
+
+  el.shuffleBtn.addEventListener('click', ()=>{
+    order = shuffleArray(DATA.map(d=>d.id));
+    pos = 0; flipped = false;
+    renderCard();
+  });
+  el.orderBtn.addEventListener('click', ()=>{
+    order = DATA.map(d=>d.id);
+    pos = 0; flipped = false;
+    renderCard();
+  });
+  el.resetBtn.addEventListener('click', ()=>{
+    Object.keys(status).forEach(k=>delete status[k]);
+    Object.keys(attempts).forEach(k=>delete attempts[k]);
+    Object.keys(autofillState).forEach(k=>delete autofillState[k]);
+    renderCard();
+  });
+
+  document.addEventListener('keydown', (e)=>{
+    const isTyping = document.activeElement && document.activeElement.classList && document.activeElement.classList.contains('blank-input');
+    if(isTyping) return;
+    if(e.key === 'ArrowRight'){ go(1); }
+    else if(e.key === 'ArrowLeft'){ go(-1); }
+    else if(e.key === ' '){ e.preventDefault(); flip(); }
+  });
+
+  renderChips();
+  renderCard();
+
+})();
+</script>
+
+</body>
+</html>
