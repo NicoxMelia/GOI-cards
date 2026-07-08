@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Fichero de Bienes y Cosas — Pregunta y Completar</title>
+<style>
+  :root{
+    --navy: #1B3B6F;
+    --navy-dark: #12294B;
+    --gold: #B8860B;
+    --white: #FFFFFF;
+    --card: #F3F6FA;
+    --card2: #EEF1F6;
+    --red: #B03A2E;
+    --red-bg: #FBEDEB;
+    --green: #2E7D4F;
+    --green-bg: #EAF5EE;
+    --gold-bg: #FBF3E3;
+    --text: #26313F;
+    --subtext: #5A6B7A;
+    --line: #DCE3EC;
+    --font-head: Cambria, "Times New Roman", serif;
+    --font-body: Calibri, "Segoe UI", Arial, sans-serif;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+
+  html,body{
+    margin:0; padding:0;
+    background: var(--white);
+    color: var(--text);
+    font-family: var(--font-body);
+    height:100%;
+  }
+
+  body{
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+  }
+
+  /* ================= HEADER ================= */
+  .topbar{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding: 18px 16px 10px;
+  }
+  .icon-badge{
+    flex:0 0 auto;
+    width:44px; height:44px;
+    border-radius:50%;
+    background: var(--gold-bg);
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px;
+    color: var(--gold);
+  }
+  .heading .eyebrow{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.6px;
+    color: var(--gold);
+    text-transform:uppercase;
+    line-height:1.3;
+  }
+  .heading h1{
+    margin:2px 0 0;
+    font-family: var(--font-head);
+    font-weight:700;
+    font-size: 20px;
+    color: var(--navy);
+    line-height:1.15;
+  }
+
+  /* ================= CATEGORY CHIPS ================= */
+  .chips-wrap{
+    overflow-x:auto;
+    padding: 4px 16px 12px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .chips-wrap::-webkit-scrollbar{ display:none; }
+  .chips{
+    display:flex;
+    gap:8px;
+    width:max-content;
+  }
+  .chip{
+    flex:0 0 auto;
+    padding: 8px 14px;
+    border-radius: 20px;
+    background: var(--card);
+    border:1px solid var(--line);
+    font-size: 12.5px;
+    font-weight:700;
+    color: var(--navy);
+    white-space:nowrap;
+    cursor:pointer;
+    min-height:36px;
+    display:flex;
+    align-items:center;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .chip .n{
+    margin-left:6px;
+    font-weight:700;
+    color: var(--gold);
+    font-size:11px;
+  }
+  .chip.active{
+    background: var(--navy);
+    color: var(--white);
+    border-color: var(--navy);
+  }
+  .chip.active .n{ color: #E8D9A9; }
+
+  /* ================= STAGE ================= */
+  .stage{
+    flex:1;
+    padding: 4px 16px 8px;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .stage-meta{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+  }
+  .tag{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+    color: var(--gold);
+    background: var(--gold-bg);
+    border-radius: 20px;
+    padding: 5px 12px;
+  }
+  .counter{
+    font-size:12.5px;
+    font-weight:700;
+    color: var(--subtext);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .card-scene{
+    perspective: 1500px;
+    min-height: 360px;
+    flex:1;
+  }
+  .card{
+    position:relative;
+    width:100%; height:100%;
+    min-height:360px;
+    transform-style: preserve-3d;
+    transition: transform .5s cubic-bezier(.2,.7,.3,1);
+  }
+  .card.flipped{ transform: rotateY(180deg); }
+
+  .face{
+    position:absolute; inset:0;
+    -webkit-backface-visibility:hidden;
+    backface-visibility:hidden;
+    border-radius: 16px;
+    background: var(--card);
+    padding: 20px 18px 18px;
+    display:flex;
+    flex-direction:column;
+    box-shadow: 0 10px 24px rgba(27,59,111,0.14);
+    overflow-y:auto;
+  }
+  .face.back{
+    transform: rotateY(180deg);
+    background: var(--white);
+    border:1px solid var(--line);
+    cursor:auto;
+  }
+  .face.front{ cursor:pointer; }
+
+  .face .face-top{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom: 12px;
+    flex: 0 0 auto;
+  }
+  .face-dot{
+    width:28px; height:28px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px;
+    font-weight:700;
+    color: var(--white);
+    background: var(--navy);
+    flex:0 0 auto;
+  }
+  .face.back .face-dot{ background: var(--gold); }
+  .face .face-label{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.8px;
+    color: var(--navy);
+    text-transform:uppercase;
+  }
+  .face.back .face-label{ color: var(--gold); }
+
+  .question-text{
+    font-family: var(--font-head);
+    font-size: 19px;
+    line-height:1.45;
+    color: var(--navy-dark);
+    flex:1;
+  }
+  .front .hint{
+    margin-top:auto;
+    padding-top:10px;
+    font-size:11px;
+    font-style:italic;
+    color: var(--subtext);
+    flex: 0 0 auto;
+  }
+
+  .fill-text{
+    font-family: var(--font-head);
+    font-size: 15.5px;
+    line-height:2.05;
+    color: var(--navy-dark);
+    display:flex;
+    flex-wrap:wrap;
+    align-items:baseline;
+    gap: 0 2px;
+    margin:0;
+  }
+  .fill-text .txt{ white-space:pre-wrap; }
+
+  .blank-input{
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    font-weight:700;
+    color: var(--navy);
+    border: none;
+    border-bottom: 2px solid var(--gold);
+    background: var(--gold-bg);
+    border-radius: 6px 6px 2px 2px;
+    padding: 3px 7px;
+    margin: 2px 1px;
+    min-width: 58px;
+    max-width: 100%;
+    text-align:center;
+    outline:none;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .blank-input:focus{
+    background: #FDF1D8;
+    border-color: var(--navy);
+  }
+  .blank-input.correct{
+    background: var(--green-bg);
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .blank-input.incorrect{
+    background: var(--red-bg);
+    border-color: var(--red);
+    color: var(--red);
+  }
+
+  .result-line{
+    min-height: 20px;
+    margin-top:10px;
+    font-size:12.5px;
+    font-weight:700;
+    text-align:center;
+    flex: 0 0 auto;
+  }
+  .result-line.ok{ color: var(--green); }
+  .result-line.bad{ color: var(--red); }
+
+  .back-action-row{
+    display:flex;
+    gap:8px;
+    margin-top:10px;
+    flex: 0 0 auto;
+  }
+  .btn{
+    flex:1;
+    min-height:42px;
+    border-radius: 12px;
+    font-family: var(--font-body);
+    font-weight:700;
+    font-size:13.5px;
+    border:1px solid transparent;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    transition: transform .1s ease, background .15s ease;
+  }
+  .btn:active{ transform: translateY(1px); }
+  .btn:focus-visible{ outline:3px solid var(--gold); outline-offset:2px; }
+
+  .btn-validate{ background: var(--navy); color: var(--white); }
+  .btn-validate:active{ background: var(--navy-dark); }
+  .btn-retry{ background: var(--card2); color: var(--navy); border-color: var(--line); }
+
+  /* ================= PROGRESS ================= */
+  .progress-wrap{ margin-top:14px; }
+  .progress-label{
+    font-size:11.5px;
+    color: var(--subtext);
+    margin-bottom:6px;
+    display:flex;
+    justify-content:space-between;
+  }
+  .progress-bar{
+    height:8px;
+    border-radius:6px;
+    background: var(--card2);
+    overflow:hidden;
+    display:flex;
+  }
+  .seg-know{ background: var(--green); height:100%; }
+  .seg-review{ background: var(--red); height:100%; }
+
+  /* ================= UTILITY ROW ================= */
+  .utility-row{
+    display:flex;
+    justify-content:center;
+    gap: 18px;
+    padding: 10px 16px 4px;
+    flex-wrap:wrap;
+  }
+  .util-btn{
+    background:none;
+    border:none;
+    font-family: var(--font-body);
+    font-size:12.5px;
+    font-weight:700;
+    color: var(--subtext);
+    cursor:pointer;
+    padding:6px 4px;
+    min-height:36px;
+  }
+  .util-btn:hover{ color: var(--navy); }
+
+  footer.note{
+    text-align:center;
+    font-size:10.5px;
+    color: var(--subtext);
+    padding: 6px 24px 4px;
+  }
+
+  /* ================= BOTTOM NAV (fixed, mobile) ================= */
+  .bottom-nav{
+    position:fixed;
+    left:0; right:0; bottom:0;
+    background: var(--white);
+    border-top: 1px solid var(--line);
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    display:flex;
+    align-items:center;
+    gap:10px;
+    box-shadow: 0 -6px 18px rgba(27,59,111,0.08);
+  }
+  .nav-btn{
+    min-height:48px;
+    border-radius: 12px;
+    border:1px solid var(--line);
+    background: var(--card);
+    color: var(--navy);
+    font-size:20px;
+    font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+    width:52px;
+    flex:0 0 auto;
+    cursor:pointer;
+  }
+  .nav-btn-main{
+    flex:1;
+    width:auto;
+    background: var(--navy);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size:14.5px;
+    letter-spacing:0.3px;
+  }
+  .nav-btn-main:active{ background: var(--navy-dark); }
+  .nav-btn:active{ background: var(--card2); }
+
+  /* ================= DESKTOP / TABLET ENHANCEMENT ================= */
+  @media (min-width: 640px){
+    body{ align-items:center; }
+    .topbar, .chips-wrap, .stage, .utility-row, footer.note{
+      width:100%;
+      max-width: 600px;
+      align-self:center;
+      margin: 0 auto;
+    }
+    .icon-badge{ width:52px; height:52px; font-size:24px; }
+    .heading h1{ font-size:25px; }
+    .card-scene{ min-height: 400px; }
+    .card{ min-height:400px; }
+    .question-text{ font-size:22px; }
+    .fill-text{ font-size:17.5px; }
+    .bottom-nav{
+      max-width: 600px;
+      left:50%;
+      transform: translateX(-50%);
+      border-radius: 16px 16px 0 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .card, .chip{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="icon-badge">📦</div>
+    <div class="heading">
+      <div class="eyebrow">Legislación y Ética Profesional</div>
+      <h1>Fichero de Bienes y Cosas</h1>
+    </div>
+  </header>
+
+  <div class="chips-wrap">
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <main class="stage">
+    <div class="stage-meta">
+      <span class="tag" id="tag">—</span>
+      <span class="counter" id="counter">0 / 0</span>
+    </div>
+
+    <div class="card-scene">
+      <div class="card" id="card">
+        <div class="face front" id="frontFace">
+          <div class="face-top">
+            <div class="face-dot">P</div>
+            <div class="face-label">Pregunta</div>
+          </div>
+          <div class="question-text" id="questionText">Cargando…</div>
+          <div class="hint">Tocá la tarjeta (o "Completar") para practicar la respuesta escribiéndola</div>
+        </div>
+        <div class="face back">
+          <div class="face-top">
+            <div class="face-dot">✎</div>
+            <div class="face-label">Completar</div>
+          </div>
+          <p class="fill-text" id="fillText"></p>
+          <div class="result-line" id="resultLine"></div>
+          <div class="back-action-row">
+            <button class="btn btn-retry" id="retryBtn">↺ Reintentar</button>
+            <button class="btn btn-validate" id="validateBtn">Validar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="progressLabel">0 correctas · 0 con errores · 0 sin intentar</span>
+        <span id="progressPercent">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="seg-know" id="segKnow" style="width:0%"></div>
+        <div class="seg-review" id="segReview" style="width:0%"></div>
+      </div>
+    </div>
+  </main>
+
+  <div class="utility-row">
+    <button class="util-btn" id="shuffleBtn">🔀 Barajar</button>
+    <button class="util-btn" id="orderBtn">🔢 Orden original</button>
+    <button class="util-btn" id="resetBtn">↺ Reiniciar todo</button>
+  </div>
+
+  <footer class="note">
+    El progreso se guarda solo durante esta sesión.
+  </footer>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn" id="prevBtn" aria-label="Anterior">‹</button>
+    <button class="nav-btn nav-btn-main" id="flipBtn">Completar →</button>
+    <button class="nav-btn" id="nextBtn" aria-label="Siguiente">›</button>
+  </nav>
+
+<script>
+(function(){
+
+  // "t" usa {{respuesta}} o {{respuesta1/respuesta2}} para alternativas válidas en los espacios.
+  const RAW = [
+    { cat:"Conceptos Generales",
+      q:"¿Qué establece el Art. 15 sobre la titularidad de derechos?",
+      t:"Las personas son titulares de los {{derechos individuales}} sobre los bienes que integran su {{patrimonio}}, conforme con lo que se establece en este Código." },
+    { cat:"Conceptos Generales",
+      q:"Según el Art. 16, ¿qué nombre reciben los bienes materiales?",
+      t:"Los bienes materiales se llaman {{cosas}}. Las disposiciones referentes a las cosas son aplicables a la {{energía}} y a las {{fuerzas naturales}} susceptibles de ser puestas al servicio del hombre." },
+    { cat:"Conceptos Generales",
+      q:"¿Sobre qué pueden recaer los derechos individuales, según el Art. 16?",
+      t:"Pueden recaer sobre bienes susceptibles de {{valor económico}}." },
+
+    { cat:"Panorama de Clasificación",
+      q:"¿En qué dos grandes grupos se clasifican las cosas?",
+      t:"Se clasifican en cosas consideradas en {{sí mismas}} y cosas consideradas en relación a las {{personas}}." },
+    { cat:"Panorama de Clasificación",
+      q:"Nombrá los seis criterios de clasificación de las cosas consideradas en sí mismas.",
+      t:"Por su {{movilidad}}, por su {{intercambiabilidad}}, por su duración en el {{uso}}, por su {{divisibilidad}}, por su {{importancia}} y por su {{comerciabilidad}}." },
+    { cat:"Panorama de Clasificación",
+      q:"Según su movilidad, ¿en qué se dividen las cosas?",
+      t:"Se dividen en {{muebles}} e {{inmuebles}}." },
+    { cat:"Panorama de Clasificación",
+      q:"Según su intercambiabilidad, ¿cómo se clasifican las cosas?",
+      t:"Se clasifican en {{fungibles}} y {{no fungibles}}." },
+    { cat:"Panorama de Clasificación",
+      q:"Según su duración en el uso, ¿cómo se clasifican las cosas?",
+      t:"Se clasifican en {{consumibles}} y {{no consumibles}}." },
+    { cat:"Panorama de Clasificación",
+      q:"Según su divisibilidad, ¿cómo se clasifican las cosas?",
+      t:"Se clasifican en {{divisibles}} y {{no divisibles}}." },
+    { cat:"Panorama de Clasificación",
+      q:"Según su importancia, ¿cómo se clasifican las cosas?",
+      t:"Se clasifican en {{principales}} y {{accesorias}}." },
+    { cat:"Panorama de Clasificación",
+      q:"Según su comerciabilidad, ¿cómo se clasifican las cosas?",
+      t:"Se clasifican en {{enajenables}} y {{no enajenables}}." },
+
+    { cat:"Muebles e Inmuebles",
+      q:"¿Qué son los inmuebles por su naturaleza (Art. 225)?",
+      t:"Son inmuebles por su naturaleza el {{suelo}}, las cosas incorporadas a él de una manera {{orgánica}} y las que se encuentran bajo el suelo sin el {{hecho del hombre}}." },
+    { cat:"Muebles e Inmuebles",
+      q:"¿Qué son los inmuebles por accesión física (Art. 226)?",
+      t:"Son las cosas muebles que se encuentran {{inmovilizadas}} por su adhesión física al suelo, con carácter {{perdurable}}; en este caso, los muebles forman un todo con el inmueble." },
+    { cat:"Muebles e Inmuebles",
+      q:"¿Qué cosas NO se consideran inmuebles por accesión?",
+      t:"No se consideran inmuebles por accesión las cosas afectadas a la {{explotación}} del inmueble o a la {{actividad}} del propietario." },
+    { cat:"Muebles e Inmuebles",
+      q:"¿Qué son las cosas muebles por su naturaleza (Art. 227)?",
+      t:"Son cosas muebles las que pueden {{desplazarse}} por sí mismas o por una {{fuerza externa}}." },
+    { cat:"Muebles e Inmuebles",
+      q:"Respecto de la ley aplicable, ¿cómo se rigen los muebles y los inmuebles?",
+      t:"Los inmuebles se rigen por la ley del {{territorio}}; los muebles por la ley territorial si son {{permanentes}}, o por la ley {{personal}} (domicilio) si el dueño los lleva consigo." },
+    { cat:"Muebles e Inmuebles",
+      q:"Respecto de la manera de enajenarlos, ¿qué se exige para inmuebles y para muebles?",
+      t:"Los inmuebles se adquieren por la {{tradición}}, la solemne {{escritura pública}} y la {{inscripción registral}}; para los muebles basta con la tradición, salvo los muebles {{registrables}}." },
+    { cat:"Muebles e Inmuebles",
+      q:"Respecto de la prescripción, ¿cómo se adquieren los inmuebles y los muebles?",
+      t:"Los inmuebles se adquieren por la posesión continua con {{justo título}} de buena o mala fe; los muebles se adquieren por la sola posesión de {{buena fe}}." },
+    { cat:"Muebles e Inmuebles",
+      q:"Respecto de la transmisión de derechos, ¿qué límite tiene el sucesor sobre un inmueble?",
+      t:"El sucesor no puede tener más derechos que los que tenía el {{causante}}." },
+
+    { cat:"Fungibles y Consumibles",
+      q:"¿Qué son las cosas fungibles (Art. 232)?",
+      t:"Son aquellas en que todo individuo de la especie equivale a otro {{individuo}} de la misma especie, y pueden sustituirse por otras de la misma {{calidad}} y en igual {{cantidad}}." },
+    { cat:"Fungibles y Consumibles",
+      q:"¿A qué concierne la fungibilidad de una cosa?",
+      t:"No concierne a la propia {{naturaleza}} de la cosa; es una cualidad {{jurídica}} que mira a la {{intención}} de las partes." },
+    { cat:"Fungibles y Consumibles",
+      q:"¿Quién establece el carácter de fungibilidad de una cosa?",
+      t:"El carácter de fungibilidad lo establece la {{voluntad}} de las partes." },
+    { cat:"Fungibles y Consumibles",
+      q:"¿Qué son las cosas consumibles (Art. 231)?",
+      t:"Son aquellas cuya existencia termina con el {{primer uso}}." },
+    { cat:"Fungibles y Consumibles",
+      q:"Dá un ejemplo de cosa naturalmente consumible y uno de civilmente consumible.",
+      t:"Los {{comestibles}} son naturalmente consumibles, mientras que el {{dinero}} es civilmente consumible." },
+    { cat:"Fungibles y Consumibles",
+      q:"¿A qué concierne la consumibilidad de una cosa?",
+      t:"Concierne a la {{naturaleza}} misma de la cosa, y se contrapone a la {{fungibilidad}}." },
+    { cat:"Fungibles y Consumibles",
+      q:"¿Qué son las cosas no consumibles?",
+      t:"Son las que no dejan de existir por el primer uso que de ellas se hace, aunque sean susceptibles de {{consumirse}} o {{deteriorarse}} después de algún tiempo." },
+    { cat:"Fungibles y Consumibles",
+      q:"¿Sobre qué tipo de cosas recae el contrato de comodato y sobre cuáles el de mutuo?",
+      t:"El comodato recae sobre cosas {{no fungibles}} (que conservan su identidad); el mutuo o préstamo de consumo recae sobre cosas {{consumibles}}." },
+
+    { cat:"Divisibles y Accesorias",
+      q:"¿Qué son las cosas divisibles (Art. 228)?",
+      t:"Son las que pueden ser divididas en {{porciones reales}} sin ser destruidas, cada una formando un todo {{homogéneo}} y análogo tanto a las demás partes como a la cosa misma." },
+    { cat:"Divisibles y Accesorias",
+      q:"¿Cuándo NO pueden dividirse las cosas?",
+      t:"No pueden dividirse si su fraccionamiento convierte en {{antieconómico}} su uso y aprovechamiento; en inmuebles, el fraccionamiento parcelario corresponde a las autoridades {{locales}}." },
+    { cat:"Divisibles y Accesorias",
+      q:"¿Qué son las cosas principales?",
+      t:"Son las cosas que pueden existir por {{sí mismas}}." },
+    { cat:"Divisibles y Accesorias",
+      q:"¿Qué son las cosas accesorias (Art. 230)?",
+      t:"Son aquellas cuya existencia y naturaleza son determinadas por otra cosa de la cual {{dependen}} o a la cual están {{adheridas}}; su régimen jurídico es el de la cosa {{principal}}, salvo disposición legal en contrario." },
+    { cat:"Divisibles y Accesorias",
+      q:"Si dos cosas muebles se adhieren y no puede distinguirse cuál es la accesoria, ¿qué se considera principal?",
+      t:"Es principal la de mayor {{valor}}; si son del mismo valor, no hay cosa {{principal}} ni accesoria." },
+
+    { cat:"Comercio, Frutos y Productos",
+      q:"¿Qué bienes están fuera del comercio (Art. 234)?",
+      t:"Están fuera del comercio los bienes cuya transmisión está expresamente prohibida por la {{ley}} o por {{actos jurídicos}}, en cuanto el Código permite tales prohibiciones." },
+    { cat:"Comercio, Frutos y Productos",
+      q:"¿Qué son los frutos de un bien?",
+      t:"Son los objetos que un bien produce, de modo {{renovable}}, sin que se altere su {{sustancia}}." },
+    { cat:"Comercio, Frutos y Productos",
+      q:"Nombrá los tres tipos de frutos.",
+      t:"Frutos {{naturales}} (producciones espontáneas de la naturaleza), frutos {{industriales}} (producidos por la industria del hombre o la cultura de la tierra) y frutos {{civiles}} (las rentas que la cosa produce)." },
+    { cat:"Comercio, Frutos y Productos",
+      q:"¿Qué se asimila a los frutos civiles?",
+      t:"Las {{remuneraciones}} del trabajo se asimilan a los frutos civiles." },
+    { cat:"Comercio, Frutos y Productos",
+      q:"¿Qué son los productos de una cosa?",
+      t:"Son los objetos {{no renovables}} que, separados o sacados de la cosa, alteran o disminuyen su {{sustancia}} (por ejemplo, leña o petróleo)." },
+    { cat:"Comercio, Frutos y Productos",
+      q:"¿Cuándo forman los frutos y productos un todo con la cosa?",
+      t:"Los frutos naturales e industriales y los productos forman un todo con la cosa, si no son {{separados}}." },
+
+    { cat:"Cosas y las Personas",
+      q:"¿En qué dos categorías se dividen las cosas en relación a las personas?",
+      t:"Se dividen en cosas de dominio {{público}} (del Estado) y cosas de dominio {{privado}}." },
+    { cat:"Cosas y las Personas",
+      q:"¿En qué se subdivide el dominio privado?",
+      t:"Se subdivide en dominio privado del {{Estado}} (Art. 236) y bienes de las {{personas}} o particulares (Art. 238)." },
+    { cat:"Cosas y las Personas",
+      q:"Mencioná al menos cuatro tipos de bienes del dominio público (Art. 235).",
+      t:"Entre otros: el {{mar territorial}}, las {{aguas interiores}} (bahías, puertos, playas), los ríos y lagos {{navegables}}, las islas formadas en aguas jurisdiccionales, el {{espacio aéreo}}, las calles y obras públicas, los documentos oficiales, y las ruinas y yacimientos {{arqueológicos}}." },
+    { cat:"Cosas y las Personas",
+      q:"Mencioná los bienes del dominio privado del Estado (Art. 236).",
+      t:"Los inmuebles sin {{dueño}}, las minas de oro, plata, cobre y piedras preciosas, los lagos {{no navegables}} sin dueño, las cosas muebles de dueño desconocido (excepto {{tesoros}}), y los bienes adquiridos por el Estado por cualquier título." },
+    { cat:"Cosas y las Personas",
+      q:"¿Qué caracteres tienen los bienes públicos del Estado (Art. 237)?",
+      t:"Son {{inenajenables}}, {{inembargables}} e {{imprescriptibles}}; las personas tienen su uso y goce, sujeto a las disposiciones generales y locales." },
+    { cat:"Cosas y las Personas",
+      q:"¿Qué son los bienes de los particulares (Art. 238)?",
+      t:"Son los bienes que no son del Estado {{nacional}}, {{provincial}}, de la Ciudad Autónoma de Buenos Aires o {{municipal}}, sin distinción de las personas que tengan derecho sobre ellos." },
+  ];
+
+  function parseTemplate(t){
+    const parts = t.split(/\{\{(.*?)\}\}/g);
+    const segments = [];
+    const blanks = [];
+    for(let i=0;i<parts.length;i++){
+      if(i % 2 === 0){
+        segments.push(parts[i]);
+      } else {
+        blanks.push(parts[i].split('/').map(s=>s.trim()));
+      }
+    }
+    return { segments, blanks };
+  }
+
+  const DATA = RAW.map((d,i)=>{
+    const parsed = parseTemplate(d.t);
+    return { id:i, cat:d.cat, q:d.q, segments:parsed.segments, blanks:parsed.blanks };
+  });
+
+  const CATS = ["Todas", ...Array.from(new Set(DATA.map(d=>d.cat)))];
+
+  const status = {};    // id -> 'correct' | 'incorrect'
+  const attempts = {};  // id -> array of input strings
+
+  let currentCat = "Todas";
+  let order = DATA.map(d=>d.id);
+  let pos = 0;
+  let flipped = false;
+
+  const el = {
+    chips: document.getElementById('chips'),
+    card: document.getElementById('card'),
+    frontFace: document.getElementById('frontFace'),
+    questionText: document.getElementById('questionText'),
+    fillText: document.getElementById('fillText'),
+    tag: document.getElementById('tag'),
+    counter: document.getElementById('counter'),
+    resultLine: document.getElementById('resultLine'),
+    prevBtn: document.getElementById('prevBtn'),
+    nextBtn: document.getElementById('nextBtn'),
+    flipBtn: document.getElementById('flipBtn'),
+    validateBtn: document.getElementById('validateBtn'),
+    retryBtn: document.getElementById('retryBtn'),
+    shuffleBtn: document.getElementById('shuffleBtn'),
+    orderBtn: document.getElementById('orderBtn'),
+    resetBtn: document.getElementById('resetBtn'),
+    progressLabel: document.getElementById('progressLabel'),
+    progressPercent: document.getElementById('progressPercent'),
+    segKnow: document.getElementById('segKnow'),
+    segReview: document.getElementById('segReview'),
+  };
+
+  function normalize(s){
+    return (s || "").toString().trim().toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .replace(/[^\w\s%]/g,'')
+      .replace(/\s+/g,' ');
+  }
+
+  function currentIds(){
+    if(currentCat === "Todas") return order;
+    return order.filter(id => DATA[id].cat === currentCat);
+  }
+
+  function renderChips(){
+    el.chips.innerHTML = "";
+    CATS.forEach(cat=>{
+      const count = cat === "Todas" ? DATA.length : DATA.filter(d=>d.cat===cat).length;
+      const chip = document.createElement('div');
+      chip.className = 'chip' + (cat===currentCat ? ' active' : '');
+      chip.innerHTML = cat + '<span class="n">' + count + '</span>';
+      chip.addEventListener('click', ()=>{
+        currentCat = cat;
+        pos = 0;
+        flipped = false;
+        renderChips();
+        renderCard();
+      });
+      el.chips.appendChild(chip);
+    });
+  }
+
+  function buildFillText(d){
+    el.fillText.innerHTML = "";
+    const saved = attempts[d.id] || [];
+    d.segments.forEach((seg, i)=>{
+      if(seg.length){
+        const span = document.createElement('span');
+        span.className = 'txt';
+        span.textContent = seg;
+        el.fillText.appendChild(span);
+      }
+      if(i < d.blanks.length){
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'blank-input';
+        input.autocomplete = 'off';
+        input.autocapitalize = 'off';
+        input.spellcheck = false;
+        input.dataset.index = i;
+        input.value = saved[i] || '';
+        input.style.width = Math.max(6, input.value.length + 2) + 'ch';
+        input.addEventListener('click', (e)=> e.stopPropagation());
+        input.addEventListener('input', ()=>{
+          input.classList.remove('correct','incorrect');
+          input.style.width = Math.max(6, input.value.length + 2) + 'ch';
+          attempts[d.id] = attempts[d.id] || [];
+          attempts[d.id][i] = input.value;
+        });
+        input.addEventListener('keydown', (e)=>{
+          if(e.key === 'Enter'){
+            e.preventDefault();
+            const inputs = Array.from(el.fillText.querySelectorAll('.blank-input'));
+            const idx = inputs.indexOf(input);
+            if(idx < inputs.length - 1){
+              inputs[idx+1].focus();
+            } else {
+              validate();
+            }
+          }
+        });
+        el.fillText.appendChild(input);
+      }
+    });
+  }
+
+  function renderCard(){
+    const ids = currentIds();
+    if(ids.length === 0){
+      el.tag.textContent = "—";
+      el.counter.textContent = "0 / 0";
+      el.questionText.textContent = "No hay tarjetas en esta categoría.";
+      el.fillText.textContent = "";
+      el.resultLine.textContent = "";
+      updateProgress();
+      return;
+    }
+    if(pos >= ids.length) pos = 0;
+    if(pos < 0) pos = ids.length - 1;
+
+    const id = ids[pos];
+    const d = DATA[id];
+
+    el.card.classList.toggle('flipped', flipped);
+    el.flipBtn.textContent = flipped ? '← Pregunta' : 'Completar →';
+    el.tag.textContent = d.cat;
+    el.counter.textContent = (pos+1) + " / " + ids.length;
+    el.questionText.textContent = d.q;
+
+    buildFillText(d);
+
+    el.resultLine.textContent = "";
+    el.resultLine.className = "result-line";
+
+    if(status[id]){
+      revalidateColorsOnly(d);
+    }
+
+    updateProgress();
+  }
+
+  function revalidateColorsOnly(d){
+    const inputs = Array.from(el.fillText.querySelectorAll('.blank-input'));
+    let correctCount = 0;
+    inputs.forEach((input, i)=>{
+      const val = normalize(input.value);
+      const ok = d.blanks[i].some(ans => normalize(ans) === val);
+      input.classList.toggle('correct', ok);
+      input.classList.toggle('incorrect', !ok);
+      if(ok) correctCount++;
+    });
+    showResult(correctCount, d.blanks.length);
+  }
+
+  function showResult(correct, total){
+    el.resultLine.textContent = correct + " de " + total + " correctas";
+    el.resultLine.className = "result-line " + (correct === total ? "ok" : "bad");
+  }
+
+  function validate(){
+    const ids = currentIds();
+    if(ids.length === 0) return;
+    const id = ids[pos];
+    const d = DATA[id];
+    const inputs = Array.from(el.fillText.querySelectorAll('.blank-input'));
+    let correctCount = 0;
+    inputs.forEach((input, i)=>{
+      const val = normalize(input.value);
+      const ok = d.blanks[i].some(ans => normalize(ans) === val);
+      input.classList.toggle('correct', ok);
+      input.classList.toggle('incorrect', !ok);
+      if(ok) correctCount++;
+    });
+    status[id] = (correctCount === d.blanks.length) ? 'correct' : 'incorrect';
+    showResult(correctCount, d.blanks.length);
+    updateProgress();
+  }
+
+  function retry(){
+    const ids = currentIds();
+    if(ids.length === 0) return;
+    const id = ids[pos];
+    delete attempts[id];
+    delete status[id];
+    renderCard();
+    const firstInput = el.fillText.querySelector('.blank-input');
+    if(firstInput) firstInput.focus();
+  }
+
+  function updateProgress(){
+    const total = DATA.length;
+    const correct = DATA.filter(d=>status[d.id]==='correct').length;
+    const incorrect = DATA.filter(d=>status[d.id]==='incorrect').length;
+    const none = total - correct - incorrect;
+    el.progressLabel.textContent = correct + " correctas · " + incorrect + " con errores · " + none + " sin intentar";
+    const pct = total ? Math.round((correct/total)*100) : 0;
+    el.progressPercent.textContent = pct + "%";
+    el.segKnow.style.width = (total ? (correct/total*100) : 0) + "%";
+    el.segReview.style.width = (total ? (incorrect/total*100) : 0) + "%";
+  }
+
+  function flip(){
+    flipped = !flipped;
+    el.card.classList.toggle('flipped', flipped);
+    el.flipBtn.textContent = flipped ? '← Pregunta' : 'Completar →';
+    if(flipped){
+      setTimeout(()=>{
+        const firstInput = el.fillText.querySelector('.blank-input');
+        if(firstInput) firstInput.focus({preventScroll:true});
+      }, 260);
+    }
+  }
+
+  function go(delta){
+    const ids = currentIds();
+    if(ids.length === 0) return;
+    pos = (pos + delta + ids.length) % ids.length;
+    flipped = false;
+    renderCard();
+  }
+
+  function shuffleArray(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+
+  el.frontFace.addEventListener('click', ()=>{ if(!flipped) flip(); });
+  el.flipBtn.addEventListener('click', flip);
+  el.prevBtn.addEventListener('click', ()=>go(-1));
+  el.nextBtn.addEventListener('click', ()=>go(1));
+  el.validateBtn.addEventListener('click', validate);
+  el.retryBtn.addEventListener('click', retry);
+
+  el.shuffleBtn.addEventListener('click', ()=>{
+    order = shuffleArray(DATA.map(d=>d.id));
+    pos = 0; flipped = false;
+    renderCard();
+  });
+  el.orderBtn.addEventListener('click', ()=>{
+    order = DATA.map(d=>d.id);
+    pos = 0; flipped = false;
+    renderCard();
+  });
+  el.resetBtn.addEventListener('click', ()=>{
+    Object.keys(status).forEach(k=>delete status[k]);
+    Object.keys(attempts).forEach(k=>delete attempts[k]);
+    renderCard();
+  });
+
+  document.addEventListener('keydown', (e)=>{
+    const isTyping = document.activeElement && document.activeElement.classList && document.activeElement.classList.contains('blank-input');
+    if(isTyping) return;
+    if(e.key === 'ArrowRight'){ go(1); }
+    else if(e.key === 'ArrowLeft'){ go(-1); }
+    else if(e.key === ' '){ e.preventDefault(); flip(); }
+  });
+
+  renderChips();
+  renderCard();
+
+})();
+</script>
+
+</body>
+</html>
