@@ -14,6 +14,8 @@
     --card2: #EEF1F6;
     --red: #B03A2E;
     --red-bg: #FBEDEB;
+    --violet: #6C3FA8;
+    --violet-bg: #F1EBFA;
     --green: #2E7D4F;
     --green-bg: #EAF5EE;
     --gold-bg: #FBF3E3;
@@ -252,6 +254,30 @@
     gap:4px;
   }
 
+  /* ================= FICHA EXPERTA v3 (máxima complejidad) ================= */
+  .tool-card.expert{
+    background: var(--violet-bg);
+    border-color: rgba(108,63,168,0.38);
+    box-shadow: 0 6px 16px rgba(108,63,168,0.14);
+  }
+  .tool-card.expert:hover{
+    box-shadow: 0 10px 22px rgba(108,63,168,0.24);
+    border-color: rgba(108,63,168,0.60);
+  }
+  .tool-card.expert .tool-icon{
+    background: linear-gradient(135deg, var(--violet) 0%, #4E2C85 100%);
+  }
+  .tool-card.expert .tool-title{
+    color: var(--violet);
+  }
+  .tool-card.expert .tool-arrow{
+    color: var(--violet);
+  }
+  .tool-card.expert .tool-level{
+    color: var(--violet);
+    border-color: rgba(108,63,168,0.38);
+  }
+
   .empty-msg{
     text-align:center;
     color: var(--subtext);
@@ -373,6 +399,16 @@
       icon:  "🗂️"
     },
 
+    {
+      file:  "fichero_fideicomiso_v3.html",
+      title: "Fideicomiso",
+      sub:   "Nivel experto · La ficha más completa y compleja de todo el panel",
+      type:  "Fichero",
+      icon:  "🧠",
+      level: "Experto",
+      tone:  "violet"   // <-- estilo violeta: distingue el v3 del resto (incluidos los v2)
+    },
+
     // --- Ejemplo de cómo agregar la siguiente ficha (descomentar y completar) ---
     // {
     //   file:  "NOMBRE_DEL_ARCHIVO.html",
@@ -425,10 +461,12 @@
 
     filtered.forEach(t=>{
       const a = document.createElement('a');
-      a.className = 'tool-card' + (t.level ? ' hard' : '');
+      const toneClass = t.tone === 'violet' ? ' expert' : (t.level ? ' hard' : '');
+      a.className = 'tool-card' + toneClass;
       a.href = SRC_FOLDER + '/' + t.file;   // <-- hipervínculo armado a partir de "file"
+      const levelIcon = t.tone === 'violet' ? '★ ' : '⚡ ';
       const levelBadge = t.level
-        ? '<span class="tool-level">⚡ ' + t.level + '</span>'
+        ? '<span class="tool-level">' + levelIcon + t.level + '</span>'
         : '';
       a.innerHTML =
         '<div class="tool-icon">' + t.icon + '</div>' +
