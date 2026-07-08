@@ -220,6 +220,38 @@
     opacity:.55;
   }
 
+  /* ================= FICHA AVANZADA (mayor dificultad) ================= */
+  .tool-card.hard{
+    background: var(--red-bg);
+    border-color: rgba(176,58,46,0.35);
+    box-shadow: 0 6px 16px rgba(176,58,46,0.12);
+  }
+  .tool-card.hard:hover{
+    box-shadow: 0 10px 22px rgba(176,58,46,0.20);
+    border-color: rgba(176,58,46,0.55);
+  }
+  .tool-card.hard .tool-icon{
+    background: var(--red);
+  }
+  .tool-card.hard .tool-title{
+    color: var(--red);
+  }
+  .tool-level{
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+    color: var(--red);
+    background: #fff;
+    border: 1px solid rgba(176,58,46,0.35);
+    border-radius: 20px;
+    padding: 3px 9px;
+    flex:0 0 auto;
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+  }
+
   .empty-msg{
     text-align:center;
     color: var(--subtext);
@@ -325,6 +357,15 @@
     },
 
     {
+      file:  "fichero_expropiacion_v2.html",
+      title: "Expropiación",
+      sub:   "Nivel avanzado · Más texto para completar",
+      type:  "Fichero",
+      icon:  "🗂️",
+      level: "Avanzado"   // <-- marca la ficha como de mayor dificultad
+    },
+
+    {
       file:  "fichero_fideicomiso.html",
       title: "Fideicomiso",
       sub:   "Ficha de estudio · Estructura, partes y funcionamiento",
@@ -384,12 +425,15 @@
 
     filtered.forEach(t=>{
       const a = document.createElement('a');
-      a.className = 'tool-card';
+      a.className = 'tool-card' + (t.level ? ' hard' : '');
       a.href = SRC_FOLDER + '/' + t.file;   // <-- hipervínculo armado a partir de "file"
+      const levelBadge = t.level
+        ? '<span class="tool-level">⚡ ' + t.level + '</span>'
+        : '';
       a.innerHTML =
         '<div class="tool-icon">' + t.icon + '</div>' +
         '<div class="tool-body">' +
-          '<div class="tool-top-row"><span class="tool-type">' + t.type + '</span></div>' +
+          '<div class="tool-top-row"><span class="tool-type">' + t.type + '</span>' + levelBadge + '</div>' +
           '<div class="tool-title">' + t.title + '</div>' +
           '<div class="tool-sub">' + (t.sub || t.file) + '</div>' +
         '</div>' +
