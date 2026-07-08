@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Fichero de Introducción al Derecho — Pregunta y Completar</title>
+<style>
+  :root{
+    --navy: #1B3B6F;
+    --navy-dark: #12294B;
+    --gold: #B8860B;
+    --white: #FFFFFF;
+    --card: #F3F6FA;
+    --card2: #EEF1F6;
+    --red: #B03A2E;
+    --red-bg: #FBEDEB;
+    --green: #2E7D4F;
+    --green-bg: #EAF5EE;
+    --gold-bg: #FBF3E3;
+    --text: #26313F;
+    --subtext: #5A6B7A;
+    --line: #DCE3EC;
+    --font-head: Cambria, "Times New Roman", serif;
+    --font-body: Calibri, "Segoe UI", Arial, sans-serif;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+
+  html,body{
+    margin:0; padding:0;
+    background: var(--white);
+    color: var(--text);
+    font-family: var(--font-body);
+    height:100%;
+  }
+
+  body{
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+  }
+
+  /* ================= HEADER ================= */
+  .topbar{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding: 18px 16px 10px;
+  }
+  .icon-badge{
+    flex:0 0 auto;
+    width:44px; height:44px;
+    border-radius:50%;
+    background: var(--gold-bg);
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px;
+    color: var(--gold);
+  }
+  .heading .eyebrow{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.6px;
+    color: var(--gold);
+    text-transform:uppercase;
+    line-height:1.3;
+  }
+  .heading h1{
+    margin:2px 0 0;
+    font-family: var(--font-head);
+    font-weight:700;
+    font-size: 20px;
+    color: var(--navy);
+    line-height:1.15;
+  }
+
+  /* ================= CATEGORY CHIPS ================= */
+  .chips-wrap{
+    overflow-x:auto;
+    padding: 4px 16px 12px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .chips-wrap::-webkit-scrollbar{ display:none; }
+  .chips{
+    display:flex;
+    gap:8px;
+    width:max-content;
+  }
+  .chip{
+    flex:0 0 auto;
+    padding: 8px 14px;
+    border-radius: 20px;
+    background: var(--card);
+    border:1px solid var(--line);
+    font-size: 12.5px;
+    font-weight:700;
+    color: var(--navy);
+    white-space:nowrap;
+    cursor:pointer;
+    min-height:36px;
+    display:flex;
+    align-items:center;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .chip .n{
+    margin-left:6px;
+    font-weight:700;
+    color: var(--gold);
+    font-size:11px;
+  }
+  .chip.active{
+    background: var(--navy);
+    color: var(--white);
+    border-color: var(--navy);
+  }
+  .chip.active .n{ color: #E8D9A9; }
+
+  /* ================= STAGE ================= */
+  .stage{
+    flex:1;
+    padding: 4px 16px 8px;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .stage-meta{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+  }
+  .tag{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+    color: var(--gold);
+    background: var(--gold-bg);
+    border-radius: 20px;
+    padding: 5px 12px;
+  }
+  .counter{
+    font-size:12.5px;
+    font-weight:700;
+    color: var(--subtext);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .card-scene{
+    perspective: 1500px;
+    min-height: 360px;
+    flex:1;
+  }
+  .card{
+    position:relative;
+    width:100%; height:100%;
+    min-height:360px;
+    transform-style: preserve-3d;
+    transition: transform .5s cubic-bezier(.2,.7,.3,1);
+  }
+  .card.flipped{ transform: rotateY(180deg); }
+
+  .face{
+    position:absolute; inset:0;
+    -webkit-backface-visibility:hidden;
+    backface-visibility:hidden;
+    border-radius: 16px;
+    background: var(--card);
+    padding: 20px 18px 18px;
+    display:flex;
+    flex-direction:column;
+    box-shadow: 0 10px 24px rgba(27,59,111,0.14);
+    overflow-y:auto;
+  }
+  .face.back{
+    transform: rotateY(180deg);
+    background: var(--white);
+    border:1px solid var(--line);
+    cursor:auto;
+  }
+  .face.front{ cursor:pointer; }
+
+  .face .face-top{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom: 12px;
+    flex: 0 0 auto;
+  }
+  .face-dot{
+    width:28px; height:28px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px;
+    font-weight:700;
+    color: var(--white);
+    background: var(--navy);
+    flex:0 0 auto;
+  }
+  .face.back .face-dot{ background: var(--gold); }
+  .face .face-label{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.8px;
+    color: var(--navy);
+    text-transform:uppercase;
+  }
+  .face.back .face-label{ color: var(--gold); }
+
+  .question-text{
+    font-family: var(--font-head);
+    font-size: 19px;
+    line-height:1.45;
+    color: var(--navy-dark);
+    flex:1;
+  }
+  .front .hint{
+    margin-top:auto;
+    padding-top:10px;
+    font-size:11px;
+    font-style:italic;
+    color: var(--subtext);
+    flex: 0 0 auto;
+  }
+
+  .fill-text{
+    font-family: var(--font-head);
+    font-size: 15.5px;
+    line-height:2.05;
+    color: var(--navy-dark);
+    display:flex;
+    flex-wrap:wrap;
+    align-items:baseline;
+    gap: 0 2px;
+    margin:0;
+  }
+  .fill-text .txt{ white-space:pre-wrap; }
+
+  .blank-input{
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    font-weight:700;
+    color: var(--navy);
+    border: none;
+    border-bottom: 2px solid var(--gold);
+    background: var(--gold-bg);
+    border-radius: 6px 6px 2px 2px;
+    padding: 3px 7px;
+    margin: 2px 1px;
+    min-width: 58px;
+    max-width: 100%;
+    text-align:center;
+    outline:none;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .blank-input:focus{
+    background: #FDF1D8;
+    border-color: var(--navy);
+  }
+  .blank-input.correct{
+    background: var(--green-bg);
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .blank-input.incorrect{
+    background: var(--red-bg);
+    border-color: var(--red);
+    color: var(--red);
+  }
+  .blank-input.shown{
+    background: #EFEAF7;
+    border-color: #6C4FA3;
+    color: #6C4FA3;
+    cursor:default;
+  }
+
+  .result-line{
+    min-height: 20px;
+    margin-top:10px;
+    font-size:12.5px;
+    font-weight:700;
+    text-align:center;
+    flex: 0 0 auto;
+  }
+  .result-line.ok{ color: var(--green); }
+  .result-line.bad{ color: var(--red); }
+  .result-line.info{ color: #6C4FA3; }
+
+  .back-action-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:10px;
+    flex: 0 0 auto;
+  }
+  .btn{
+    flex:1 1 28%;
+    min-width:96px;
+    min-height:42px;
+    border-radius: 12px;
+    font-family: var(--font-body);
+    font-weight:700;
+    font-size:12.8px;
+    border:1px solid transparent;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    transition: transform .1s ease, background .15s ease;
+    padding: 4px 6px;
+    text-align:center;
+  }
+  .btn:active{ transform: translateY(1px); }
+  .btn:focus-visible{ outline:3px solid var(--gold); outline-offset:2px; }
+
+  .btn-validate{ background: var(--navy); color: var(--white); }
+  .btn-validate:active{ background: var(--navy-dark); }
+  .btn-retry{ background: var(--card2); color: var(--navy); border-color: var(--line); }
+  .btn-show{ background: #EFEAF7; color: #6C4FA3; border-color: #D9CCEF; }
+  .btn-show.active{ background: #6C4FA3; color: var(--white); border-color: #6C4FA3; }
+
+  /* ================= PROGRESS ================= */
+  .progress-wrap{ margin-top:14px; }
+  .progress-label{
+    font-size:11.5px;
+    color: var(--subtext);
+    margin-bottom:6px;
+    display:flex;
+    justify-content:space-between;
+  }
+  .progress-bar{
+    height:8px;
+    border-radius:6px;
+    background: var(--card2);
+    overflow:hidden;
+    display:flex;
+  }
+  .seg-know{ background: var(--green); height:100%; }
+  .seg-review{ background: var(--red); height:100%; }
+
+  /* ================= UTILITY ROW ================= */
+  .utility-row{
+    display:flex;
+    justify-content:center;
+    gap: 18px;
+    padding: 10px 16px 4px;
+    flex-wrap:wrap;
+  }
+  .util-btn{
+    background:none;
+    border:none;
+    font-family: var(--font-body);
+    font-size:12.5px;
+    font-weight:700;
+    color: var(--subtext);
+    cursor:pointer;
+    padding:6px 4px;
+    min-height:36px;
+  }
+  .util-btn:hover{ color: var(--navy); }
+
+  footer.note{
+    text-align:center;
+    font-size:10.5px;
+    color: var(--subtext);
+    padding: 6px 24px 4px;
+  }
+
+  /* ================= BOTTOM NAV (fixed, mobile) ================= */
+  .bottom-nav{
+    position:fixed;
+    left:0; right:0; bottom:0;
+    background: var(--white);
+    border-top: 1px solid var(--line);
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    display:flex;
+    align-items:center;
+    gap:10px;
+    box-shadow: 0 -6px 18px rgba(27,59,111,0.08);
+  }
+  .nav-btn{
+    min-height:48px;
+    border-radius: 12px;
+    border:1px solid var(--line);
+    background: var(--card);
+    color: var(--navy);
+    font-size:20px;
+    font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+    width:52px;
+    flex:0 0 auto;
+    cursor:pointer;
+  }
+  .nav-btn-main{
+    flex:1;
+    width:auto;
+    background: var(--navy);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size:14.5px;
+    letter-spacing:0.3px;
+  }
+  .nav-btn-main:active{ background: var(--navy-dark); }
+  .nav-btn:active{ background: var(--card2); }
+
+  /* ================= DESKTOP / TABLET ENHANCEMENT ================= */
+  @media (min-width: 640px){
+    body{ align-items:center; }
+    .topbar, .chips-wrap, .stage, .utility-row, footer.note{
+      width:100%;
+      max-width: 600px;
+      align-self:center;
+      margin: 0 auto;
+    }
+    .icon-badge{ width:52px; height:52px; font-size:24px; }
+    .heading h1{ font-size:25px; }
+    .card-scene{ min-height: 400px; }
+    .card{ min-height:400px; }
+    .question-text{ font-size:22px; }
+    .fill-text{ font-size:17.5px; }
+    .bottom-nav{
+      max-width: 600px;
+      left:50%;
+      transform: translateX(-50%);
+      border-radius: 16px 16px 0 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .card, .chip{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="icon-badge">📘</div>
+    <div class="heading">
+      <div class="eyebrow">Legislación y Ética Profesional</div>
+      <h1>Fichero de Introducción al Derecho</h1>
+    </div>
+  </header>
+
+  <div class="chips-wrap">
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <main class="stage">
+    <div class="stage-meta">
+      <span class="tag" id="tag">—</span>
+      <span class="counter" id="counter">0 / 0</span>
+    </div>
+
+    <div class="card-scene">
+      <div class="card" id="card">
+        <div class="face front" id="frontFace">
+          <div class="face-top">
+            <div class="face-dot">P</div>
+            <div class="face-label">Pregunta</div>
+          </div>
+          <div class="question-text" id="questionText">Cargando…</div>
+          <div class="hint">Tocá la tarjeta (o "Completar") para practicar la respuesta escribiéndola</div>
+        </div>
+        <div class="face back">
+          <div class="face-top">
+            <div class="face-dot">✎</div>
+            <div class="face-label">Completar</div>
+          </div>
+          <p class="fill-text" id="fillText"></p>
+          <div class="result-line" id="resultLine"></div>
+          <div class="back-action-row">
+            <button class="btn btn-retry" id="retryBtn">↺ Reintentar</button>
+            <button class="btn btn-show" id="showAnswerBtn">👁 Ver respuestas</button>
+            <button class="btn btn-validate" id="validateBtn">Validar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="progressLabel">0 correctas · 0 con errores · 0 sin intentar</span>
+        <span id="progressPercent">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="seg-know" id="segKnow" style="width:0%"></div>
+        <div class="seg-review" id="segReview" style="width:0%"></div>
+      </div>
+    </div>
+  </main>
+
+  <div class="utility-row">
+    <button class="util-btn" id="shuffleBtn">🔀 Barajar</button>
+    <button class="util-btn" id="orderBtn">🔢 Orden original</button>
+    <button class="util-btn" id="resetBtn">↺ Reiniciar todo</button>
+  </div>
+
+  <footer class="note">
+    El progreso se guarda solo durante esta sesión.
+  </footer>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn" id="prevBtn" aria-label="Anterior">‹</button>
+    <button class="nav-btn nav-btn-main" id="flipBtn">Completar →</button>
+    <button class="nav-btn" id="nextBtn" aria-label="Siguiente">›</button>
+  </nav>
+
+<script>
+(function(){
+
+  // "t" usa {{respuesta}} o {{respuesta1/respuesta2}} para alternativas válidas en los espacios.
+  const RAW = [
+
+    // ===================== DERECHO Y MORAL =====================
+    { cat:"Derecho y Moral",
+      q:"¿Cómo se define al Derecho como conjunto de reglas?",
+      t:"El Derecho es el conjunto de reglas establecidas para regir la {{vida}} de los hombres en sociedad, en cuanto se trata de reglas cuya observancia puede ser {{coercitivamente}} impuesta a los individuos." },
+    { cat:"Derecho y Moral",
+      q:"Compará al Derecho y la Moral según su obligatoriedad.",
+      t:"El Derecho impone reglas {{obligatorias}}, mientras que la Moral se compone de reglas {{no obligatorias}}." },
+    { cat:"Derecho y Moral",
+      q:"En la apreciación de los actos, ¿qué considera el Derecho y qué considera la Moral?",
+      t:"El Derecho considera solamente su {{aspecto legal}}; la Moral tiene en cuenta el carácter {{altruista o egoísta}} de quien ejecuta el acto." },
+    { cat:"Derecho y Moral",
+      q:"¿El Derecho y la Moral son heterónomos o autónomos?",
+      t:"El Derecho es {{heterónomo}}, mientras que la Moral es {{autónoma}}." },
+    { cat:"Derecho y Moral",
+      q:"¿El Derecho y la Moral son bilaterales o unilaterales?",
+      t:"El Derecho es {{bilateral}}, mientras que la Moral es {{unilateral}}." },
+    { cat:"Derecho y Moral",
+      q:"¿El Derecho y la Moral son coactivos?",
+      t:"El Derecho es {{coactivo}}, mientras que la Moral es {{no coactiva}}." },
+
+    // ===================== DERECHO OBJETIVO Y SUBJETIVO =====================
+    { cat:"Derecho Objetivo y Subjetivo",
+      q:"Definí el Derecho Objetivo.",
+      t:"El Derecho Objetivo se confunde e identifica con la {{ley}} misma; es una norma de conducta socialmente {{obligatoria}} (manda, prohíbe o permite) a cuyo cumplimiento se puede ser compelido por el {{Estado}}." },
+    { cat:"Derecho Objetivo y Subjetivo",
+      q:"¿Con qué otros términos se equipara al Derecho Objetivo?",
+      t:"El Derecho Objetivo se equipara con: Derecho – {{Ley}}, Derecho – {{Norma}}, y {{Norma agendi}}." },
+    { cat:"Derecho Objetivo y Subjetivo",
+      q:"Definí el Derecho Subjetivo (primera parte de la definición).",
+      t:"El Derecho Subjetivo es la {{facultad}} o poder del individuo que le permite realizar determinados {{actos}} (vg. derecho al trabajo, de propiedad)." },
+    { cat:"Derecho Objetivo y Subjetivo",
+      q:"Definí el Derecho Subjetivo en relación a una pretensión frente al Estado.",
+      t:"El Derecho Subjetivo también se refiere a una {{pretensión legítima}} para exigir algo del {{Estado}} o de un sujeto privado." },
+    { cat:"Derecho Objetivo y Subjetivo",
+      q:"Según la definición ampliada, ¿qué es el Derecho Subjetivo en relación a un interés?",
+      t:"Es la facultad de {{obrar}} y de {{exigir}} con miras a la satisfacción de un interés honesto y justo, digno de la {{tutela jurídica}}." },
+    { cat:"Derecho Objetivo y Subjetivo",
+      q:"¿Qué tres categorías encierra el Derecho Subjetivo?",
+      t:"El Derecho Subjetivo encierra tres categorías ínsitas: a) el {{Sujeto}} (persona); b) el {{objeto}}; y c) el {{Título o Causa eficiente}}." },
+    { cat:"Derecho Objetivo y Subjetivo",
+      q:"¿Con qué otros términos se equipara al Derecho Subjetivo?",
+      t:"El Derecho Subjetivo se equipara con: Derecho – {{Facultad}}, Derecho – {{Poder}}, y la {{atribución}} de que goza la persona para obrar." },
+    { cat:"Derecho Objetivo y Subjetivo",
+      q:"Clasificación del Derecho Subjetivo — Categoría I: derechos que importan a la persona.",
+      t:"La Categoría I incluye derechos {{inherentes a la persona}} (Derechos de la Personalidad, innatos y personalísimos) y derechos en {{persona ajena}} (derechos potestativos, derechos de Familia)." },
+    { cat:"Derecho Objetivo y Subjetivo",
+      q:"¿Dónde se ubican los Derechos Intelectuales en la clasificación por categorías?",
+      t:"Los Derechos Intelectuales se ubican entre la {{Categoría I}} y la {{Categoría II}}, vinculando a ambas." },
+    { cat:"Derecho Objetivo y Subjetivo",
+      q:"Clasificación del Derecho Subjetivo — Categoría II: derechos sobre los bienes.",
+      t:"La Categoría II incluye derechos que importan directa o inmediatamente sobre los bienes, el {{patrimonio}}: a) derechos de {{crédito o personales}} (obligaciones/personales); b) derechos sobre la cosa: {{reales}}." },
+    { cat:"Derecho Objetivo y Subjetivo",
+      q:"Clasificación del Derecho Subjetivo según su oponibilidad: derechos absolutos.",
+      t:"Los derechos {{absolutos}} son oponibles a {{todos}}; comprenden los derechos {{reales}} y los derechos {{intelectuales}}." },
+    { cat:"Derecho Objetivo y Subjetivo",
+      q:"Clasificación del Derecho Subjetivo según su oponibilidad: derechos relativos.",
+      t:"Los derechos {{relativos}} se pueden hacer valer solo respecto de {{determinadas personas}}; comprenden los derechos {{personales}} (obligaciones)." },
+    { cat:"Derecho Objetivo y Subjetivo",
+      q:"Clasificación del Derecho Subjetivo según su contenido: derechos patrimoniales.",
+      t:"Los derechos {{patrimoniales}} tienen contenido {{económico}}, satisfacen necesidades económicas y son apreciables en {{dinero}}; comprenden derechos reales, personales e intelectuales." },
+    { cat:"Derecho Objetivo y Subjetivo",
+      q:"Clasificación del Derecho Subjetivo según su contenido: derechos extrapatrimoniales.",
+      t:"Los derechos {{extrapatrimoniales}} no tienen contenido {{económico}}; ejemplos son el derecho al {{honor}}, a la vida y a la familia." },
+    { cat:"Derecho Objetivo y Subjetivo",
+      q:"¿Cuáles son los caracteres del Derecho Objetivo?",
+      t:"El Derecho Objetivo es {{general}} (se aplica a todos los individuos), {{coercitivo}} (es obligatorio) y {{evolutivo}} (se transforma siguiendo el desarrollo de la sociedad)." },
+    { cat:"Derecho Objetivo y Subjetivo",
+      q:"Distinguí Derecho Natural de Derecho Positivo.",
+      t:"El Derecho Natural es el derecho hacia el cual tiende un {{perfeccionamiento paulatino}} de las instituciones; el Derecho Positivo es el derecho {{vigente}} o aplicado en un determinado momento (leyes, ordenanzas, etc.)." },
+
+    // ===================== DERECHO POSITIVO: DIVISIÓN =====================
+    { cat:"Derecho Positivo: División",
+      q:"¿Cómo se divide el Derecho Positivo según su ámbito?",
+      t:"El Derecho Positivo se divide en {{Internacional}} e {{Interno}}, y cada uno se subdivide en {{Público}} y {{Privado}}." },
+    { cat:"Derecho Positivo: División",
+      q:"Mencioná las ramas del Derecho Público.",
+      t:"El Derecho Público comprende: {{Constitucional}}, {{Administrativo}}, {{Procesal}} y {{Penal}}, entre otras." },
+    { cat:"Derecho Positivo: División",
+      q:"Mencioná las ramas del Derecho Privado.",
+      t:"El Derecho Privado comprende: {{Civil}} y {{Comercial}}." },
+    { cat:"Derecho Positivo: División",
+      q:"¿Qué ramas integran el llamado Derecho Mixto?",
+      t:"El Derecho Mixto integra: derecho del {{trabajo o laboral}}, de {{minas}}, {{rural}}, {{marítimo}} y {{aeronáutico}}, entre otros." },
+    { cat:"Derecho Positivo: División",
+      q:"¿Qué organiza y establece el Derecho Constitucional?",
+      t:"El Derecho Constitucional organiza el {{Estado}}, determina su {{gobierno}}, crea los {{poderes}} y sus relaciones entre sí, y establece las fundamentales relaciones entre {{Estado e individuos}}." },
+    { cat:"Derecho Positivo: División",
+      q:"¿Qué regula el Derecho Administrativo?",
+      t:"El Derecho Administrativo fija las relaciones entre la {{Administración Pública}} y los {{administrados}}, delimita las {{atribuciones}} de cada parte y organiza el funcionamiento del gobierno creado por el Derecho Constitucional." },
+    { cat:"Derecho Positivo: División",
+      q:"¿Qué reglamenta específicamente el Derecho Administrativo?",
+      t:"El Derecho Administrativo reglamenta lo relativo a la {{administración}}, los {{funcionarios}} y los {{empleados públicos}}." },
+
+    // ===================== CONSTITUCIÓN NACIONAL =====================
+    { cat:"Constitución Nacional",
+      q:"¿Cuáles son las tres partes en que se estructura la Constitución Nacional?",
+      t:"La Constitución se estructura en: {{Preámbulo}}, parte {{Dogmática}} y parte {{Orgánica}}." },
+    { cat:"Constitución Nacional",
+      q:"¿Qué contiene el Preámbulo de la Constitución?",
+      t:"El Preámbulo condensa las {{decisiones políticas}}, fines y objetivos, y refleja la {{ideología}} que alumbra el texto." },
+    { cat:"Constitución Nacional",
+      q:"¿Qué contiene la parte Dogmática de la Constitución?",
+      t:"La parte Dogmática contiene los {{derechos y garantías}} y los {{nuevos derechos}}." },
+    { cat:"Constitución Nacional",
+      q:"¿Qué contiene la parte Orgánica de la Constitución?",
+      t:"La parte Orgánica organiza el {{Poder}}, establece los {{tres poderes}} y su equilibrio funcional, y regula las relaciones entre {{Nación y Provincias}}." },
+    { cat:"Constitución Nacional",
+      q:"¿Qué tipo de Constitución es la Argentina?",
+      t:"Es una Constitución {{Escrita o Codificada}} del tipo {{Racional–normativo}}, que establece criterios de {{reparto}}, principios de normas y normas." },
+    { cat:"Constitución Nacional",
+      q:"Completá el Preámbulo de la Constitución Nacional Argentina.",
+      t:"Nos los representantes del pueblo de la Nación Argentina, reunidos en Congreso General Constituyente por voluntad y elección de las provincias que la componen, en cumplimiento de pactos preexistentes, con el objeto de constituir la {{unión nacional}}, afianzar la {{justicia}}, consolidar la {{paz interior}}, proveer a la {{defensa común}}, promover el {{bienestar general}}, y asegurar los beneficios de la {{libertad}}, para nosotros, para nuestra posteridad, y para todos los hombres del mundo que quieran habitar en el suelo argentino: invocando la protección de Dios, fuente de toda razón y justicia: ordenamos, decretamos y establecemos esta Constitución para la Nación Argentina." },
+
+    // ===================== REFORMA 1994 =====================
+    { cat:"Reforma 1994",
+      q:"¿Qué garantiza la Reforma de 1994 respecto del sistema democrático?",
+      t:"Garantiza la defensa del sistema {{Democrático}} y prevé la sanción por la {{corrupción}} de funcionarios de gobierno." },
+    { cat:"Reforma 1994",
+      q:"¿Qué establece la Reforma de 1994 sobre derechos políticos?",
+      t:"Garantiza el ejercicio de los derechos políticos: sufragio {{universal}}, {{secreto}} y {{obligatorio}}, e igualdad de oportunidades entre varones y mujeres para ocupar cargos." },
+    { cat:"Reforma 1994",
+      q:"¿Qué se establece sobre los partidos políticos?",
+      t:"Se reconoce el derecho a la {{creación}} y {{organización}} de partidos políticos; el Estado contribuye a su {{sostenimiento}}." },
+    { cat:"Reforma 1994",
+      q:"¿Qué derechos de participación directa incorpora la Reforma de 1994?",
+      t:"Se incorpora el derecho a la {{iniciativa popular}} y a la {{consulta popular}} vinculante y no vinculante ({{referéndum}}, {{plebiscito}})." },
+    { cat:"Reforma 1994",
+      q:"¿Qué otros nuevos derechos incorpora la Reforma de 1994?",
+      t:"Se incorpora el derecho a un {{medio ambiente sano}}, con utilización racional de los recursos naturales, y los derechos de {{consumidores y usuarios}}, de protección a la salud e intereses económicos." },
+    { cat:"Reforma 1994",
+      q:"¿Qué garantía procesal constitucional se incorpora en 1994?",
+      t:"Se incorpora la {{Acción de Amparo}} contra actos que afecten los derechos y garantías." },
+    { cat:"Reforma 1994",
+      q:"¿Qué función cumple la Auditoría General de la Nación?",
+      t:"La Auditoría General de la Nación controla la {{legalidad}} de la gestión y auditoría de la {{Administración Pública}}, con {{autonomía funcional}}." },
+    { cat:"Reforma 1994",
+      q:"¿Cuál es la misión del Defensor del Pueblo?",
+      t:"La misión del Defensor del Pueblo es la defensa de los {{derechos humanos}} y demás derechos tutelados por la Constitución." },
+    { cat:"Reforma 1994",
+      q:"¿Qué es el Ministerio Público y cuál es su función?",
+      t:"El Ministerio Público es un órgano {{independiente}}, {{autónomo}} y {{autárquico}}, cuya función es promover la actuación de la justicia en defensa de la legalidad de los intereses generales de la sociedad." },
+    { cat:"Reforma 1994",
+      q:"¿Cuáles son las atribuciones del Jefe de Gabinete?",
+      t:"El Jefe de Gabinete ejerce la {{administración}} del país, expide {{reglamentos}} e instrucciones, nombra {{empleados}} de la administración, y puede asistir a sesiones del Congreso con voz pero {{sin voto}}." },
+    { cat:"Reforma 1994",
+      q:"¿Para qué se crea el Consejo de la Magistratura?",
+      t:"El Consejo de la Magistratura se crea a cargo de la {{selección}} de jueces y la administración {{económica y financiera}} del Poder Judicial." },
+    { cat:"Reforma 1994",
+      q:"¿Qué facultad se otorga a las provincias respecto de regiones?",
+      t:"Las provincias pueden crear {{regiones}} para su desarrollo y celebrar {{convenios internacionales}}." },
+    { cat:"Reforma 1994",
+      q:"¿Qué autonomía se le reconoce a la Ciudad de Buenos Aires?",
+      t:"La Ciudad de Buenos Aires tendrá autonomía {{legislativa}}, {{jurisdiccional}} y {{administrativa}}." },
+
+    // ===================== LEY Y FUENTES DEL DERECHO =====================
+    { cat:"Ley y Fuentes del Derecho",
+      q:"Definí la Ley.",
+      t:"La Ley es una regla social {{obligatoria}} establecida por autoridad {{pública}}." },
+    { cat:"Ley y Fuentes del Derecho",
+      q:"¿Cuáles son las características de la Ley?",
+      t:"Las características de la ley son: {{generalidad}}, {{estabilidad}} y {{obligatoriedad}}." },
+    { cat:"Ley y Fuentes del Derecho",
+      q:"¿Cuáles son las clases de leyes según el texto?",
+      t:"Las clases de leyes son: {{Constituciones}}, {{Leyes}}, {{Reglamentos}} y {{Ordenanzas municipales}}." },
+    { cat:"Ley y Fuentes del Derecho",
+      q:"Mencioná algunas clasificaciones de las leyes.",
+      t:"Las leyes se clasifican según su alcance (nacionales, provinciales o municipales), según sean de derecho público o privado, según la materia, en {{sustantivas}} (de fondo) o {{adjetivas}} (de forma), y en {{permanentes}}, {{temporarias}} o {{transitorias}}." },
+    { cat:"Ley y Fuentes del Derecho",
+      q:"¿Qué integra el conjunto de Leyes Nacionales?",
+      t:"Las Leyes Nacionales incluyen: la {{Constitución Nacional}}, los {{tratados}} celebrados con naciones extranjeras, las {{leyes nacionales}} (incluidos los códigos dictados por el Congreso) y los {{reglamentos}} del Poder Ejecutivo." },
+    { cat:"Ley y Fuentes del Derecho",
+      q:"Ordená la Pirámide Jurídica de mayor a menor jerarquía.",
+      t:"La Pirámide Jurídica ordena, de mayor a menor jerarquía: {{Constitución Nacional}} (con los tratados con rango constitucional), {{Tratados}}, {{Leyes generales}}, {{Leyes especiales}}, {{Decretos–Reglamentos}} y {{Normas particulares}}." },
+    { cat:"Ley y Fuentes del Derecho",
+      q:"¿Puede el Juez crear Derecho?",
+      t:"El Juez debe resolver las cuestiones que le someten los particulares; sus decisiones tienen autoridad entre las {{partes}} y {{aplican}} el Derecho, pero no puede {{crear Derecho}} (no puede erigirse en legislador)." },
+    { cat:"Ley y Fuentes del Derecho",
+      q:"¿Qué es la Jurisprudencia?",
+      t:"La Jurisprudencia se forma cuando hay una serie de {{fallos}} que resuelven una misma cuestión en el mismo sentido, aplicando principios semejantes en cuestiones {{análogas}}; los jueces tratan de amoldarse a los {{precedentes}} ya establecidos." },
+    { cat:"Ley y Fuentes del Derecho",
+      q:"¿Qué es la Doctrina?",
+      t:"La Doctrina se refiere a las {{opiniones}} que exponen en sus tratados los juristas {{reconocidos}}." },
+  ];
+
+  function parseTemplate(t){
+    const parts = t.split(/\{\{(.*?)\}\}/g);
+    const segments = [];
+    const blanks = [];
+    for(let i=0;i<parts.length;i++){
+      if(i % 2 === 0){
+        segments.push(parts[i]);
+      } else {
+        blanks.push(parts[i].split('/').map(s=>s.trim()));
+      }
+    }
+    return { segments, blanks };
+  }
+
+  const DATA = RAW.map((d,i)=>{
+    const parsed = parseTemplate(d.t);
+    return { id:i, cat:d.cat, q:d.q, segments:parsed.segments, blanks:parsed.blanks };
+  });
+
+  const CATS = ["Todas", ...Array.from(new Set(DATA.map(d=>d.cat)))];
+
+  const status = {};       // id -> 'correct' | 'incorrect'
+  const attempts = {};     // id -> array of input strings
+  const showingAnswers = {}; // id -> boolean
+  const preShow = {};       // id -> array of values saved before showing answers
+
+  let currentCat = "Todas";
+  let order = DATA.map(d=>d.id);
+  let pos = 0;
+  let flipped = false;
+
+  const el = {
+    chips: document.getElementById('chips'),
+    card: document.getElementById('card'),
+    frontFace: document.getElementById('frontFace'),
+    questionText: document.getElementById('questionText'),
+    fillText: document.getElementById('fillText'),
+    tag: document.getElementById('tag'),
+    counter: document.getElementById('counter'),
+    resultLine: document.getElementById('resultLine'),
+    prevBtn: document.getElementById('prevBtn'),
+    nextBtn: document.getElementById('nextBtn'),
+    flipBtn: document.getElementById('flipBtn'),
+    validateBtn: document.getElementById('validateBtn'),
+    retryBtn: document.getElementById('retryBtn'),
+    showAnswerBtn: document.getElementById('showAnswerBtn'),
+    shuffleBtn: document.getElementById('shuffleBtn'),
+    orderBtn: document.getElementById('orderBtn'),
+    resetBtn: document.getElementById('resetBtn'),
+    progressLabel: document.getElementById('progressLabel'),
+    progressPercent: document.getElementById('progressPercent'),
+    segKnow: document.getElementById('segKnow'),
+    segReview: document.getElementById('segReview'),
+  };
+
+  function normalize(s){
+    return (s || "").toString().trim().toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .replace(/[^\w\s%]/g,'')
+      .replace(/\s+/g,' ');
+  }
+
+  function currentIds(){
+    if(currentCat === "Todas") return order;
+    return order.filter(id => DATA[id].cat === currentCat);
+  }
+
+  function renderChips(){
+    el.chips.innerHTML = "";
+    CATS.forEach(cat=>{
+      const count = cat === "Todas" ? DATA.length : DATA.filter(d=>d.cat===cat).length;
+      const chip = document.createElement('div');
+      chip.className = 'chip' + (cat===currentCat ? ' active' : '');
+      chip.innerHTML = cat + '<span class="n">' + count + '</span>';
+      chip.addEventListener('click', ()=>{
+        currentCat = cat;
+        pos = 0;
+        flipped = false;
+        renderChips();
+        renderCard();
+      });
+      el.chips.appendChild(chip);
+    });
+  }
+
+  function buildFillText(d){
+    el.fillText.innerHTML = "";
+    const saved = attempts[d.id] || [];
+    const showing = !!showingAnswers[d.id];
+    d.segments.forEach((seg, i)=>{
+      if(seg.length){
+        const span = document.createElement('span');
+        span.className = 'txt';
+        span.textContent = seg;
+        el.fillText.appendChild(span);
+      }
+      if(i < d.blanks.length){
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'blank-input';
+        input.autocomplete = 'off';
+        input.autocapitalize = 'off';
+        input.spellcheck = false;
+        input.dataset.index = i;
+        if(showing){
+          input.value = d.blanks[i][0];
+          input.readOnly = true;
+          input.classList.add('shown');
+        } else {
+          input.value = saved[i] || '';
+        }
+        input.style.width = Math.max(6, input.value.length + 2) + 'ch';
+        input.addEventListener('click', (e)=> e.stopPropagation());
+        input.addEventListener('input', ()=>{
+          input.classList.remove('correct','incorrect');
+          input.style.width = Math.max(6, input.value.length + 2) + 'ch';
+          attempts[d.id] = attempts[d.id] || [];
+          attempts[d.id][i] = input.value;
+        });
+        input.addEventListener('keydown', (e)=>{
+          if(e.key === 'Enter'){
+            e.preventDefault();
+            const inputs = Array.from(el.fillText.querySelectorAll('.blank-input'));
+            const idx = inputs.indexOf(input);
+            if(idx < inputs.length - 1){
+              inputs[idx+1].focus();
+            } else {
+              validate();
+            }
+          }
+        });
+        el.fillText.appendChild(input);
+      }
+    });
+  }
+
+  function renderCard(){
+    const ids = currentIds();
+    if(ids.length === 0){
+      el.tag.textContent = "—";
+      el.counter.textContent = "0 / 0";
+      el.questionText.textContent = "No hay tarjetas en esta categoría.";
+      el.fillText.textContent = "";
+      el.resultLine.textContent = "";
+      updateProgress();
+      return;
+    }
+    if(pos >= ids.length) pos = 0;
+    if(pos < 0) pos = ids.length - 1;
+
+    const id = ids[pos];
+    const d = DATA[id];
+
+    el.card.classList.toggle('flipped', flipped);
+    el.flipBtn.textContent = flipped ? '← Pregunta' : 'Completar →';
+    el.tag.textContent = d.cat;
+    el.counter.textContent = (pos+1) + " / " + ids.length;
+    el.questionText.textContent = d.q;
+
+    buildFillText(d);
+    updateShowAnswerBtn(id);
+
+    if(showingAnswers[id]){
+      el.resultLine.textContent = "Mostrando las respuestas correctas";
+      el.resultLine.className = "result-line info";
+    } else {
+      el.resultLine.textContent = "";
+      el.resultLine.className = "result-line";
+      if(status[id]){
+        revalidateColorsOnly(d);
+      }
+    }
+
+    updateProgress();
+  }
+
+  function updateShowAnswerBtn(id){
+    const showing = !!showingAnswers[id];
+    el.showAnswerBtn.textContent = showing ? '🙈 Ocultar' : '👁 Ver respuestas';
+    el.showAnswerBtn.classList.toggle('active', showing);
+  }
+
+  function revalidateColorsOnly(d){
+    const inputs = Array.from(el.fillText.querySelectorAll('.blank-input'));
+    let correctCount = 0;
+    inputs.forEach((input, i)=>{
+      const val = normalize(input.value);
+      const ok = d.blanks[i].some(ans => normalize(ans) === val);
+      input.classList.toggle('correct', ok);
+      input.classList.toggle('incorrect', !ok);
+      if(ok) correctCount++;
+    });
+    showResult(correctCount, d.blanks.length);
+  }
+
+  function showResult(correct, total){
+    el.resultLine.textContent = correct + " de " + total + " correctas";
+    el.resultLine.className = "result-line " + (correct === total ? "ok" : "bad");
+  }
+
+  function validate(){
+    const ids = currentIds();
+    if(ids.length === 0) return;
+    const id = ids[pos];
+    if(showingAnswers[id]) return; // no se valida mientras se muestran las respuestas
+    const d = DATA[id];
+    const inputs = Array.from(el.fillText.querySelectorAll('.blank-input'));
+    let correctCount = 0;
+    inputs.forEach((input, i)=>{
+      const val = normalize(input.value);
+      const ok = d.blanks[i].some(ans => normalize(ans) === val);
+      input.classList.toggle('correct', ok);
+      input.classList.toggle('incorrect', !ok);
+      if(ok) correctCount++;
+    });
+    status[id] = (correctCount === d.blanks.length) ? 'correct' : 'incorrect';
+    showResult(correctCount, d.blanks.length);
+    updateProgress();
+  }
+
+  function retry(){
+    const ids = currentIds();
+    if(ids.length === 0) return;
+    const id = ids[pos];
+    delete attempts[id];
+    delete status[id];
+    delete showingAnswers[id];
+    delete preShow[id];
+    renderCard();
+    const firstInput = el.fillText.querySelector('.blank-input');
+    if(firstInput) firstInput.focus();
+  }
+
+  function toggleShowAnswers(){
+    const ids = currentIds();
+    if(ids.length === 0) return;
+    const id = ids[pos];
+    const d = DATA[id];
+    const inputs = Array.from(el.fillText.querySelectorAll('.blank-input'));
+
+    if(!showingAnswers[id]){
+      // Guardar el estado actual antes de mostrar las respuestas
+      preShow[id] = inputs.map(inp => inp.value);
+      inputs.forEach((inp, i)=>{
+        inp.value = d.blanks[i][0];
+        inp.readOnly = true;
+        inp.classList.remove('correct','incorrect');
+        inp.classList.add('shown');
+        inp.style.width = Math.max(6, inp.value.length + 2) + 'ch';
+      });
+      showingAnswers[id] = true;
+      el.resultLine.textContent = "Mostrando las respuestas correctas";
+      el.resultLine.className = "result-line info";
+    } else {
+      const saved = preShow[id] || [];
+      inputs.forEach((inp, i)=>{
+        inp.value = saved[i] || '';
+        inp.readOnly = false;
+        inp.classList.remove('shown');
+        inp.style.width = Math.max(6, inp.value.length + 2) + 'ch';
+      });
+      attempts[id] = saved.slice();
+      showingAnswers[id] = false;
+      delete preShow[id];
+      if(status[id]){
+        revalidateColorsOnly(d);
+      } else {
+        el.resultLine.textContent = "";
+        el.resultLine.className = "result-line";
+      }
+    }
+    updateShowAnswerBtn(id);
+  }
+
+  function updateProgress(){
+    const total = DATA.length;
+    const correct = DATA.filter(d=>status[d.id]==='correct').length;
+    const incorrect = DATA.filter(d=>status[d.id]==='incorrect').length;
+    const none = total - correct - incorrect;
+    el.progressLabel.textContent = correct + " correctas · " + incorrect + " con errores · " + none + " sin intentar";
+    const pct = total ? Math.round((correct/total)*100) : 0;
+    el.progressPercent.textContent = pct + "%";
+    el.segKnow.style.width = (total ? (correct/total*100) : 0) + "%";
+    el.segReview.style.width = (total ? (incorrect/total*100) : 0) + "%";
+  }
+
+  function flip(){
+    flipped = !flipped;
+    el.card.classList.toggle('flipped', flipped);
+    el.flipBtn.textContent = flipped ? '← Pregunta' : 'Completar →';
+    if(flipped){
+      setTimeout(()=>{
+        const firstInput = el.fillText.querySelector('.blank-input');
+        if(firstInput && !firstInput.readOnly) firstInput.focus({preventScroll:true});
+      }, 260);
+    }
+  }
+
+  function go(delta){
+    const ids = currentIds();
+    if(ids.length === 0) return;
+    pos = (pos + delta + ids.length) % ids.length;
+    flipped = false;
+    renderCard();
+  }
+
+  function shuffleArray(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+
+  el.frontFace.addEventListener('click', ()=>{ if(!flipped) flip(); });
+  el.flipBtn.addEventListener('click', flip);
+  el.prevBtn.addEventListener('click', ()=>go(-1));
+  el.nextBtn.addEventListener('click', ()=>go(1));
+  el.validateBtn.addEventListener('click', validate);
+  el.retryBtn.addEventListener('click', retry);
+  el.showAnswerBtn.addEventListener('click', toggleShowAnswers);
+
+  el.shuffleBtn.addEventListener('click', ()=>{
+    order = shuffleArray(DATA.map(d=>d.id));
+    pos = 0; flipped = false;
+    renderCard();
+  });
+  el.orderBtn.addEventListener('click', ()=>{
+    order = DATA.map(d=>d.id);
+    pos = 0; flipped = false;
+    renderCard();
+  });
+  el.resetBtn.addEventListener('click', ()=>{
+    Object.keys(status).forEach(k=>delete status[k]);
+    Object.keys(attempts).forEach(k=>delete attempts[k]);
+    Object.keys(showingAnswers).forEach(k=>delete showingAnswers[k]);
+    Object.keys(preShow).forEach(k=>delete preShow[k]);
+    renderCard();
+  });
+
+  document.addEventListener('keydown', (e)=>{
+    const isTyping = document.activeElement && document.activeElement.classList && document.activeElement.classList.contains('blank-input');
+    if(isTyping) return;
+    if(e.key === 'ArrowRight'){ go(1); }
+    else if(e.key === 'ArrowLeft'){ go(-1); }
+    else if(e.key === ' '){ e.preventDefault(); flip(); }
+  });
+
+  renderChips();
+  renderCard();
+
+})();
+</script>
+
+</body>
+</html>
