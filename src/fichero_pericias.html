@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Fichero de Pericias Judiciales — Pregunta y Completar</title>
+<style>
+  :root{
+    --navy: #1B3B6F;
+    --navy-dark: #12294B;
+    --gold: #B8860B;
+    --white: #FFFFFF;
+    --card: #F3F6FA;
+    --card2: #EEF1F6;
+    --red: #B03A2E;
+    --red-bg: #FBEDEB;
+    --green: #2E7D4F;
+    --green-bg: #EAF5EE;
+    --gold-bg: #FBF3E3;
+    --text: #26313F;
+    --subtext: #5A6B7A;
+    --line: #DCE3EC;
+    --font-head: Cambria, "Times New Roman", serif;
+    --font-body: Calibri, "Segoe UI", Arial, sans-serif;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+
+  html,body{
+    margin:0; padding:0;
+    background: var(--white);
+    color: var(--text);
+    font-family: var(--font-body);
+    height:100%;
+  }
+
+  body{
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+  }
+
+  /* ================= HEADER ================= */
+  .topbar{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding: 18px 16px 10px;
+  }
+  .icon-badge{
+    flex:0 0 auto;
+    width:44px; height:44px;
+    border-radius:50%;
+    background: var(--gold-bg);
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px;
+    color: var(--gold);
+  }
+  .heading .eyebrow{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.6px;
+    color: var(--gold);
+    text-transform:uppercase;
+    line-height:1.3;
+  }
+  .heading h1{
+    margin:2px 0 0;
+    font-family: var(--font-head);
+    font-weight:700;
+    font-size: 20px;
+    color: var(--navy);
+    line-height:1.15;
+  }
+
+  /* ================= CATEGORY CHIPS ================= */
+  .chips-wrap{
+    overflow-x:auto;
+    padding: 4px 16px 12px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .chips-wrap::-webkit-scrollbar{ display:none; }
+  .chips{
+    display:flex;
+    gap:8px;
+    width:max-content;
+  }
+  .chip{
+    flex:0 0 auto;
+    padding: 8px 14px;
+    border-radius: 20px;
+    background: var(--card);
+    border:1px solid var(--line);
+    font-size: 12.5px;
+    font-weight:700;
+    color: var(--navy);
+    white-space:nowrap;
+    cursor:pointer;
+    min-height:36px;
+    display:flex;
+    align-items:center;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .chip .n{
+    margin-left:6px;
+    font-weight:700;
+    color: var(--gold);
+    font-size:11px;
+  }
+  .chip.active{
+    background: var(--navy);
+    color: var(--white);
+    border-color: var(--navy);
+  }
+  .chip.active .n{ color: #E8D9A9; }
+
+  /* ================= STAGE ================= */
+  .stage{
+    flex:1;
+    padding: 4px 16px 8px;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .stage-meta{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+  }
+  .tag{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+    color: var(--gold);
+    background: var(--gold-bg);
+    border-radius: 20px;
+    padding: 5px 12px;
+  }
+  .counter{
+    font-size:12.5px;
+    font-weight:700;
+    color: var(--subtext);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .card-scene{
+    perspective: 1500px;
+    min-height: 380px;
+    flex:1;
+  }
+  .card{
+    position:relative;
+    width:100%; height:100%;
+    min-height:380px;
+    transform-style: preserve-3d;
+    transition: transform .5s cubic-bezier(.2,.7,.3,1);
+  }
+  .card.flipped{ transform: rotateY(180deg); }
+
+  .face{
+    position:absolute; inset:0;
+    -webkit-backface-visibility:hidden;
+    backface-visibility:hidden;
+    border-radius: 16px;
+    background: var(--card);
+    padding: 20px 18px 18px;
+    display:flex;
+    flex-direction:column;
+    box-shadow: 0 10px 24px rgba(27,59,111,0.14);
+    overflow-y:auto;
+  }
+  .face.back{
+    transform: rotateY(180deg);
+    background: var(--white);
+    border:1px solid var(--line);
+    cursor:auto;
+  }
+  .face.front{ cursor:pointer; }
+
+  .face .face-top{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom: 12px;
+    flex: 0 0 auto;
+  }
+  .face-dot{
+    width:28px; height:28px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px;
+    font-weight:700;
+    color: var(--white);
+    background: var(--navy);
+    flex:0 0 auto;
+  }
+  .face.back .face-dot{ background: var(--gold); }
+  .face .face-label{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.8px;
+    color: var(--navy);
+    text-transform:uppercase;
+  }
+  .face.back .face-label{ color: var(--gold); }
+
+  .question-text{
+    font-family: var(--font-head);
+    font-size: 19px;
+    line-height:1.45;
+    color: var(--navy-dark);
+    flex:1;
+  }
+  .front .hint{
+    margin-top:auto;
+    padding-top:10px;
+    font-size:11px;
+    font-style:italic;
+    color: var(--subtext);
+    flex: 0 0 auto;
+  }
+
+  .fill-text{
+    font-family: var(--font-head);
+    font-size: 15.5px;
+    line-height:2.05;
+    color: var(--navy-dark);
+    display:flex;
+    flex-wrap:wrap;
+    align-items:baseline;
+    gap: 0 2px;
+    margin:0;
+  }
+  .fill-text .txt{ white-space:pre-wrap; }
+
+  .blank-input{
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    font-weight:700;
+    color: var(--navy);
+    border: none;
+    border-bottom: 2px solid var(--gold);
+    background: var(--gold-bg);
+    border-radius: 6px 6px 2px 2px;
+    padding: 3px 7px;
+    margin: 2px 1px;
+    min-width: 58px;
+    max-width: 100%;
+    text-align:center;
+    outline:none;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .blank-input:focus{
+    background: #FDF1D8;
+    border-color: var(--navy);
+  }
+  .blank-input.correct{
+    background: var(--green-bg);
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .blank-input.incorrect{
+    background: var(--red-bg);
+    border-color: var(--red);
+    color: var(--red);
+  }
+  .blank-input.revealed{
+    background: var(--gold-bg);
+    border-color: var(--gold);
+    color: var(--navy-dark);
+    font-style: italic;
+  }
+
+  .result-line{
+    min-height: 20px;
+    margin-top:10px;
+    font-size:12.5px;
+    font-weight:700;
+    text-align:center;
+    flex: 0 0 auto;
+  }
+  .result-line.ok{ color: var(--green); }
+  .result-line.bad{ color: var(--red); }
+
+  .back-action-row{
+    display:flex;
+    gap:8px;
+    margin-top:10px;
+    flex: 0 0 auto;
+  }
+  .reveal-row{
+    margin-top:8px;
+    flex: 0 0 auto;
+  }
+  .btn{
+    flex:1;
+    min-height:42px;
+    border-radius: 12px;
+    font-family: var(--font-body);
+    font-weight:700;
+    font-size:13.5px;
+    border:1px solid transparent;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    transition: transform .1s ease, background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .btn:active{ transform: translateY(1px); }
+  .btn:focus-visible{ outline:3px solid var(--gold); outline-offset:2px; }
+
+  .btn-validate{ background: var(--navy); color: var(--white); }
+  .btn-validate:active{ background: var(--navy-dark); }
+  .btn-retry{ background: var(--card2); color: var(--navy); border-color: var(--line); }
+
+  .btn-reveal{
+    width:100%;
+    background: var(--white);
+    color: var(--gold);
+    border-color: var(--gold);
+  }
+  .btn-reveal.active{
+    background: var(--gold);
+    color: var(--white);
+  }
+
+  /* ================= PROGRESS ================= */
+  .progress-wrap{ margin-top:14px; }
+  .progress-label{
+    font-size:11.5px;
+    color: var(--subtext);
+    margin-bottom:6px;
+    display:flex;
+    justify-content:space-between;
+  }
+  .progress-bar{
+    height:8px;
+    border-radius:6px;
+    background: var(--card2);
+    overflow:hidden;
+    display:flex;
+  }
+  .seg-know{ background: var(--green); height:100%; }
+  .seg-review{ background: var(--red); height:100%; }
+
+  /* ================= UTILITY ROW ================= */
+  .utility-row{
+    display:flex;
+    justify-content:center;
+    gap: 18px;
+    padding: 10px 16px 4px;
+    flex-wrap:wrap;
+  }
+  .util-btn{
+    background:none;
+    border:none;
+    font-family: var(--font-body);
+    font-size:12.5px;
+    font-weight:700;
+    color: var(--subtext);
+    cursor:pointer;
+    padding:6px 4px;
+    min-height:36px;
+  }
+  .util-btn:hover{ color: var(--navy); }
+
+  footer.note{
+    text-align:center;
+    font-size:10.5px;
+    color: var(--subtext);
+    padding: 6px 24px 4px;
+  }
+
+  /* ================= BOTTOM NAV (fixed, mobile) ================= */
+  .bottom-nav{
+    position:fixed;
+    left:0; right:0; bottom:0;
+    background: var(--white);
+    border-top: 1px solid var(--line);
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    display:flex;
+    align-items:center;
+    gap:10px;
+    box-shadow: 0 -6px 18px rgba(27,59,111,0.08);
+  }
+  .nav-btn{
+    min-height:48px;
+    border-radius: 12px;
+    border:1px solid var(--line);
+    background: var(--card);
+    color: var(--navy);
+    font-size:20px;
+    font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+    width:52px;
+    flex:0 0 auto;
+    cursor:pointer;
+  }
+  .nav-btn-main{
+    flex:1;
+    width:auto;
+    background: var(--navy);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size:14.5px;
+    letter-spacing:0.3px;
+  }
+  .nav-btn-main:active{ background: var(--navy-dark); }
+  .nav-btn:active{ background: var(--card2); }
+
+  /* ================= DESKTOP / TABLET ENHANCEMENT ================= */
+  @media (min-width: 640px){
+    body{ align-items:center; }
+    .topbar, .chips-wrap, .stage, .utility-row, footer.note{
+      width:100%;
+      max-width: 600px;
+      align-self:center;
+      margin: 0 auto;
+    }
+    .icon-badge{ width:52px; height:52px; font-size:24px; }
+    .heading h1{ font-size:25px; }
+    .card-scene{ min-height: 420px; }
+    .card{ min-height:420px; }
+    .question-text{ font-size:22px; }
+    .fill-text{ font-size:17.5px; }
+    .bottom-nav{
+      max-width: 600px;
+      left:50%;
+      transform: translateX(-50%);
+      border-radius: 16px 16px 0 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .card, .chip{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="icon-badge">🔍</div>
+    <div class="heading">
+      <div class="eyebrow">Legislación y Ética Profesional</div>
+      <h1>Fichero de Pericias Judiciales</h1>
+    </div>
+  </header>
+
+  <div class="chips-wrap">
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <main class="stage">
+    <div class="stage-meta">
+      <span class="tag" id="tag">—</span>
+      <span class="counter" id="counter">0 / 0</span>
+    </div>
+
+    <div class="card-scene">
+      <div class="card" id="card">
+        <div class="face front" id="frontFace">
+          <div class="face-top">
+            <div class="face-dot">P</div>
+            <div class="face-label">Pregunta</div>
+          </div>
+          <div class="question-text" id="questionText">Cargando…</div>
+          <div class="hint">Tocá la tarjeta (o "Completar") para practicar la respuesta escribiéndola</div>
+        </div>
+        <div class="face back">
+          <div class="face-top">
+            <div class="face-dot">✎</div>
+            <div class="face-label">Completar</div>
+          </div>
+          <p class="fill-text" id="fillText"></p>
+          <div class="result-line" id="resultLine"></div>
+          <div class="back-action-row">
+            <button class="btn btn-retry" id="retryBtn">↺ Reintentar</button>
+            <button class="btn btn-validate" id="validateBtn">Validar</button>
+          </div>
+          <div class="reveal-row">
+            <button class="btn btn-reveal" id="revealBtn">👁 Ver respuestas</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="progressLabel">0 correctas · 0 con errores · 0 sin intentar</span>
+        <span id="progressPercent">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="seg-know" id="segKnow" style="width:0%"></div>
+        <div class="seg-review" id="segReview" style="width:0%"></div>
+      </div>
+    </div>
+  </main>
+
+  <div class="utility-row">
+    <button class="util-btn" id="shuffleBtn">🔀 Barajar</button>
+    <button class="util-btn" id="orderBtn">🔢 Orden original</button>
+    <button class="util-btn" id="resetBtn">↺ Reiniciar todo</button>
+  </div>
+
+  <footer class="note">
+    El progreso se guarda solo durante esta sesión.
+  </footer>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn" id="prevBtn" aria-label="Anterior">‹</button>
+    <button class="nav-btn nav-btn-main" id="flipBtn">Completar →</button>
+    <button class="nav-btn" id="nextBtn" aria-label="Siguiente">›</button>
+  </nav>
+
+<script>
+(function(){
+
+  // "t" usa {{respuesta}} o {{respuesta1/respuesta2}} para alternativas válidas en los espacios.
+  const RAW = [
+    // ===== Conceptos Generales =====
+    { cat:"Conceptos Generales",
+      q:"¿Qué es el Derecho Procesal?",
+      t:"Derecho procesal es la rama del derecho {{público}} que contempla el conjunto de {{normas}}, códigos y formas del {{proceso judicial}}." },
+    { cat:"Conceptos Generales",
+      q:"¿Qué contempla el derecho procesal respecto de la resolución de litigios?",
+      t:"Contempla los mecanismos y procedimientos que estipula la {{ley}} para resolver correcta y formalmente los {{litigios}} planteados por las partes en disputa, mediante un método y una decisión que se atengan a los {{hechos}} afirmados y probados y a lo contemplado por el {{derecho aplicable}}." },
+    { cat:"Conceptos Generales",
+      q:"¿Qué es un Juicio?",
+      t:"Juicio es el mecanismo {{procesal}} por el cual la {{justicia}} resuelve una controversia entre {{dos partes}}." },
+    { cat:"Conceptos Generales",
+      q:"¿Cómo se integra el juicio ordinario?",
+      t:"El juicio ordinario se integra con la {{demanda}} y su {{contestación}}. La demanda es la presentación formulada ante el {{juez competente}}." },
+    { cat:"Conceptos Generales",
+      q:"¿Qué es la Sentencia?",
+      t:"Sentencia es el acto que emana de los agentes de la {{jurisdicción}} mediante el cual deciden la {{causa}} o puntos sometidos a su conocimiento." },
+    { cat:"Conceptos Generales",
+      q:"En la sentencia, ¿entre qué dos tesis elige el juez?",
+      t:"El juez elige entre la tesis del {{actor}} y la del {{demandado}} la solución que le parece ajustada al {{derecho}} y a la {{justicia}}." },
+    { cat:"Conceptos Generales",
+      q:"¿Cuáles son las ramas del Derecho Procesal?",
+      t:"{{Civil}}, {{Penal}}, {{Laboral}}, {{Comercial}} y {{Otros}}." },
+
+    // ===== Fuentes y Competencia =====
+    { cat:"Fuentes y Competencia",
+      q:"¿Qué expresa el Art. 18 de la Constitución Nacional?",
+      t:"El art. 18 expresa la {{inviolabilidad}} de la defensa en juicio de las personas y de sus derechos: “Ningún {{habitante}} de la Nación puede ser {{penado}} sin juicio previo fundado en {{ley anterior}} ni hecho del proceso”." },
+    { cat:"Fuentes y Competencia",
+      q:"¿Qué establece el Art. 16 de la Constitución Nacional como fuente del derecho procesal?",
+      t:"Establece la {{igualdad}} ante la ley." },
+    { cat:"Fuentes y Competencia",
+      q:"¿Qué establecen las Constituciones Provinciales?",
+      t:"Establecen la existencia de su propio {{Poder Judicial}} y las {{funciones}} que le corresponden." },
+    { cat:"Fuentes y Competencia",
+      q:"¿Qué son los Reglamentos como fuente del derecho?",
+      t:"Son normas dictadas por el poder {{ejecutivo}} que regulan aspectos {{específicos}} de una ley." },
+    { cat:"Fuentes y Competencia",
+      q:"¿Qué son las Leyes como fuente del derecho?",
+      t:"Son normas dictadas por el poder {{legislativo}} que regulan diversas materias, como el derecho {{civil}}, {{penal}}, {{laboral}}, entre otros." },
+    { cat:"Fuentes y Competencia",
+      q:"¿Qué es la Jurisprudencia?",
+      t:"Es el conjunto de decisiones {{judiciales}} que aplican e {{interpretan}} las normas jurídicas." },
+    { cat:"Fuentes y Competencia",
+      q:"¿Qué es la Jurisdicción?",
+      t:"Jurisdicción es la facultad de declarar el {{derecho}}, aplicarlo y hacerlo {{cumplir}}." },
+    { cat:"Fuentes y Competencia",
+      q:"¿Qué es la Competencia?",
+      t:"Es la aptitud que reconoce la ley al {{juez}} para ejercer sus funciones respecto a determinados asuntos: {{materia}}, {{grado}} y {{territorio}}." },
+
+    // ===== Pruebas y Medios de Prueba =====
+    { cat:"Pruebas y Medios de Prueba",
+      q:"¿Cuándo el juez abre la causa a prueba?",
+      t:"Siempre que se alegaran hechos {{pertinentes}} acerca de los cuales no hubiera {{conformidad}} entre las partes, o siempre que alguna de éstas lo {{solicitara}}, el juez abrirá a prueba la causa." },
+    { cat:"Pruebas y Medios de Prueba",
+      q:"¿Qué es la Prueba?",
+      t:"Es la demostración de la existencia de {{hechos naturales}}, o de {{situaciones jurídicas}}. Está constituida por los elementos que acreditan la {{veracidad}} de los hechos invocados en el juicio." },
+    { cat:"Pruebas y Medios de Prueba",
+      q:"Completá el principio fundamental sobre la carga de la prueba.",
+      t:"Quien {{afirma}} algo está obligado a {{probarlo}}." },
+    { cat:"Pruebas y Medios de Prueba",
+      q:"¿En qué consiste la Confesión como medio de prueba?",
+      t:"Una parte {{capaz}} de obligarse reconoce total o parcialmente la {{verdad}} de un hecho susceptible de producir consecuencias {{jurídicas}} a su cargo." },
+    { cat:"Pruebas y Medios de Prueba",
+      q:"¿Qué valor probatorio tiene el instrumento público?",
+      t:"El instrumento público hace {{plena fe}} de los hechos cumplidos por el {{escribano}} o funcionario público." },
+    { cat:"Pruebas y Medios de Prueba",
+      q:"¿Qué valor tienen los instrumentos privados reconocidos en juicio?",
+      t:"Tienen el {{mismo valor}} que atribuye la ley a los instrumentos {{públicos}}." },
+    { cat:"Pruebas y Medios de Prueba",
+      q:"¿En qué consiste la Inspección Ocular?",
+      t:"Es la constitución del {{juez}} o de uno de sus {{Secretarios}}, en determinado lugar, para tomar conocimiento {{directo}} y {{personal}} de circunstancias vinculadas a un hecho." },
+    { cat:"Pruebas y Medios de Prueba",
+      q:"¿Qué es la Prueba Testimonial?",
+      t:"Es la declaración de una {{persona humana}} hábil que proporciona al órgano judicial una narración acerca de un hecho que ha sido {{percibido}} por medio de sus sentidos o realizado por ella y que son {{relevantes}} para resolver un conflicto." },
+    { cat:"Pruebas y Medios de Prueba",
+      q:"¿Cuál es el quinto medio de prueba, vinculado con los peritos?",
+      t:"El {{dictamen pericial}}." },
+
+    // ===== El Perito: Concepto y Perfil =====
+    { cat:"El Perito: Concepto y Perfil",
+      q:"¿Por qué motivos el juez no siempre puede conocer o apreciar un hecho por sus propios medios?",
+      t:"Porque no esté al alcance de sus {{sentidos}}, o porque no posea las {{aptitudes técnicas o científicas}} en la disciplina que le permiten discernir sobre el mismo." },
+    { cat:"El Perito: Concepto y Perfil",
+      q:"Definí al Perito.",
+      t:"Persona {{ajena}} al juicio, técnica o versada en cierto tipo de asuntos o poseedora de {{conocimientos especiales}}, que {{asesora}} a las partes y al Tribunal para el {{esclarecimiento}} de la litis o de un aspecto de la misma." },
+    { cat:"El Perito: Concepto y Perfil",
+      q:"¿Cuáles son las fuentes de conocimiento del perito?",
+      t:"{{Estudios Universitarios o Técnicos}}, {{Cursos de Especialización o Posgrado}} y {{Experiencia}}." },
+    { cat:"El Perito: Concepto y Perfil",
+      q:"Nombrá al menos cuatro características que debe tener el perito.",
+      t:"{{Amplitud de criterio}} y ductilidad, {{Intuición}} e ingenio, {{Autoridad}}, organización científica de su labor, {{Perseverancia}} e imparcialidad y habilidades de {{comunicación}}." },
+    { cat:"El Perito: Concepto y Perfil",
+      q:"¿Qué es el Perito Oficial?",
+      t:"Asesora al {{juez}}. Es un {{auxiliar}} de la Justicia." },
+    { cat:"El Perito: Concepto y Perfil",
+      q:"¿Qué son los Peritos de Parte o Contraloreadores?",
+      t:"Asesoran a las {{partes}}." },
+
+    // ===== Perito vs Testigo, Árbitro e Intérprete =====
+    { cat:"Perito vs Testigo, Árbitro e Intérprete",
+      q:"¿Qué caracteriza al Testigo?",
+      t:"Emite declaración en base a lo que ha visto u oído acerca de un determinado hecho, el cual conoce de manera {{circunstancial}}." },
+    { cat:"Perito vs Testigo, Árbitro e Intérprete",
+      q:"¿Qué función cumple el Intérprete?",
+      t:"Realiza {{traducciones}} de un idioma a otro." },
+    { cat:"Perito vs Testigo, Árbitro e Intérprete",
+      q:"¿Qué caracteriza al Árbitro?",
+      t:"Es elegido de {{común acuerdo}} por las partes y con compromiso de aceptar el dictamen. Emite un dictamen {{vinculante}}. {{Juzgan}} y dirimen la cuestión." },
+    { cat:"Perito vs Testigo, Árbitro e Intérprete",
+      q:"¿Cómo se caracteriza la función del Perito frente al árbitro y al testigo?",
+      t:"Orienta y {{asesora}} al juez (perito oficial) o a las partes (peritos contraloreadores o de parte). Examina los hechos en función de su {{conocimiento}} y {{experiencia}}. Emiten dictamen {{no vinculante}}." },
+
+    // ===== Designación y Procedimiento =====
+    { cat:"Designación y Procedimiento",
+      q:"¿Cuáles son los requisitos para ser Perito Oficial?",
+      t:"{{Título habilitante}}; idoneidad y capacidad en la materia; no estar {{inhabilitado}} o declarado {{incapaz}}; poseer {{matrícula pericial}}." },
+    { cat:"Designación y Procedimiento",
+      q:"¿Cómo puede ser la designación del perito según su origen?",
+      t:"{{Voluntaria}} (solicitud de las partes) o {{necesaria}} (juez), debiendo fundamentar la razón de la petición." },
+    { cat:"Designación y Procedimiento",
+      q:"¿Qué formas de designación del perito existen?",
+      t:"{{Acuerdo}} entre partes, {{libre elección}} del Juez, o {{sorteo}} (debiendo estar listado en la especialidad y tener matrícula pericial)." },
+    { cat:"Designación y Procedimiento",
+      q:"¿Qué se establece en la Audiencia de designación?",
+      t:"Se establece de qué forma se va a elegir al perito. Se fijan también {{plazos}} para {{aceptación}} del cargo, {{comienzo}} de la pericia y {{finalización}} de la misma." },
+    { cat:"Designación y Procedimiento",
+      q:"¿Qué implica la Notificación del perito designado?",
+      t:"Se notifica al {{perito}} y a la dirección de {{servicios judiciales}} (darlo de baja temporalmente en listas)." },
+    { cat:"Designación y Procedimiento",
+      q:"¿Qué ocurre si el perito no acepta el cargo sin justificación?",
+      t:"Sin justificación → sanciones ({{removido}} del listado por cierto plazo)." },
+    { cat:"Designación y Procedimiento",
+      q:"¿Cuándo puede ser recusado un perito y por qué causales?",
+      t:"Antes de {{comenzar}} las tareas periciales, por causales como {{parentesco}}, {{amistad}}, {{enemistad}}, deudor o {{acreedor}} de las partes." },
+    { cat:"Designación y Procedimiento",
+      q:"¿Cuándo puede ser removido un perito?",
+      t:"Luego de {{comenzar}} las tareas periciales, por no presentar el dictamen en {{tiempo y forma}} (no cobra y puede ser condenado a pagar gastos de diligencias frustradas, daños y perjuicios, etc.)." },
+    { cat:"Designación y Procedimiento",
+      q:"¿A quién asesoran los peritos contraloreadores y qué tipos existen?",
+      t:"Asesoran a las {{partes}}: existe el perito contraloreador de la parte {{actora}} y de la parte {{demandada}}." },
+    { cat:"Designación y Procedimiento",
+      q:"¿Quién elabora los cuestionarios y cómo se pactan los honorarios de los peritos contraloreadores?",
+      t:"Elaboran los {{cuestionarios}}. Pactan sus honorarios con la {{parte}} que los contrata (el perito oficial cobra los honorarios que le regula el {{tribunal}})." },
+    { cat:"Designación y Procedimiento",
+      q:"Si el perito contraloreador no está de acuerdo con el dictamen del perito oficial, ¿qué puede hacer?",
+      t:"Puede presentar dictamen en {{disidencia}}. También puede solicitar {{ampliaciones}} de pericia (el juez puede dar lugar a estas o no)." },
+    { cat:"Designación y Procedimiento",
+      q:"Nombrá las tres etapas del proceso hasta el inicio de la pericia.",
+      t:"1- {{Designación}} del o los peritos (no siendo recusados). 2- {{Notificación}} del o los peritos. 3- {{Aceptación}} del cargo." },
+    { cat:"Designación y Procedimiento",
+      q:"¿Qué implica la etapa de Aceptación del cargo?",
+      t:"Nota de {{aceptación}} fijando lugar, día y hora para el inicio de la pericia, y la {{revisación}} del expediente y los cuestionarios." },
+
+    // ===== Pericia, Dictamen e Informe =====
+    { cat:"Pericia, Dictamen e Informe",
+      q:"¿Qué se hace en la Etapa Preparatoria de la pericia?",
+      t:"{{Estudio}} del expediente, búsqueda de {{planos}}, informes y documentación, e {{inspección}} del lugar y/o los elementos (fijando previamente fecha y hora para que las partes puedan estar presentes)." },
+    { cat:"Pericia, Dictamen e Informe",
+      q:"¿Qué se hace en la Etapa de Examen?",
+      t:"{{Análisis}} de antecedentes y de la información obtenida en la etapa anterior, {{estudio}} de resultados, y responder los cuestionarios de forma {{fundamentada}} y deliberada, pudiendo trabajar en conjunto con los peritos contraloreadores." },
+    { cat:"Pericia, Dictamen e Informe",
+      q:"¿Qué se configura en la etapa del Dictamen?",
+      t:"Se configura el {{informe pericial}}, transcribiendo los resultados y conclusiones obtenidas en las etapas anteriores, con una explicación detallada de las operaciones {{técnicas}} realizadas y de los principios {{científicos}} en que se fundan." },
+    { cat:"Pericia, Dictamen e Informe",
+      q:"¿Cómo debe responder el perito a los cuestionarios sometidos a su dictamen?",
+      t:"Debe responder a todos los puntos de manera {{concreta}} y {{específica}}." },
+    { cat:"Pericia, Dictamen e Informe",
+      q:"¿Qué cualidades debe reunir la pericia?",
+      t:"{{Objetividad}}, {{Claridad}}, {{Imparcialidad}}, {{Precisión técnica}} y {{Fundamentación científica}}." },
+    { cat:"Pericia, Dictamen e Informe",
+      q:"¿Qué contiene el Encabezamiento del informe pericial?",
+      t:"{{Causa}}, {{juez}} y {{perito}}." },
+    { cat:"Pericia, Dictamen e Informe",
+      q:"¿Qué incluye el Planteo del informe pericial?",
+      t:"{{Antecedentes}}, {{testimonios}}, tareas en el {{sitio}}, más antecedentes y {{bibliografía}}." },
+    { cat:"Pericia, Dictamen e Informe",
+      q:"¿Qué se recomienda respecto de las formulaciones complicadas en el Análisis del informe?",
+      t:"No incluir formulaciones complicadas; deben incorporarse en {{anexos}}." },
+    { cat:"Pericia, Dictamen e Informe",
+      q:"¿Qué contiene el párrafo final de forma del informe pericial?",
+      t:"Un {{resumen}} de la información incluida en las respuestas a los cuestionarios. No se realizan {{conjeturas}} ni se determinan {{culpabilidades}}." },
+
+    // ===== Alcances, Impugnaciones y Responsabilidad =====
+    { cat:"Alcances, Impugnaciones y Responsabilidad",
+      q:"¿La prueba pericial obliga al juez?",
+      t:"La prueba pericial NO {{obliga}} al juez de modo alguno. El tribunal puede {{apartarse}} de sus conclusiones." },
+    { cat:"Alcances, Impugnaciones y Responsabilidad",
+      q:"Mencioná los dos motivos por los que el tribunal puede apartarse de la pericia.",
+      t:"{{Irregularidad}} en la tramitación, y {{defectos}} o contradicciones entre el fundamento y la {{conclusión}}." },
+    { cat:"Alcances, Impugnaciones y Responsabilidad",
+      q:"¿Por qué motivos puede impugnarse una pericia?",
+      t:"Por motivos de orden {{procedimental}} o {{formal}}, o por razón de su {{contenido}}." },
+    { cat:"Alcances, Impugnaciones y Responsabilidad",
+      q:"¿Quién puede impugnar la pericia y dónde se resuelve la impugnación?",
+      t:"Cualquiera de las {{partes}} puede impugnarla y se resuelve en la {{sentencia}}." },
+    { cat:"Alcances, Impugnaciones y Responsabilidad",
+      q:"¿En qué consiste la Responsabilidad Civil del perito?",
+      t:"Comprende {{daños y perjuicios}}. El daño comprende no sólo el {{perjuicio}} efectivamente sufrido, sino también la {{ganancia}} de que fue privado el damnificado." },
+    { cat:"Alcances, Impugnaciones y Responsabilidad",
+      q:"¿En qué consiste la Responsabilidad Penal del perito?",
+      t:"{{Falso testimonio}} o daño: en el dictamen pericial a veces el profesional por negligencia o mala fe omite consignar circunstancias de hecho observadas por él y que atañen directamente a la {{cuestión}} motivo de la peritación." },
+    { cat:"Alcances, Impugnaciones y Responsabilidad",
+      q:"¿Qué implica la Sanción Disciplinaria del perito?",
+      t:"{{Denuncia}} al Colegio de Ingenieros, sin derecho a {{honorarios}}." },
+    { cat:"Alcances, Impugnaciones y Responsabilidad",
+      q:"¿Qué derechos tiene el perito respecto a sus honorarios?",
+      t:"Cobro de {{honorarios}} acordes a la tarea desarrollada y la responsabilidad asumida; debe esperar a la {{sentencia}} para la regulación de honorarios (no pueden ser mayores que los de los {{abogados}})." },
+  ];
+
+  function parseTemplate(t){
+    const parts = t.split(/\{\{(.*?)\}\}/g);
+    const segments = [];
+    const blanks = [];
+    for(let i=0;i<parts.length;i++){
+      if(i % 2 === 0){
+        segments.push(parts[i]);
+      } else {
+        blanks.push(parts[i].split('/').map(s=>s.trim()));
+      }
+    }
+    return { segments, blanks };
+  }
+
+  const DATA = RAW.map((d,i)=>{
+    const parsed = parseTemplate(d.t);
+    return { id:i, cat:d.cat, q:d.q, segments:parsed.segments, blanks:parsed.blanks };
+  });
+
+  const CATS = ["Todas", ...Array.from(new Set(DATA.map(d=>d.cat)))];
+
+  const status = {};    // id -> 'correct' | 'incorrect'
+  const attempts = {};  // id -> array of input strings
+
+  let currentCat = "Todas";
+  let order = DATA.map(d=>d.id);
+  let pos = 0;
+  let flipped = false;
+
+  // Estado del toggle "Ver respuestas" — no persiste al navegar, se resetea en cada renderCard
+  let revealActive = false;
+  let revealStash = null; // array de {value, correct, incorrect} previos a revelar
+
+  const el = {
+    chips: document.getElementById('chips'),
+    card: document.getElementById('card'),
+    frontFace: document.getElementById('frontFace'),
+    questionText: document.getElementById('questionText'),
+    fillText: document.getElementById('fillText'),
+    tag: document.getElementById('tag'),
+    counter: document.getElementById('counter'),
+    resultLine: document.getElementById('resultLine'),
+    prevBtn: document.getElementById('prevBtn'),
+    nextBtn: document.getElementById('nextBtn'),
+    flipBtn: document.getElementById('flipBtn'),
+    validateBtn: document.getElementById('validateBtn'),
+    retryBtn: document.getElementById('retryBtn'),
+    revealBtn: document.getElementById('revealBtn'),
+    shuffleBtn: document.getElementById('shuffleBtn'),
+    orderBtn: document.getElementById('orderBtn'),
+    resetBtn: document.getElementById('resetBtn'),
+    progressLabel: document.getElementById('progressLabel'),
+    progressPercent: document.getElementById('progressPercent'),
+    segKnow: document.getElementById('segKnow'),
+    segReview: document.getElementById('segReview'),
+  };
+
+  function normalize(s){
+    return (s || "").toString().trim().toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .replace(/[^\w\s%]/g,'')
+      .replace(/\s+/g,' ');
+  }
+
+  function currentIds(){
+    if(currentCat === "Todas") return order;
+    return order.filter(id => DATA[id].cat === currentCat);
+  }
+
+  function renderChips(){
+    el.chips.innerHTML = "";
+    CATS.forEach(cat=>{
+      const count = cat === "Todas" ? DATA.length : DATA.filter(d=>d.cat===cat).length;
+      const chip = document.createElement('div');
+      chip.className = 'chip' + (cat===currentCat ? ' active' : '');
+      chip.innerHTML = cat + '<span class="n">' + count + '</span>';
+      chip.addEventListener('click', ()=>{
+        currentCat = cat;
+        pos = 0;
+        flipped = false;
+        renderChips();
+        renderCard();
+      });
+      el.chips.appendChild(chip);
+    });
+  }
+
+  function buildFillText(d){
+    el.fillText.innerHTML = "";
+    const saved = attempts[d.id] || [];
+    d.segments.forEach((seg, i)=>{
+      if(seg.length){
+        const span = document.createElement('span');
+        span.className = 'txt';
+        span.textContent = seg;
+        el.fillText.appendChild(span);
+      }
+      if(i < d.blanks.length){
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'blank-input';
+        input.autocomplete = 'off';
+        input.autocapitalize = 'off';
+        input.spellcheck = false;
+        input.dataset.index = i;
+        input.value = saved[i] || '';
+        input.style.width = Math.max(6, input.value.length + 2) + 'ch';
+        input.addEventListener('click', (e)=> e.stopPropagation());
+        input.addEventListener('input', ()=>{
+          input.classList.remove('correct','incorrect');
+          input.style.width = Math.max(6, input.value.length + 2) + 'ch';
+          attempts[d.id] = attempts[d.id] || [];
+          attempts[d.id][i] = input.value;
+        });
+        input.addEventListener('keydown', (e)=>{
+          if(e.key === 'Enter'){
+            e.preventDefault();
+            const inputs = Array.from(el.fillText.querySelectorAll('.blank-input'));
+            const idx = inputs.indexOf(input);
+            if(idx < inputs.length - 1){
+              inputs[idx+1].focus();
+            } else {
+              validate();
+            }
+          }
+        });
+        el.fillText.appendChild(input);
+      }
+    });
+  }
+
+  function resetRevealUI(){
+    revealActive = false;
+    revealStash = null;
+    el.revealBtn.textContent = '👁 Ver respuestas';
+    el.revealBtn.classList.remove('active');
+  }
+
+  function renderCard(){
+    resetRevealUI();
+    const ids = currentIds();
+    if(ids.length === 0){
+      el.tag.textContent = "—";
+      el.counter.textContent = "0 / 0";
+      el.questionText.textContent = "No hay tarjetas en esta categoría.";
+      el.fillText.textContent = "";
+      el.resultLine.textContent = "";
+      updateProgress();
+      return;
+    }
+    if(pos >= ids.length) pos = 0;
+    if(pos < 0) pos = ids.length - 1;
+
+    const id = ids[pos];
+    const d = DATA[id];
+
+    el.card.classList.toggle('flipped', flipped);
+    el.flipBtn.textContent = flipped ? '← Pregunta' : 'Completar →';
+    el.tag.textContent = d.cat;
+    el.counter.textContent = (pos+1) + " / " + ids.length;
+    el.questionText.textContent = d.q;
+
+    buildFillText(d);
+
+    el.resultLine.textContent = "";
+    el.resultLine.className = "result-line";
+
+    if(status[id]){
+      revalidateColorsOnly(d);
+    }
+
+    updateProgress();
+  }
+
+  function revalidateColorsOnly(d){
+    const inputs = Array.from(el.fillText.querySelectorAll('.blank-input'));
+    let correctCount = 0;
+    inputs.forEach((input, i)=>{
+      const val = normalize(input.value);
+      const ok = d.blanks[i].some(ans => normalize(ans) === val);
+      input.classList.toggle('correct', ok);
+      input.classList.toggle('incorrect', !ok);
+      if(ok) correctCount++;
+    });
+    showResult(correctCount, d.blanks.length);
+  }
+
+  function showResult(correct, total){
+    el.resultLine.textContent = correct + " de " + total + " correctas";
+    el.resultLine.className = "result-line " + (correct === total ? "ok" : "bad");
+  }
+
+  function validate(){
+    const ids = currentIds();
+    if(ids.length === 0) return;
+    const id = ids[pos];
+    const d = DATA[id];
+    const inputs = Array.from(el.fillText.querySelectorAll('.blank-input'));
+    let correctCount = 0;
+    inputs.forEach((input, i)=>{
+      const val = normalize(input.value);
+      const ok = d.blanks[i].some(ans => normalize(ans) === val);
+      input.classList.toggle('correct', ok);
+      input.classList.toggle('incorrect', !ok);
+      if(ok) correctCount++;
+    });
+    status[id] = (correctCount === d.blanks.length) ? 'correct' : 'incorrect';
+    showResult(correctCount, d.blanks.length);
+    updateProgress();
+  }
+
+  function retry(){
+    const ids = currentIds();
+    if(ids.length === 0) return;
+    const id = ids[pos];
+    delete attempts[id];
+    delete status[id];
+    resetRevealUI();
+    renderCard();
+    const firstInput = el.fillText.querySelector('.blank-input');
+    if(firstInput) firstInput.focus();
+  }
+
+  // Toggle: al presionar, completa los espacios con las respuestas correctas.
+  // Al presionar de nuevo, vuelve la card al estado en que estaba antes de revelar.
+  function toggleReveal(){
+    const ids = currentIds();
+    if(ids.length === 0) return;
+    const id = ids[pos];
+    const d = DATA[id];
+    const inputs = Array.from(el.fillText.querySelectorAll('.blank-input'));
+    if(inputs.length === 0) return;
+
+    if(!revealActive){
+      revealStash = inputs.map(inp => ({
+        value: inp.value,
+        correct: inp.classList.contains('correct'),
+        incorrect: inp.classList.contains('incorrect')
+      }));
+      inputs.forEach((inp, i)=>{
+        inp.value = d.blanks[i][0];
+        inp.classList.remove('correct','incorrect');
+        inp.classList.add('revealed');
+        inp.readOnly = true;
+        inp.style.width = Math.max(6, inp.value.length + 2) + 'ch';
+      });
+      revealActive = true;
+      el.revealBtn.textContent = '🙈 Ocultar respuestas';
+      el.revealBtn.classList.add('active');
+    } else {
+      inputs.forEach((inp, i)=>{
+        const st = revealStash ? revealStash[i] : null;
+        inp.value = st ? st.value : '';
+        inp.classList.remove('revealed');
+        inp.classList.toggle('correct', !!(st && st.correct));
+        inp.classList.toggle('incorrect', !!(st && st.incorrect));
+        inp.readOnly = false;
+        inp.style.width = Math.max(6, inp.value.length + 2) + 'ch';
+      });
+      revealActive = false;
+      revealStash = null;
+      el.revealBtn.textContent = '👁 Ver respuestas';
+      el.revealBtn.classList.remove('active');
+    }
+  }
+
+  function updateProgress(){
+    const total = DATA.length;
+    const correct = DATA.filter(d=>status[d.id]==='correct').length;
+    const incorrect = DATA.filter(d=>status[d.id]==='incorrect').length;
+    const none = total - correct - incorrect;
+    el.progressLabel.textContent = correct + " correctas · " + incorrect + " con errores · " + none + " sin intentar";
+    const pct = total ? Math.round((correct/total)*100) : 0;
+    el.progressPercent.textContent = pct + "%";
+    el.segKnow.style.width = (total ? (correct/total*100) : 0) + "%";
+    el.segReview.style.width = (total ? (incorrect/total*100) : 0) + "%";
+  }
+
+  function flip(){
+    flipped = !flipped;
+    el.card.classList.toggle('flipped', flipped);
+    el.flipBtn.textContent = flipped ? '← Pregunta' : 'Completar →';
+    if(flipped){
+      setTimeout(()=>{
+        const firstInput = el.fillText.querySelector('.blank-input');
+        if(firstInput) firstInput.focus({preventScroll:true});
+      }, 260);
+    }
+  }
+
+  function go(delta){
+    const ids = currentIds();
+    if(ids.length === 0) return;
+    pos = (pos + delta + ids.length) % ids.length;
+    flipped = false;
+    renderCard();
+  }
+
+  function shuffleArray(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+
+  el.frontFace.addEventListener('click', ()=>{ if(!flipped) flip(); });
+  el.flipBtn.addEventListener('click', flip);
+  el.prevBtn.addEventListener('click', ()=>go(-1));
+  el.nextBtn.addEventListener('click', ()=>go(1));
+  el.validateBtn.addEventListener('click', validate);
+  el.retryBtn.addEventListener('click', retry);
+  el.revealBtn.addEventListener('click', (e)=>{ e.stopPropagation(); toggleReveal(); });
+
+  el.shuffleBtn.addEventListener('click', ()=>{
+    order = shuffleArray(DATA.map(d=>d.id));
+    pos = 0; flipped = false;
+    renderCard();
+  });
+  el.orderBtn.addEventListener('click', ()=>{
+    order = DATA.map(d=>d.id);
+    pos = 0; flipped = false;
+    renderCard();
+  });
+  el.resetBtn.addEventListener('click', ()=>{
+    Object.keys(status).forEach(k=>delete status[k]);
+    Object.keys(attempts).forEach(k=>delete attempts[k]);
+    renderCard();
+  });
+
+  document.addEventListener('keydown', (e)=>{
+    const isTyping = document.activeElement && document.activeElement.classList && document.activeElement.classList.contains('blank-input');
+    if(isTyping) return;
+    if(e.key === 'ArrowRight'){ go(1); }
+    else if(e.key === 'ArrowLeft'){ go(-1); }
+    else if(e.key === ' '){ e.preventDefault(); flip(); }
+  });
+
+  renderChips();
+  renderCard();
+
+})();
+</script>
+
+</body>
+</html>
