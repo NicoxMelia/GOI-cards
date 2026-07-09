@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Fichero de Contratos — Pregunta y Completar</title>
+<style>
+  :root{
+    --navy: #1B3B6F;
+    --navy-dark: #12294B;
+    --gold: #B8860B;
+    --white: #FFFFFF;
+    --card: #F3F6FA;
+    --card2: #EEF1F6;
+    --red: #B03A2E;
+    --red-bg: #FBEDEB;
+    --green: #2E7D4F;
+    --green-bg: #EAF5EE;
+    --gold-bg: #FBF3E3;
+    --text: #26313F;
+    --subtext: #5A6B7A;
+    --line: #DCE3EC;
+    --font-head: Cambria, "Times New Roman", serif;
+    --font-body: Calibri, "Segoe UI", Arial, sans-serif;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+
+  html,body{
+    margin:0; padding:0;
+    background: var(--white);
+    color: var(--text);
+    font-family: var(--font-body);
+    height:100%;
+  }
+
+  body{
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+  }
+
+  /* ================= HEADER ================= */
+  .topbar{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding: 18px 16px 10px;
+  }
+  .icon-badge{
+    flex:0 0 auto;
+    width:44px; height:44px;
+    border-radius:50%;
+    background: var(--gold-bg);
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px;
+    color: var(--gold);
+  }
+  .heading .eyebrow{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.6px;
+    color: var(--gold);
+    text-transform:uppercase;
+    line-height:1.3;
+  }
+  .heading h1{
+    margin:2px 0 0;
+    font-family: var(--font-head);
+    font-weight:700;
+    font-size: 20px;
+    color: var(--navy);
+    line-height:1.15;
+  }
+
+  /* ================= CATEGORY CHIPS ================= */
+  .chips-wrap{
+    overflow-x:auto;
+    padding: 4px 16px 12px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .chips-wrap::-webkit-scrollbar{ display:none; }
+  .chips{
+    display:flex;
+    gap:8px;
+    width:max-content;
+  }
+  .chip{
+    flex:0 0 auto;
+    padding: 8px 14px;
+    border-radius: 20px;
+    background: var(--card);
+    border:1px solid var(--line);
+    font-size: 12.5px;
+    font-weight:700;
+    color: var(--navy);
+    white-space:nowrap;
+    cursor:pointer;
+    min-height:36px;
+    display:flex;
+    align-items:center;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .chip .n{
+    margin-left:6px;
+    font-weight:700;
+    color: var(--gold);
+    font-size:11px;
+  }
+  .chip.active{
+    background: var(--navy);
+    color: var(--white);
+    border-color: var(--navy);
+  }
+  .chip.active .n{ color: #E8D9A9; }
+
+  /* ================= STAGE ================= */
+  .stage{
+    flex:1;
+    padding: 4px 16px 8px;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .stage-meta{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+  }
+  .tag{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+    color: var(--gold);
+    background: var(--gold-bg);
+    border-radius: 20px;
+    padding: 5px 12px;
+  }
+  .counter{
+    font-size:12.5px;
+    font-weight:700;
+    color: var(--subtext);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .card-scene{
+    perspective: 1500px;
+    min-height: 400px;
+    flex:1;
+  }
+  .card{
+    position:relative;
+    width:100%; height:100%;
+    min-height:400px;
+    transform-style: preserve-3d;
+    transition: transform .5s cubic-bezier(.2,.7,.3,1);
+  }
+  .card.flipped{ transform: rotateY(180deg); }
+
+  .face{
+    position:absolute; inset:0;
+    -webkit-backface-visibility:hidden;
+    backface-visibility:hidden;
+    border-radius: 16px;
+    background: var(--card);
+    padding: 20px 18px 18px;
+    display:flex;
+    flex-direction:column;
+    box-shadow: 0 10px 24px rgba(27,59,111,0.14);
+    overflow-y:auto;
+  }
+  .face.back{
+    transform: rotateY(180deg);
+    background: var(--white);
+    border:1px solid var(--line);
+    cursor:auto;
+  }
+  .face.front{ cursor:pointer; }
+
+  .face .face-top{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom: 12px;
+    flex: 0 0 auto;
+  }
+  .face-dot{
+    width:28px; height:28px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px;
+    font-weight:700;
+    color: var(--white);
+    background: var(--navy);
+    flex:0 0 auto;
+  }
+  .face.back .face-dot{ background: var(--gold); }
+  .face .face-label{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.8px;
+    color: var(--navy);
+    text-transform:uppercase;
+  }
+  .face.back .face-label{ color: var(--gold); }
+
+  .question-text{
+    font-family: var(--font-head);
+    font-size: 19px;
+    line-height:1.45;
+    color: var(--navy-dark);
+    flex:1;
+  }
+  .front .hint{
+    margin-top:auto;
+    padding-top:10px;
+    font-size:11px;
+    font-style:italic;
+    color: var(--subtext);
+    flex: 0 0 auto;
+  }
+
+  .fill-text{
+    font-family: var(--font-head);
+    font-size: 15.5px;
+    line-height:2.05;
+    color: var(--navy-dark);
+    display:flex;
+    flex-wrap:wrap;
+    align-items:baseline;
+    gap: 0 2px;
+    margin:0;
+  }
+  .fill-text .txt{ white-space:pre-wrap; }
+
+  .blank-input{
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    font-weight:700;
+    color: var(--navy);
+    border: none;
+    border-bottom: 2px solid var(--gold);
+    background: var(--gold-bg);
+    border-radius: 6px 6px 2px 2px;
+    padding: 3px 7px;
+    margin: 2px 1px;
+    min-width: 58px;
+    max-width: 100%;
+    text-align:center;
+    outline:none;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .blank-input:focus{
+    background: #FDF1D8;
+    border-color: var(--navy);
+  }
+  .blank-input.correct{
+    background: var(--green-bg);
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .blank-input.incorrect{
+    background: var(--red-bg);
+    border-color: var(--red);
+    color: var(--red);
+  }
+  .blank-input.revealed{
+    background: #EFE6F7;
+    border-color: #7A4FA3;
+    color: #5D3A85;
+    font-style:italic;
+  }
+  .blank-input:disabled{ opacity:0.95; cursor:default; }
+
+  .result-line{
+    min-height: 20px;
+    margin-top:10px;
+    font-size:12.5px;
+    font-weight:700;
+    text-align:center;
+    flex: 0 0 auto;
+  }
+  .result-line.ok{ color: var(--green); }
+  .result-line.bad{ color: var(--red); }
+
+  .autofill-row{
+    display:flex;
+    margin-top:8px;
+    flex: 0 0 auto;
+  }
+  .btn-autofill{
+    width:100%;
+    min-height:38px;
+    border-radius: 12px;
+    font-family: var(--font-body);
+    font-weight:700;
+    font-size:12.5px;
+    background: var(--card2);
+    color: #5D3A85;
+    border:1px solid #D8C6EA;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    transition: transform .1s ease, background .15s ease;
+  }
+  .btn-autofill:active{ transform: translateY(1px); }
+  .btn-autofill.active{
+    background: #EFE6F7;
+    border-color:#7A4FA3;
+  }
+
+  .back-action-row{
+    display:flex;
+    gap:8px;
+    margin-top:10px;
+    flex: 0 0 auto;
+  }
+  .btn{
+    flex:1;
+    min-height:42px;
+    border-radius: 12px;
+    font-family: var(--font-body);
+    font-weight:700;
+    font-size:13.5px;
+    border:1px solid transparent;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    transition: transform .1s ease, background .15s ease;
+  }
+  .btn:active{ transform: translateY(1px); }
+  .btn:focus-visible{ outline:3px solid var(--gold); outline-offset:2px; }
+
+  .btn-validate{ background: var(--navy); color: var(--white); }
+  .btn-validate:active{ background: var(--navy-dark); }
+  .btn-retry{ background: var(--card2); color: var(--navy); border-color: var(--line); }
+
+  /* ================= PROGRESS ================= */
+  .progress-wrap{ margin-top:14px; }
+  .progress-label{
+    font-size:11.5px;
+    color: var(--subtext);
+    margin-bottom:6px;
+    display:flex;
+    justify-content:space-between;
+  }
+  .progress-bar{
+    height:8px;
+    border-radius:6px;
+    background: var(--card2);
+    overflow:hidden;
+    display:flex;
+  }
+  .seg-know{ background: var(--green); height:100%; }
+  .seg-review{ background: var(--red); height:100%; }
+
+  /* ================= UTILITY ROW ================= */
+  .utility-row{
+    display:flex;
+    justify-content:center;
+    gap: 18px;
+    padding: 10px 16px 4px;
+    flex-wrap:wrap;
+  }
+  .util-btn{
+    background:none;
+    border:none;
+    font-family: var(--font-body);
+    font-size:12.5px;
+    font-weight:700;
+    color: var(--subtext);
+    cursor:pointer;
+    padding:6px 4px;
+    min-height:36px;
+  }
+  .util-btn:hover{ color: var(--navy); }
+
+  footer.note{
+    text-align:center;
+    font-size:10.5px;
+    color: var(--subtext);
+    padding: 6px 24px 4px;
+  }
+
+  /* ================= BOTTOM NAV (fixed, mobile) ================= */
+  .bottom-nav{
+    position:fixed;
+    left:0; right:0; bottom:0;
+    background: var(--white);
+    border-top: 1px solid var(--line);
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    display:flex;
+    align-items:center;
+    gap:10px;
+    box-shadow: 0 -6px 18px rgba(27,59,111,0.08);
+  }
+  .nav-btn{
+    min-height:48px;
+    border-radius: 12px;
+    border:1px solid var(--line);
+    background: var(--card);
+    color: var(--navy);
+    font-size:20px;
+    font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+    width:52px;
+    flex:0 0 auto;
+    cursor:pointer;
+  }
+  .nav-btn-main{
+    flex:1;
+    width:auto;
+    background: var(--navy);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size:14.5px;
+    letter-spacing:0.3px;
+  }
+  .nav-btn-main:active{ background: var(--navy-dark); }
+  .nav-btn:active{ background: var(--card2); }
+
+  /* ================= DESKTOP / TABLET ENHANCEMENT ================= */
+  @media (min-width: 640px){
+    body{ align-items:center; }
+    .topbar, .chips-wrap, .stage, .utility-row, footer.note{
+      width:100%;
+      max-width: 600px;
+      align-self:center;
+      margin: 0 auto;
+    }
+    .icon-badge{ width:52px; height:52px; font-size:24px; }
+    .heading h1{ font-size:25px; }
+    .card-scene{ min-height: 440px; }
+    .card{ min-height:440px; }
+    .question-text{ font-size:22px; }
+    .fill-text{ font-size:17.5px; }
+    .bottom-nav{
+      max-width: 600px;
+      left:50%;
+      transform: translateX(-50%);
+      border-radius: 16px 16px 0 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .card, .chip{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="icon-badge">🤝</div>
+    <div class="heading">
+      <div class="eyebrow">Legislación y Ética Profesional</div>
+      <h1>Fichero de Contratos</h1>
+    </div>
+  </header>
+
+  <div class="chips-wrap">
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <main class="stage">
+    <div class="stage-meta">
+      <span class="tag" id="tag">—</span>
+      <span class="counter" id="counter">0 / 0</span>
+    </div>
+
+    <div class="card-scene">
+      <div class="card" id="card">
+        <div class="face front" id="frontFace">
+          <div class="face-top">
+            <div class="face-dot">P</div>
+            <div class="face-label">Pregunta</div>
+          </div>
+          <div class="question-text" id="questionText">Cargando…</div>
+          <div class="hint">Tocá la tarjeta (o "Completar") para practicar la respuesta escribiéndola</div>
+        </div>
+        <div class="face back">
+          <div class="face-top">
+            <div class="face-dot">✎</div>
+            <div class="face-label">Completar</div>
+          </div>
+          <p class="fill-text" id="fillText"></p>
+          <div class="autofill-row">
+            <button class="btn-autofill" id="autofillBtn">👁 Ver respuestas</button>
+          </div>
+          <div class="result-line" id="resultLine"></div>
+          <div class="back-action-row">
+            <button class="btn btn-retry" id="retryBtn">↺ Reintentar</button>
+            <button class="btn btn-validate" id="validateBtn">Validar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="progressLabel">0 correctas · 0 con errores · 0 sin intentar</span>
+        <span id="progressPercent">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="seg-know" id="segKnow" style="width:0%"></div>
+        <div class="seg-review" id="segReview" style="width:0%"></div>
+      </div>
+    </div>
+  </main>
+
+  <div class="utility-row">
+    <button class="util-btn" id="shuffleBtn">🔀 Barajar</button>
+    <button class="util-btn" id="orderBtn">🔢 Orden original</button>
+    <button class="util-btn" id="resetBtn">↺ Reiniciar todo</button>
+  </div>
+
+  <footer class="note">
+    El progreso se guarda solo durante esta sesión.
+  </footer>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn" id="prevBtn" aria-label="Anterior">‹</button>
+    <button class="nav-btn nav-btn-main" id="flipBtn">Completar →</button>
+    <button class="nav-btn" id="nextBtn" aria-label="Siguiente">›</button>
+  </nav>
+
+<script>
+(function(){
+
+  // "t" usa {{respuesta}} o {{respuesta1/respuesta2}} para alternativas válidas en los espacios.
+  const RAW = [
+    // ===== CARACTERES Y ELEMENTOS =====
+    { cat:"Caracteres y Elementos",
+      q:"¿Cuándo hay contrato, según el viejo Código Civil?",
+      t:"Hay contrato cuando varias personas se ponen de {{acuerdo}} sobre una {{declaración de voluntad común}}, destinada a {{reglar}} sus derechos." },
+    { cat:"Caracteres y Elementos",
+      q:"Según el CCCU, ¿qué es un contrato?",
+      t:"Es el {{acto jurídico}} mediante el cual dos o más partes manifiestan su {{consentimiento}} para crear, {{regular}}, modificar, {{transferir}} o {{extinguir}} relaciones jurídicas {{patrimoniales}}." },
+    { cat:"Caracteres y Elementos",
+      q:"Mencioná los tres caracteres del contrato.",
+      t:"Los caracteres del contrato son: {{pluralidad de personas}}, {{acuerdo de voluntades}} y {{reglar derechos}}." },
+    {
+      cat: "Caracteres y Elementos",
+      q: "¿Cuales son los elementos de un contrato?",
+      t:"Los elementos de un contrato son: {{esenciales/naturales/accidentales}}, {{naturales/accidentales/esenciales}} y {{accidentales/naturales/esenciales}}."},
+    { cat:"Caracteres y Elementos",
+      q:"¿Cuáles son los elementos esenciales del contrato?",
+      t:"Los elementos esenciales son: {{consentimiento/capacidad/objeto/forma}}, {{capacidad/consentimiento/objeto/forma}}, {{objeto/capacidad/consentimiento/forma}} y {{forma/capacidad/objeto/consentimiento}}." },
+    { cat:"Caracteres y Elementos",
+      q:"Además de los esenciales, ¿qué otros dos tipos de elementos tiene el contrato?",
+      t:"Además de los elementos esenciales, el contrato tiene elementos {{naturales/accidentales}} y elementos {{accidentales/naturales}}." },
+    { cat:"Caracteres y Elementos",
+      q:"¿Cómo puede ser el consentimiento expreso?",
+      t:"El consentimiento expreso puede ser: {{verbal/escrito}}, {{verbal/escrito}} y por {{signos inequivocos}}." },
+    { cat:"Caracteres y Elementos",
+      q:"¿Cómo se expresa el consentimiento verbal?",
+      t:"El consentimiento verbal se expresa {{oralmente}}." },
+    { cat:"Caracteres y Elementos",
+      q:"Dá un ejemplo de consentimiento por signos inequívocos.",
+      t:"El consentimiento por signos inequívocos se expresa con signos o {{señas claras}} de asentimiento, por ejemplo {{levantar la mano}} en una votación o en un {{remate}}." },
+    { cat:"Caracteres y Elementos",
+      q:"¿Cómo se manifiesta el consentimiento por escrito y qué tipos de documentos existen?",
+      t:"El consentimiento por escrito se expresa a través de la {{escritura}}, mediante {{documentos}} en los que consta su voluntad por medio de la {{firma autógrafa}}; estos documentos pueden ser {{públicos}} o {{privados}}." },
+    { cat:"Caracteres y Elementos",
+      q:"¿Qué es el consentimiento tácito?",
+      t:"El consentimiento tácito es cuando una voluntad se interpreta por {{signos}}, {{actuaciones/gestos}} o {{gestos/actuaciones}} que sin {{manifestar}} directamente lo que {{se quiere}}, reflejan la {{voluntad interna}} del sujeto en forma {{univoca}}." },
+    { cat:"Caracteres y Elementos",
+      q:"¿De qué resulta la voluntad en el consentimiento tácito?",
+      t:"La voluntad tácita resulta de {{hechos}} que la presupongan o que autoricen a {{presumirlo}}." },
+    { cat:"Caracteres y Elementos",
+      q:"¿Cuáles son los medios de prueba del contrato?",
+      t:"El contrato se prueba mediante {{instrumentos públicos}}, {{instrumentos privados}}, {{confesión de partes}}, {{juramento judicial}}, {{presunciones legales}} y {{testigos}}." },
+    { cat:"Caracteres y Elementos",
+      q:"¿Qué límites tienen las convenciones estipuladas por las partes?",
+      t:"Las convenciones estipuladas por las partes tienen como límite el {{orden público}}, la {{moral}} y las {{buenas costumbres}}." },
+    { cat:"Caracteres y Elementos",
+      q:"¿Qué facultades tienen los jueces y tribunales respecto de los contratos?",
+      t:"Los jueces y tribunales deben hacer {{respetar}} las convenciones y están facultados para {{interpretar}} y determinar su {{alcance}}." },
+
+    // ===== CLASIFICACIÓN =====
+    { cat:"Clasificación",
+      q:"Según el número de partes obligadas, ¿cómo se clasifican los contratos?",
+      t:"Según el número de partes obligadas, los contratos se clasifican en {{unilaterales}} y {{bilaterales}}." },
+    { cat:"Clasificación",
+      q:"Según exista o no contraprestación, ¿cómo se clasifican los contratos?",
+      t:"Según exista o no contraprestación, los contratos se clasifican en {{a título gratuito}} y {{a título oneroso}}." },
+    { cat:"Clasificación",
+      q:"Los contratos a título oneroso, ¿en qué subcategorías se dividen?",
+      t:"Los contratos a título oneroso se dividen en {{conmutativos}} y {{aleatorios}}." },
+    { cat:"Clasificación",
+      q:"Según estén regulados por la ley, ¿cómo se clasifican los contratos?",
+      t:"Según estén regulados por la ley, los contratos se clasifican en {{nominados}} e {{innominados}}." },
+    { cat:"Clasificación",
+      q:"Según requieran una forma determinada, ¿cómo se clasifican los contratos?",
+      t:"Según requieran una forma determinada, los contratos se clasifican en {{formales}} y {{no formales}}." },
+    { cat:"Clasificación",
+      q:"Según se perfeccionen con el mero consentimiento o con la entrega de la cosa, ¿cómo se clasifican?",
+      t:"Según se perfeccionen con el mero consentimiento o con la entrega de la cosa, los contratos se clasifican en {{consensuales}} y {{reales}}." },
+
+    // ===== CONTRATOS DE CONSUMO =====
+    { cat:"Contratos de Consumo",
+      q:"¿Qué es la relación de consumo?",
+      t:"La relación de consumo es el {{vínculo jurídico}} entre un {{proveedor}} y un {{consumidor}}." },
+    { cat:"Contratos de Consumo",
+      q:"Definí \"consumidor\".",
+      t:"Consumidor es la persona {{humana}} o {{jurídica}} que adquiere o utiliza, en forma {{gratuita}} u {{onerosa}}, bienes o servicios como {{destinatario final}}, o de su grupo {{familiar}} o {{social}}." },
+    { cat:"Contratos de Consumo",
+      q:"Definí el contrato de consumo.",
+      t:"El contrato de consumo es el celebrado entre un {{consumidor}} o usuario final y una persona humana o jurídica que actúe {{profesional}} u {{ocasionalmente}}, o una empresa {{productora}} de bienes o {{prestadora}} de servicios, que tenga por objeto la {{adquisición}}, uso o goce de bienes o servicios para uso {{privado}}, familiar o social." },
+    { cat:"Contratos de Consumo",
+      q:"¿Cómo se interpreta el contrato de consumo en caso de duda?",
+      t:"El contrato de consumo se interpreta en el sentido más favorable para el {{consumidor}}; ante dudas sobre el alcance de su obligación, se adopta la {{menos gravosa}}." },
+
+    // ===== TRANSFERENCIA DE COSAS =====
+    { cat:"Transferencia de Cosas",
+      q:"Definí el contrato de compraventa.",
+      t:"Hay compraventa si una de las partes se obliga a {{transferir la propiedad}} de una cosa y la otra a {{pagar un precio}} en dinero." },
+    { cat:"Transferencia de Cosas",
+      q:"Definí el contrato de permuta.",
+      t:"Hay permuta si las partes se obligan {{recíprocamente}} a transferirse el {{dominio}} de cosas que {{no son dinero}}." },
+    { cat:"Transferencia de Cosas",
+      q:"Definí el contrato de mutuo.",
+      t:"Hay contrato de mutuo cuando el {{mutuante}} se compromete a entregar al {{mutuario}} en propiedad una cantidad de cosas {{fungibles}}, y éste se {{obliga}} a devolver {{igual cantidad}} de cosas de la misma {{calidad}} y {{especie}}." },
+    { cat:"Transferencia de Cosas",
+      q:"Definí el contrato de comodato.",
+      t:"Hay comodato si una parte {{se obliga}} a entregar a otra una cosa {{no fungible}}, {{mueble}} o {{inmueble}}, para que se sirva {{gratuitamente}} de ella y {{restituya}} la {{misma cosa}} recibida." },
+    { cat:"Transferencia de Cosas",
+      q:"Definí el contrato de donación.",
+      t:"Hay donación cuando {{una parte}} se obliga a transferir {{gratuitamente}} una cosa a {{otra}}, y ésta lo {{acepta}}." },
+
+    // ===== SERVICIOS Y GARANTÍAS =====
+    { cat:"Servicios y Garantías",
+      q:"Definí el contrato de mandato.",
+      t:"Hay contrato de mandato cuando {{una parte}} se obliga a realizar uno o más {{actos jurídicos}} en interés de otra." },
+    { cat:"Servicios y Garantías",
+      q:"¿Cómo puede ser conferido y aceptado el mandato?",
+      t:"El mandato puede ser conferido y aceptado {{expresa}} o {{tácitamente}}." },
+    { cat:"Servicios y Garantías",
+      q:"¿Cuándo se entiende conferido tácitamente un mandato?",
+      t:"Si una persona sabe que alguien está haciendo algo en su interés, y no lo {{impide}}, pudiendo hacerlo, se entiende que ha conferido {{tácitamente}} mandato." },
+    { cat:"Servicios y Garantías",
+      q:"¿Qué implica la ejecución del mandato respecto de su aceptación?",
+      t:"La ejecución del mandato implica su {{aceptación}} aun sin mediar declaración {{expresa}} sobre ella." },
+    { cat:"Servicios y Garantías",
+      q:"Definí el contrato de fianza.",
+      t:"Hay contrato de fianza cuando {{una persona}} se obliga {{accesoriamente}} por otra a satisfacer {{una prestación}} para el caso de {{incumplimiento}}." },
+    { cat:"Servicios y Garantías",
+      q:"Definí el contrato de renta vitalicia.",
+      t:"La renta vitalicia es aquel contrato por el cual alguien, a cambio de un {{capital}} o de otra prestación mensurable en dinero, se obliga a pagar una {{renta}} en forma periódica a otro, durante la {{vida}} de una o más {{personas humanas}} ya existentes, designadas en el contrato." },
+    { cat:"Servicios y Garantías",
+      q:"Definí el contrato de cesión de derechos.",
+      t:"Hay contrato de cesión cuando una de las partes {{transfiere}} a la otra un {{derecho}}." },
+    { cat:"Servicios y Garantías",
+      q:"¿Qué reglas se aplican a la cesión de derechos según la contraprestación pactada?",
+      t:"Se aplican a la cesión las reglas de la {{compraventa}}, de la {{permuta}} o de la {{donación}}, según se haya realizado con precio en dinero, con transmisión de la propiedad de un bien, o sin contraprestación, respectivamente." },
+    { cat:"Servicios y Garantías",
+      q:"¿Qué ocurre cuando la cesión es en garantía?",
+      t:"Si la cesión es en garantía, las normas sobre {{prenda de créditos}} se aplican a las relaciones entre {{cedente}} y {{cesionario}}." },
+    { cat:"Servicios y Garantías",
+      q:"¿Cuándo hay cesión de deudas?",
+      t:"Hay cesión de deuda si el {{acreedor}}, el {{deudor}} y un {{tercero}} acuerdan que éste debe pagar la deuda, sin que haya {{novación}}." },
+    { cat:"Servicios y Garantías",
+      q:"Definí el contrato de depósito.",
+      t:"Hay depósito cuando una parte se obliga a recibir de otra {{una cosa}} con la obligación de {{custodiarla}} y {{restituirla}} con sus {{frutos}}." },
+
+    // ===== USO Y EMPRESA =====
+    { cat:"Uso y Empresa",
+      q:"Definí el contrato de locación.",
+      t:"Hay contrato de locación si una parte se obliga a otorgar a otra el {{uso y goce}} temporario de {{una cosa}}, a cambio del pago de un {{precio}} en dinero." },
+    { cat:"Uso y Empresa",
+      q:"Definí el contrato de obra y de servicios.",
+      t:"Hay contrato de obra o de servicios cuando {{una persona}}, segun el caso,-el {{contratista}} o el prestador de servicios, actuando {{independientemente}}, se obliga a favor de otra, llamada {{comitente}}, a realizar una obra {{material}} o {{intelectual}} o a proveer un {{servicio}} mediante una {{retribución}}." },
+    { cat:"Uso y Empresa",
+      q:"Definí el contrato de fideicomiso y nombrá sus partes.",
+      t:"Hay fideicomiso cuando una parte, llamada {{fiduciante}}, transmite o se compromete a transmitir {{la propiedad de bienes}} a otra persona llamada {{fiduciario}}, quien se obliga a {{ejercerla}} en beneficio de otra llamada {{beneficiario}}, que se designa en {{el contrato}}, y a {{transmitirla}} al cumplimiento de un plazo o condición al {{fideicomisario}}." },
+    { cat:"Uso y Empresa",
+      q:"Definí el contrato de leasing.",
+      t:"En el leasing, el {{dador}} conviene transferir al {{tomador}} la tenencia de un bien cierto y determinado para su {{uso}} y {{goce}}, contra el pago de un {{canon}}, y le confiere una {{opción de compra}} por un precio." },
+
+    // ===== CONTRATOS EN EL CCCU =====
+    { cat:"Contratos en el CCCU",
+      q:"¿Qué dos nuevas categorías de contratos incorpora el CCCU?",
+      t:"El CCCU incorpora como nuevas categorías el {{contrato por adhesión}} a cláusulas predispuestas y el {{contrato de consumo}} (arts. {{1092}} a {{1095}})." },
+    { cat:"Contratos en el CCCU",
+      q:"¿Con qué ley se complementan los principios generales de los contratos de consumo?",
+      t:"Los principios generales de los contratos de consumo se complementan con la {{Ley de Defensa del Consumidor}} {{24.240}}." },
+    { cat:"Contratos en el CCCU",
+      q:"¿Qué aspectos regulan los artículos 1092 a 1122 sobre contratos de consumo?",
+      t:"Los arts. 1092 a 1122 regulan las {{prácticas abusivas}}, la {{información}} y publicidad, las {{modalidades especiales}} y las {{cláusulas abusivas}}." },
+    { cat:"Contratos en el CCCU",
+      q:"Mencioná contratos que el CCCU unifica, ya previstos en el Código Civil y en el de Comercio.",
+      t:"El CCCU regula y unifica contratos previstos antes en el Código Civil y en el Código de Comercio, como {{compraventa}}, {{permuta}}, {{suministro}}, {{locación}}, {{mandato}}, {{mutuo}}, {{comodato}} y {{fianza}}, entre otros." },
+    { cat:"Contratos en el CCCU",
+      q:"¿Con qué normas específicas se incorporan el leasing y el fideicomiso al CCCU?",
+      t:"El leasing se incorpora con la {{ley 25.248}} y el art. {{1227}} y siguientes; el fideicomiso con la {{ley 24.441}} y el art. {{1666}} y siguientes." },
+    { cat:"Contratos en el CCCU",
+      q:"¿Qué contratos se tipifican con una regulación mínima en el CCCU?",
+      t:"Se tipifican con una regulación mínima la {{franquicia}} (art. {{1512}}), el {{arbitraje}} (art. {{1649}}) y el contrato de {{agencia}}." },
+
+    // ===== TRATATIVAS Y CONTRATOS PRELIMINARES =====
+    { cat:"Tratativas y Preliminares",
+      q:"¿Qué deberes rigen las tratativas contractuales?",
+      t:"Las tratativas contractuales se rigen por la {{libertad de negociación}}, el deber de {{buena fe}} y el deber de {{confidencialidad}}." },
+    { cat:"Tratativas y Preliminares",
+      q:"¿Qué contienen los contratos preliminares y cuál es su plazo de vigencia?",
+      t:"Los contratos preliminares contienen los elementos esenciales particulares del contrato futuro definitivo; su plazo de vigencia es de {{1 año}} o el menor que convengan las partes, y es {{renovable}}." },
+    { cat:"Tratativas y Preliminares",
+      q:"Mencioná dos ejemplos de contratos preliminares.",
+      t:"Son ejemplos de contratos preliminares la {{promesa de celebrar un contrato}} y el {{contrato de opción}}." },
+    { cat:"Tratativas y Preliminares",
+      q:"¿En qué artículo se regula el pacto de preferencia?",
+      t:"El pacto de preferencia, o de hacer, se regula en el art. {{997}} CCC." },
+    { cat:"Tratativas y Preliminares",
+      q:"¿En qué artículo se regula el contrato sujeto a conformidad?",
+      t:"El contrato sujeto a conformidad se regula en el art. {{999}} CCC." },
+    { cat:"Tratativas y Preliminares",
+      q:"Además de los preliminares, ¿qué otras dos figuras contractuales especiales se mencionan?",
+      t:"Otras figuras contractuales especiales son los {{subcontratos}} y los {{contratos conexos}}." },
+  ];
+
+  function parseTemplate(t){
+    const parts = t.split(/\{\{(.*?)\}\}/g);
+    const segments = [];
+    const blanks = [];
+    for(let i=0;i<parts.length;i++){
+      if(i % 2 === 0){
+        segments.push(parts[i]);
+      } else {
+        blanks.push(parts[i].split('/').map(s=>s.trim()));
+      }
+    }
+    return { segments, blanks };
+  }
+
+  const DATA = RAW.map((d,i)=>{
+    const parsed = parseTemplate(d.t);
+    return { id:i, cat:d.cat, q:d.q, segments:parsed.segments, blanks:parsed.blanks };
+  });
+
+  const CATS = ["Todas", ...Array.from(new Set(DATA.map(d=>d.cat)))];
+
+  const status = {};       // id -> 'correct' | 'incorrect'
+  const attempts = {};     // id -> array of input strings
+  const autofillActive = {};   // id -> bool
+  const autofillSnapshot = {}; // id -> array of {value, cls}
+
+  let currentCat = "Todas";
+  let order = DATA.map(d=>d.id);
+  let pos = 0;
+  let flipped = false;
+
+  const el = {
+    chips: document.getElementById('chips'),
+    card: document.getElementById('card'),
+    frontFace: document.getElementById('frontFace'),
+    questionText: document.getElementById('questionText'),
+    fillText: document.getElementById('fillText'),
+    tag: document.getElementById('tag'),
+    counter: document.getElementById('counter'),
+    resultLine: document.getElementById('resultLine'),
+    prevBtn: document.getElementById('prevBtn'),
+    nextBtn: document.getElementById('nextBtn'),
+    flipBtn: document.getElementById('flipBtn'),
+    validateBtn: document.getElementById('validateBtn'),
+    retryBtn: document.getElementById('retryBtn'),
+    autofillBtn: document.getElementById('autofillBtn'),
+    shuffleBtn: document.getElementById('shuffleBtn'),
+    orderBtn: document.getElementById('orderBtn'),
+    resetBtn: document.getElementById('resetBtn'),
+    progressLabel: document.getElementById('progressLabel'),
+    progressPercent: document.getElementById('progressPercent'),
+    segKnow: document.getElementById('segKnow'),
+    segReview: document.getElementById('segReview'),
+  };
+
+  function normalize(s){
+    return (s || "").toString().trim().toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .replace(/[^\w\s%.]/g,'')
+      .replace(/\s+/g,' ');
+  }
+
+  function currentIds(){
+    if(currentCat === "Todas") return order;
+    return order.filter(id => DATA[id].cat === currentCat);
+  }
+
+  function renderChips(){
+    el.chips.innerHTML = "";
+    CATS.forEach(cat=>{
+      const count = cat === "Todas" ? DATA.length : DATA.filter(d=>d.cat===cat).length;
+      const chip = document.createElement('div');
+      chip.className = 'chip' + (cat===currentCat ? ' active' : '');
+      chip.innerHTML = cat + '<span class="n">' + count + '</span>';
+      chip.addEventListener('click', ()=>{
+        currentCat = cat;
+        pos = 0;
+        flipped = false;
+        renderChips();
+        renderCard();
+      });
+      el.chips.appendChild(chip);
+    });
+  }
+
+  function buildFillText(d){
+    el.fillText.innerHTML = "";
+    const saved = attempts[d.id] || [];
+    d.segments.forEach((seg, i)=>{
+      if(seg.length){
+        const span = document.createElement('span');
+        span.className = 'txt';
+        span.textContent = seg;
+        el.fillText.appendChild(span);
+      }
+      if(i < d.blanks.length){
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'blank-input';
+        input.autocomplete = 'off';
+        input.autocapitalize = 'off';
+        input.spellcheck = false;
+        input.dataset.index = i;
+        input.value = saved[i] || '';
+        input.style.width = Math.max(6, input.value.length + 2) + 'ch';
+        input.addEventListener('click', (e)=> e.stopPropagation());
+        input.addEventListener('input', ()=>{
+          input.classList.remove('correct','incorrect');
+          input.style.width = Math.max(6, input.value.length + 2) + 'ch';
+          attempts[d.id] = attempts[d.id] || [];
+          attempts[d.id][i] = input.value;
+        });
+        input.addEventListener('keydown', (e)=>{
+          if(e.key === 'Enter'){
+            e.preventDefault();
+            const inputs = Array.from(el.fillText.querySelectorAll('.blank-input'));
+            const idx = inputs.indexOf(input);
+            if(idx < inputs.length - 1){
+              inputs[idx+1].focus();
+            } else {
+              validate();
+            }
+          }
+        });
+        el.fillText.appendChild(input);
+      }
+    });
+  }
+
+  function renderCard(){
+    const ids = currentIds();
+    if(ids.length === 0){
+      el.tag.textContent = "—";
+      el.counter.textContent = "0 / 0";
+      el.questionText.textContent = "No hay tarjetas en esta categoría.";
+      el.fillText.textContent = "";
+      el.resultLine.textContent = "";
+      updateProgress();
+      return;
+    }
+    if(pos >= ids.length) pos = 0;
+    if(pos < 0) pos = ids.length - 1;
+
+    const id = ids[pos];
+    const d = DATA[id];
+
+    el.card.classList.toggle('flipped', flipped);
+    el.flipBtn.textContent = flipped ? '← Pregunta' : 'Completar →';
+    el.tag.textContent = d.cat;
+    el.counter.textContent = (pos+1) + " / " + ids.length;
+    el.questionText.textContent = d.q;
+
+    buildFillText(d);
+
+    el.resultLine.textContent = "";
+    el.resultLine.className = "result-line";
+
+    if(status[id]){
+      revalidateColorsOnly(d);
+    }
+
+    // reset autofill visual state for this viewing
+    autofillActive[id] = false;
+    el.autofillBtn.textContent = '👁 Ver respuestas';
+    el.autofillBtn.classList.remove('active');
+
+    updateProgress();
+  }
+
+  function revalidateColorsOnly(d){
+    const inputs = Array.from(el.fillText.querySelectorAll('.blank-input'));
+    let correctCount = 0;
+    inputs.forEach((input, i)=>{
+      const val = normalize(input.value);
+      const ok = d.blanks[i].some(ans => normalize(ans) === val);
+      input.classList.toggle('correct', ok);
+      input.classList.toggle('incorrect', !ok);
+      if(ok) correctCount++;
+    });
+    showResult(correctCount, d.blanks.length);
+  }
+
+  function showResult(correct, total){
+    el.resultLine.textContent = correct + " de " + total + " correctas";
+    el.resultLine.className = "result-line " + (correct === total ? "ok" : "bad");
+  }
+
+  function validate(){
+    const ids = currentIds();
+    if(ids.length === 0) return;
+    const id = ids[pos];
+    const d = DATA[id];
+    if(autofillActive[id]) return; // don't validate while answers are revealed
+    const inputs = Array.from(el.fillText.querySelectorAll('.blank-input'));
+    let correctCount = 0;
+    inputs.forEach((input, i)=>{
+      const val = normalize(input.value);
+      const ok = d.blanks[i].some(ans => normalize(ans) === val);
+      input.classList.toggle('correct', ok);
+      input.classList.toggle('incorrect', !ok);
+      if(ok) correctCount++;
+    });
+    status[id] = (correctCount === d.blanks.length) ? 'correct' : 'incorrect';
+    showResult(correctCount, d.blanks.length);
+    updateProgress();
+  }
+
+  function retry(){
+    const ids = currentIds();
+    if(ids.length === 0) return;
+    const id = ids[pos];
+    delete attempts[id];
+    delete status[id];
+    delete autofillSnapshot[id];
+    autofillActive[id] = false;
+    renderCard();
+    const firstInput = el.fillText.querySelector('.blank-input');
+    if(firstInput) firstInput.focus();
+  }
+
+  function toggleAutofill(){
+    const ids = currentIds();
+    if(ids.length === 0) return;
+    const id = ids[pos];
+    const d = DATA[id];
+    const inputs = Array.from(el.fillText.querySelectorAll('.blank-input'));
+    if(inputs.length === 0) return;
+
+    autofillActive[id] = !autofillActive[id];
+
+    if(autofillActive[id]){
+      // snapshot exactly what's on screen right now (values + validation classes)
+      autofillSnapshot[id] = inputs.map(inp => ({ value: inp.value, cls: inp.className }));
+      inputs.forEach((inp, i)=>{
+        inp.value = d.blanks[i][0];
+        inp.style.width = Math.max(6, inp.value.length + 2) + 'ch';
+        inp.classList.remove('correct','incorrect');
+        inp.classList.add('revealed');
+        inp.disabled = true;
+      });
+      el.autofillBtn.textContent = '🙈 Ocultar respuestas';
+      el.autofillBtn.classList.add('active');
+    } else {
+      const snap = autofillSnapshot[id] || [];
+      inputs.forEach((inp, i)=>{
+        inp.disabled = false;
+        inp.classList.remove('revealed');
+        const s = snap[i];
+        if(s){
+          inp.value = s.value;
+          inp.className = s.cls;
+          inp.style.width = Math.max(6, inp.value.length + 2) + 'ch';
+        }
+      });
+      el.autofillBtn.textContent = '👁 Ver respuestas';
+      el.autofillBtn.classList.remove('active');
+    }
+  }
+
+  function updateProgress(){
+    const total = DATA.length;
+    const correct = DATA.filter(d=>status[d.id]==='correct').length;
+    const incorrect = DATA.filter(d=>status[d.id]==='incorrect').length;
+    const none = total - correct - incorrect;
+    el.progressLabel.textContent = correct + " correctas · " + incorrect + " con errores · " + none + " sin intentar";
+    const pct = total ? Math.round((correct/total)*100) : 0;
+    el.progressPercent.textContent = pct + "%";
+    el.segKnow.style.width = (total ? (correct/total*100) : 0) + "%";
+    el.segReview.style.width = (total ? (incorrect/total*100) : 0) + "%";
+  }
+
+  function flip(){
+    flipped = !flipped;
+    el.card.classList.toggle('flipped', flipped);
+    el.flipBtn.textContent = flipped ? '← Pregunta' : 'Completar →';
+    if(flipped){
+      setTimeout(()=>{
+        const firstInput = el.fillText.querySelector('.blank-input');
+        if(firstInput) firstInput.focus({preventScroll:true});
+      }, 260);
+    }
+  }
+
+  function go(delta){
+    const ids = currentIds();
+    if(ids.length === 0) return;
+    pos = (pos + delta + ids.length) % ids.length;
+    flipped = false;
+    renderCard();
+  }
+
+  function shuffleArray(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+
+  el.frontFace.addEventListener('click', ()=>{ if(!flipped) flip(); });
+  el.flipBtn.addEventListener('click', flip);
+  el.prevBtn.addEventListener('click', ()=>go(-1));
+  el.nextBtn.addEventListener('click', ()=>go(1));
+  el.validateBtn.addEventListener('click', validate);
+  el.retryBtn.addEventListener('click', retry);
+  el.autofillBtn.addEventListener('click', toggleAutofill);
+
+  el.shuffleBtn.addEventListener('click', ()=>{
+    order = shuffleArray(DATA.map(d=>d.id));
+    pos = 0; flipped = false;
+    renderCard();
+  });
+  el.orderBtn.addEventListener('click', ()=>{
+    order = DATA.map(d=>d.id);
+    pos = 0; flipped = false;
+    renderCard();
+  });
+  el.resetBtn.addEventListener('click', ()=>{
+    Object.keys(status).forEach(k=>delete status[k]);
+    Object.keys(attempts).forEach(k=>delete attempts[k]);
+    Object.keys(autofillSnapshot).forEach(k=>delete autofillSnapshot[k]);
+    Object.keys(autofillActive).forEach(k=>delete autofillActive[k]);
+    renderCard();
+  });
+
+  document.addEventListener('keydown', (e)=>{
+    const isTyping = document.activeElement && document.activeElement.classList && document.activeElement.classList.contains('blank-input');
+    if(isTyping) return;
+    if(e.key === 'ArrowRight'){ go(1); }
+    else if(e.key === 'ArrowLeft'){ go(-1); }
+    else if(e.key === ' '){ e.preventDefault(); flip(); }
+  });
+
+  renderChips();
+  renderCard();
+
+})();
+</script>
+
+</body>
+</html>
