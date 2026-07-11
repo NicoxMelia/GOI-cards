@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Fichero de Obra Pública — Pregunta y Completar</title>
+<style>
+  :root{
+    --navy: #1B3B6F;
+    --navy-dark: #12294B;
+    --gold: #B8860B;
+    --white: #FFFFFF;
+    --card: #F3F6FA;
+    --card2: #EEF1F6;
+    --red: #B03A2E;
+    --red-bg: #FBEDEB;
+    --green: #2E7D4F;
+    --green-bg: #EAF5EE;
+    --gold-bg: #FBF3E3;
+    --text: #26313F;
+    --subtext: #5A6B7A;
+    --line: #DCE3EC;
+    --font-head: Cambria, "Times New Roman", serif;
+    --font-body: Calibri, "Segoe UI", Arial, sans-serif;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+
+  html,body{
+    margin:0; padding:0;
+    background: var(--white);
+    color: var(--text);
+    font-family: var(--font-body);
+    height:100%;
+  }
+
+  body{
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+  }
+
+  /* ================= HEADER ================= */
+  .topbar{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding: 18px 16px 10px;
+  }
+  .icon-badge{
+    flex:0 0 auto;
+    width:44px; height:44px;
+    border-radius:50%;
+    background: var(--gold-bg);
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px;
+    color: var(--gold);
+  }
+  .heading .eyebrow{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.6px;
+    color: var(--gold);
+    text-transform:uppercase;
+    line-height:1.3;
+  }
+  .heading h1{
+    margin:2px 0 0;
+    font-family: var(--font-head);
+    font-weight:700;
+    font-size: 20px;
+    color: var(--navy);
+    line-height:1.15;
+  }
+
+  /* ================= CATEGORY CHIPS ================= */
+  .chips-wrap{
+    overflow-x:auto;
+    padding: 4px 16px 12px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .chips-wrap::-webkit-scrollbar{ display:none; }
+  .chips{
+    display:flex;
+    gap:8px;
+    width:max-content;
+  }
+  .chip{
+    flex:0 0 auto;
+    padding: 8px 14px;
+    border-radius: 20px;
+    background: var(--card);
+    border:1px solid var(--line);
+    font-size: 12.5px;
+    font-weight:700;
+    color: var(--navy);
+    white-space:nowrap;
+    cursor:pointer;
+    min-height:36px;
+    display:flex;
+    align-items:center;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .chip .n{
+    margin-left:6px;
+    font-weight:700;
+    color: var(--gold);
+    font-size:11px;
+  }
+  .chip.active{
+    background: var(--navy);
+    color: var(--white);
+    border-color: var(--navy);
+  }
+  .chip.active .n{ color: #E8D9A9; }
+
+  /* ================= STAGE ================= */
+  .stage{
+    flex:1;
+    padding: 4px 16px 8px;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .stage-meta{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+  }
+  .tag{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+    color: var(--gold);
+    background: var(--gold-bg);
+    border-radius: 20px;
+    padding: 5px 12px;
+  }
+  .counter{
+    font-size:12.5px;
+    font-weight:700;
+    color: var(--subtext);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .card-scene{
+    perspective: 1500px;
+    min-height: 360px;
+    flex:1;
+  }
+  .card{
+    position:relative;
+    width:100%; height:100%;
+    min-height:360px;
+    transform-style: preserve-3d;
+    transition: transform .5s cubic-bezier(.2,.7,.3,1);
+  }
+  .card.flipped{ transform: rotateY(180deg); }
+
+  .face{
+    position:absolute; inset:0;
+    -webkit-backface-visibility:hidden;
+    backface-visibility:hidden;
+    border-radius: 16px;
+    background: var(--card);
+    padding: 20px 18px 18px;
+    display:flex;
+    flex-direction:column;
+    box-shadow: 0 10px 24px rgba(27,59,111,0.14);
+    overflow-y:auto;
+  }
+  .face.back{
+    transform: rotateY(180deg);
+    background: var(--white);
+    border:1px solid var(--line);
+    cursor:auto;
+  }
+  .face.front{ cursor:pointer; }
+
+  .face .face-top{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom: 12px;
+    flex: 0 0 auto;
+  }
+  .face-dot{
+    width:28px; height:28px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px;
+    font-weight:700;
+    color: var(--white);
+    background: var(--navy);
+    flex:0 0 auto;
+  }
+  .face.back .face-dot{ background: var(--gold); }
+  .face .face-label{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.8px;
+    color: var(--navy);
+    text-transform:uppercase;
+  }
+  .face.back .face-label{ color: var(--gold); }
+
+  .question-text{
+    font-family: var(--font-head);
+    font-size: 19px;
+    line-height:1.45;
+    color: var(--navy-dark);
+    flex:1;
+  }
+  .front .hint{
+    margin-top:auto;
+    padding-top:10px;
+    font-size:11px;
+    font-style:italic;
+    color: var(--subtext);
+    flex: 0 0 auto;
+  }
+
+  .fill-text{
+    font-family: var(--font-head);
+    font-size: 15.5px;
+    line-height:2.05;
+    color: var(--navy-dark);
+    display:flex;
+    flex-wrap:wrap;
+    align-items:baseline;
+    gap: 0 2px;
+    margin:0;
+  }
+  .fill-text .txt{ white-space:pre-wrap; }
+
+  .blank-input{
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    font-weight:700;
+    color: var(--navy);
+    border: none;
+    border-bottom: 2px solid var(--gold);
+    background: var(--gold-bg);
+    border-radius: 6px 6px 2px 2px;
+    padding: 3px 7px;
+    margin: 2px 1px;
+    min-width: 58px;
+    max-width: 100%;
+    text-align:center;
+    outline:none;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .blank-input:focus{
+    background: #FDF1D8;
+    border-color: var(--navy);
+  }
+  .blank-input.correct{
+    background: var(--green-bg);
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .blank-input.incorrect{
+    background: var(--red-bg);
+    border-color: var(--red);
+    color: var(--red);
+  }
+  .blank-input.autofilled{
+    background: #EFE9F7;
+    border-color: #7B5EA7;
+    color: #5B3E8C;
+  }
+
+  .result-line{
+    min-height: 20px;
+    margin-top:10px;
+    font-size:12.5px;
+    font-weight:700;
+    text-align:center;
+    flex: 0 0 auto;
+  }
+  .result-line.ok{ color: var(--green); }
+  .result-line.bad{ color: var(--red); }
+
+  .back-action-row{
+    display:flex;
+    gap:8px;
+    margin-top:10px;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+  }
+  .btn{
+    flex:1;
+    min-height:42px;
+    border-radius: 12px;
+    font-family: var(--font-body);
+    font-weight:700;
+    font-size:13.5px;
+    border:1px solid transparent;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    transition: transform .1s ease, background .15s ease;
+    min-width: 100px;
+  }
+  .btn:active{ transform: translateY(1px); }
+  .btn:focus-visible{ outline:3px solid var(--gold); outline-offset:2px; }
+
+  .btn-validate{ background: var(--navy); color: var(--white); }
+  .btn-validate:active{ background: var(--navy-dark); }
+  .btn-retry{ background: var(--card2); color: var(--navy); border-color: var(--line); }
+  .btn-autofill{ background: var(--gold-bg); color: var(--gold); border-color: #E9D8AE; }
+  .btn-autofill.active{ background: var(--gold); color: var(--white); border-color: var(--gold); }
+
+  /* ================= PROGRESS ================= */
+  .progress-wrap{ margin-top:14px; }
+  .progress-label{
+    font-size:11.5px;
+    color: var(--subtext);
+    margin-bottom:6px;
+    display:flex;
+    justify-content:space-between;
+  }
+  .progress-bar{
+    height:8px;
+    border-radius:6px;
+    background: var(--card2);
+    overflow:hidden;
+    display:flex;
+  }
+  .seg-know{ background: var(--green); height:100%; }
+  .seg-review{ background: var(--red); height:100%; }
+
+  /* ================= UTILITY ROW ================= */
+  .utility-row{
+    display:flex;
+    justify-content:center;
+    gap: 18px;
+    padding: 10px 16px 4px;
+    flex-wrap:wrap;
+  }
+  .util-btn{
+    background:none;
+    border:none;
+    font-family: var(--font-body);
+    font-size:12.5px;
+    font-weight:700;
+    color: var(--subtext);
+    cursor:pointer;
+    padding:6px 4px;
+    min-height:36px;
+  }
+  .util-btn:hover{ color: var(--navy); }
+
+  footer.note{
+    text-align:center;
+    font-size:10.5px;
+    color: var(--subtext);
+    padding: 6px 24px 4px;
+  }
+
+  /* ================= BOTTOM NAV (fixed, mobile) ================= */
+  .bottom-nav{
+    position:fixed;
+    left:0; right:0; bottom:0;
+    background: var(--white);
+    border-top: 1px solid var(--line);
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    display:flex;
+    align-items:center;
+    gap:10px;
+    box-shadow: 0 -6px 18px rgba(27,59,111,0.08);
+  }
+  .nav-btn{
+    min-height:48px;
+    border-radius: 12px;
+    border:1px solid var(--line);
+    background: var(--card);
+    color: var(--navy);
+    font-size:20px;
+    font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+    width:52px;
+    flex:0 0 auto;
+    cursor:pointer;
+  }
+  .nav-btn-main{
+    flex:1;
+    width:auto;
+    background: var(--navy);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size:14.5px;
+    letter-spacing:0.3px;
+  }
+  .nav-btn-main:active{ background: var(--navy-dark); }
+  .nav-btn:active{ background: var(--card2); }
+
+  /* ================= DESKTOP / TABLET ENHANCEMENT ================= */
+  @media (min-width: 640px){
+    body{ align-items:center; }
+    .topbar, .chips-wrap, .stage, .utility-row, footer.note{
+      width:100%;
+      max-width: 600px;
+      align-self:center;
+      margin: 0 auto;
+    }
+    .icon-badge{ width:52px; height:52px; font-size:24px; }
+    .heading h1{ font-size:25px; }
+    .card-scene{ min-height: 420px; }
+    .card{ min-height:420px; }
+    .question-text{ font-size:22px; }
+    .fill-text{ font-size:17.5px; }
+    .bottom-nav{
+      max-width: 600px;
+      left:50%;
+      transform: translateX(-50%);
+      border-radius: 16px 16px 0 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .card, .chip{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="icon-badge">🏗️</div>
+    <div class="heading">
+      <div class="eyebrow">Legislación y Ética Profesional</div>
+      <h1>Fichero de Obra Pública</h1>
+    </div>
+  </header>
+
+  <div class="chips-wrap">
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <main class="stage">
+    <div class="stage-meta">
+      <span class="tag" id="tag">—</span>
+      <span class="counter" id="counter">0 / 0</span>
+    </div>
+
+    <div class="card-scene">
+      <div class="card" id="card">
+        <div class="face front" id="frontFace">
+          <div class="face-top">
+            <div class="face-dot">P</div>
+            <div class="face-label">Pregunta</div>
+          </div>
+          <div class="question-text" id="questionText">Cargando…</div>
+          <div class="hint">Tocá la tarjeta (o "Completar") para practicar la respuesta escribiéndola</div>
+        </div>
+        <div class="face back">
+          <div class="face-top">
+            <div class="face-dot">✎</div>
+            <div class="face-label">Completar</div>
+          </div>
+          <p class="fill-text" id="fillText"></p>
+          <div class="result-line" id="resultLine"></div>
+          <div class="back-action-row">
+            <button class="btn btn-retry" id="retryBtn">↺ Reintentar</button>
+            <button class="btn btn-autofill" id="autofillBtn">👁 Ver respuestas</button>
+            <button class="btn btn-validate" id="validateBtn">Validar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="progressLabel">0 correctas · 0 con errores · 0 sin intentar</span>
+        <span id="progressPercent">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="seg-know" id="segKnow" style="width:0%"></div>
+        <div class="seg-review" id="segReview" style="width:0%"></div>
+      </div>
+    </div>
+  </main>
+
+  <div class="utility-row">
+    <button class="util-btn" id="shuffleBtn">🔀 Barajar</button>
+    <button class="util-btn" id="orderBtn">🔢 Orden original</button>
+    <button class="util-btn" id="resetBtn">↺ Reiniciar todo</button>
+  </div>
+
+  <footer class="note">
+    El progreso se guarda solo durante esta sesión.
+  </footer>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn" id="prevBtn" aria-label="Anterior">‹</button>
+    <button class="nav-btn nav-btn-main" id="flipBtn">Completar →</button>
+    <button class="nav-btn" id="nextBtn" aria-label="Siguiente">›</button>
+  </nav>
+
+<script>
+(function(){
+
+  // "t" usa {{respuesta}} o {{respuesta1/respuesta2}} para alternativas válidas en los espacios.
+  const RAW = [
+
+    // ===================== CONCEPTO Y MARCO NORMATIVO =====================
+    { cat:"Concepto y Marco Normativo",
+      q:"Según el concepto general, ¿qué es la obra pública (O.P.)?",
+      t:"La O.P. puede ser una cosa {{mueble}} o {{inmueble}} cuya construcción integral o reparación está destinada a la {{utilidad común directa o indirecta}}, perteneciendo su titularidad al Estado Nacional, Provincial, Municipal o Ente Descentralizado." },
+    { cat:"Concepto y Marco Normativo",
+      q:"En cuanto a la titularidad y ejecución de la obra pública, ¿qué la caracteriza?",
+      t:"La titularidad de la obra pública siempre es una {{entidad estatal}}; su ejecución puede realizarse por el {{Estado}}, por un {{contratista}} o por un {{concesionario}}." },
+    { cat:"Concepto y Marco Normativo",
+      q:"Según el art. 227 del CCyC, ¿cómo puede ser la cosa objeto de la obra pública?",
+      t:"La cosa puede ser {{mueble}} o {{inmueble}}, de naturaleza {{corporal}} o {{incorporal}}, conforme el art. {{227}} del CCC." },
+    { cat:"Concepto y Marco Normativo",
+      q:"¿Cuál es el destino y cuál la finalidad de la obra pública?",
+      t:"El destino de la obra pública es la {{utilidad común}}, y su finalidad es asegurar la {{satisfacción de necesidades colectivas y/o sociales}}." },
+    { cat:"Concepto y Marco Normativo",
+      q:"Completá la definición del artículo 1° de la Ley 13.064.",
+      t:"Considérase obra pública toda {{construcción}} o {{trabajo}} o {{servicio de industria}} que se ejecute con fondos del {{Tesoro de la Nación}}, a excepción de los efectuados con {{subsidios}}, que se regirán por ley especial, y las {{construcciones militares}}, que se regirán por la ley 12.737." },
+    { cat:"Concepto y Marco Normativo",
+      q:"Además del Tesoro de la Nación, ¿qué otro origen pueden tener los recursos de financiamiento de la obra pública?",
+      t:"El financiamiento también puede provenir de un {{ente financiero nacional o internacional}}, o de financiamiento {{privado}} de un empresario." },
+    { cat:"Concepto y Marco Normativo",
+      q:"Según el Decreto 19.324/49, mencioná al menos cuatro tipos de construcciones u obras comprendidas.",
+      t:"Entre las construcciones y obras se encuentran las {{viales}}, {{portuarias}}, los {{diques}}, los {{edificios especiales}}, las líneas telefónicas y telegráficas, los {{aeropuertos}} y los {{monumentos}}, entre otras." },
+    { cat:"Concepto y Marco Normativo",
+      q:"Según el Decreto 19.324, ¿qué comprenden los conceptos de \"trabajos, obras\" y de \"servicio de industria\"?",
+      t:"Como trabajos u obras se incluyen las {{ampliaciones}}, {{reparaciones}}, {{conservación}}, el dragado y el balizamiento; como servicio de industria, la {{organización de talleres, fábricas y usinas}} y las instalaciones de servicios industriales." },
+
+    // ===================== SISTEMAS DE EJECUCIÓN Y SELECCIÓN =====================
+    { cat:"Sistemas de Ejecución y Selección",
+      q:"¿Cuáles son los dos grandes sistemas de ejecución de la obra pública?",
+      t:"Los sistemas de ejecución son: 1) {{Directo}}, por administración estatal; y 2) {{Indirecto}}, por contrato." },
+    { cat:"Sistemas de Ejecución y Selección",
+      q:"Dentro del sistema indirecto por contrato, ¿qué modalidades existen además de la ejecución \"por terceros\"?",
+      t:"Además de por terceros, existe la ejecución por {{concesión}} (de obra pública o de servicio público), por {{iniciativa privada}}, por {{contribución por mejoras}} y por {{participación pública privada}}." },
+    { cat:"Sistemas de Ejecución y Selección",
+      q:"Según la Ley 13.064, ¿cuáles son los sistemas de selección para las obras por contrato?",
+      t:"Los sistemas de selección son: {{licitación pública}} (doble etapa), {{licitación privada}}, {{concurso público}}, {{concurso de precios}}, concurso de proyectos integrales, {{remate público}}, suministro o relevamiento de precios y {{contratación directa}}." },
+    { cat:"Sistemas de Ejecución y Selección",
+      q:"Definí la licitación privada como sistema de selección.",
+      t:"La licitación privada es un procedimiento de selección donde se invita a un mínimo de {{ocho}} firmas, siempre que el Registro de Constructores de Obras cuente con el número de inscriptos en la {{especialidad}} de obra que se licite." },
+    { cat:"Sistemas de Ejecución y Selección",
+      q:"Definí el concurso de precios.",
+      t:"El concurso de precios se utiliza para obras cuyo presupuesto no exceda el límite fijado en la Ley Normativa de Ejecución del Presupuesto, solicitándose cotización de precios a un mínimo de {{cinco}} firmas." },
+    { cat:"Sistemas de Ejecución y Selección",
+      q:"¿Cuál es el criterio de selección en el concurso público? Dá un ejemplo de aplicación.",
+      t:"En el concurso público, el criterio de selección son los {{antecedentes}}, es decir, la mejor aptitud {{técnica, científica, cultural, artística, económica financiera}}; por ejemplo, en servicios de {{consultoría}}." },
+    { cat:"Sistemas de Ejecución y Selección",
+      q:"Describí el remate público como sistema de selección.",
+      t:"El remate público es una {{subasta pública}}, realizada previa convocatoria al público debidamente publicitada, mediante una {{puja}} para ofrecer el mejor precio para la administración." },
+    { cat:"Sistemas de Ejecución y Selección",
+      q:"¿Cuál es el objeto del suministro o relevamiento de precios y para qué se utiliza?",
+      t:"Tiene por objeto la {{agilización}} del procedimiento de compras de la AP, formando una base de datos con los precios más convenientes; se utiliza para la compra de {{productos menores}}, artículos de librería, y es más rápido y ágil que la {{contratación directa}}." },
+    { cat:"Sistemas de Ejecución y Selección",
+      q:"¿En qué consiste el concurso de proyectos integrales?",
+      t:"Es un concurso en el cual el criterio de selección se origina en una {{iniciativa privada}} que elabora el interesado para contratar con la administración." },
+    { cat:"Sistemas de Ejecución y Selección",
+      q:"Según la Ley Provincial 8614 (mod. Ley 10417), ¿cuáles son los sistemas de selección provinciales?",
+      t:"Los sistemas de selección son: {{licitación pública}} (doble etapa), {{compulsa abreviada}}, {{subasta electrónica}} y {{contratación directa}}." },
+    { cat:"Sistemas de Ejecución y Selección",
+      q:"Mencioná al menos dos características de la subasta electrónica.",
+      t:"Los interesados deben estar {{registrados}} en Compras Públicas, se fija un {{precio de arranque}} a partir del cual se realizan mejoras en las ofertas, y se indica un {{margen mínimo}} de mejora en los pliegos." },
+    { cat:"Sistemas de Ejecución y Selección",
+      q:"Mencioná al menos dos ventajas de la subasta electrónica.",
+      t:"Incentiva la {{competencia}} entre oferentes, agiliza los procedimientos de contratación, y garantiza {{igualdad y transparencia}}, ya que la identidad de los participantes se da a conocer al finalizar la subasta." },
+
+    // ===================== SISTEMAS DE CONTRATACIÓN Y CONTRATACIÓN DIRECTA =====================
+    { cat:"Sistemas de Contratación y Contratación Directa",
+      q:"¿Qué se presume, salvo prueba en contrario, en el sistema de ajuste alzado (art. 1262)?",
+      t:"Se presume, excepto prueba en contrario, que la obra fue contratada por {{ajuste alzado}} y que los {{materiales}} los provee el contratista." },
+    { cat:"Sistemas de Contratación y Contratación Directa",
+      q:"En el sistema por pieza o medida (art. 1266), sin designación de número de piezas o medida total, ¿qué ocurre?",
+      t:"Se establece un {{límite mínimo}}, y cualquiera de las partes puede {{rescindir}} el contrato cumplido el mínimo, debiéndose las prestaciones correspondientes a las partes concluidas." },
+    { cat:"Sistemas de Contratación y Contratación Directa",
+      q:"En el sistema por pieza o medida, con designación de número de piezas o medida total, ¿qué obligaciones surgen?",
+      t:"El contratista está obligado a entregar la obra {{concluida}}, y el comitente debe pagar la {{retribución total}} de las unidades pactadas." },
+    { cat:"Sistemas de Contratación y Contratación Directa",
+      q:"¿Qué comprende el sistema de coste y costas?",
+      t:"Comprende el valor de los {{materiales}}, el valor de la {{mano de obra}} y el valor de otros gastos {{directos o indirectos}}." },
+    { cat:"Sistemas de Contratación y Contratación Directa",
+      q:"¿Cuáles son los dos supuestos por los que procede la contratación directa?",
+      t:"Procede la contratación directa: A) por {{monto}}, cuando no exceda el límite establecido en el art. 11 de la ley de ejecución de presupuesto provincial n° 5901; y B) por {{causa o naturaleza}}." },
+    { cat:"Sistemas de Contratación y Contratación Directa",
+      q:"Mencioná al menos cinco supuestos de contratación directa por causa o naturaleza.",
+      t:"Entre otros: {{urgencia}}, {{secreto de estado}}, artistas o fabricantes especializados, marcas o privilegios, {{único fabricante o vendedor}}, {{licitación desierta}}, ofertas inadmisibles y venta de productos perecederos." },
+    { cat:"Sistemas de Contratación y Contratación Directa",
+      q:"¿Qué requisitos exige la contratación directa por razones de urgencia?",
+      t:"Debe ir plenamente acreditada mediante {{estudios técnicos objetivos previos y serios}} que la califiquen como cierta, no quedando liberada al {{arbitrio de los funcionarios}}." },
+    { cat:"Sistemas de Contratación y Contratación Directa",
+      q:"Según el Decreto 287/2020 (emergencia sanitaria por COVID-19), ¿qué facultad se otorgó durante la emergencia?",
+      t:"Se facultó a efectuar la {{contratación directa}} de bienes y servicios necesarios para atender la emergencia, sin sujeción al régimen de contrataciones, debiendo publicarse posteriormente en la página web de la Oficina Nacional de Contrataciones y en el {{Boletín Oficial}}." },
+    { cat:"Sistemas de Contratación y Contratación Directa",
+      q:"Según los límites de contratación (Ley 5901, valor índice 2024 = $380.000), ¿hasta qué índice se admite la contratación directa por monto y el concurso de precios?",
+      t:"La contratación directa por monto se admite hasta el índice {{20}}, y el concurso de precios hasta el índice {{90}}." },
+    { cat:"Sistemas de Contratación y Contratación Directa",
+      q:"Según los límites de contratación, ¿hasta qué índice se admite la licitación privada, y qué ocurre con la licitación pública y la contratación directa por causa?",
+      t:"La licitación privada se admite hasta el índice {{240}}; la {{licitación pública}} y la contratación directa por causa no tienen {{límites}}." },
+
+    // ===================== LICITACIÓN PÚBLICA: CONCEPTO Y PRINCIPIOS =====================
+    { cat:"Licitación Pública: Concepto y Principios",
+      q:"Definí la licitación pública como procedimiento de selección.",
+      t:"Es un procedimiento de selección del co-contratante que, sobre la base de una previa justificación de la {{idoneidad moral, técnica y financiera}} de los intervinientes, tiende a establecer la mejor oferta, el precio más conveniente para la adquisición o enajenación de bienes, prestación de servicios o ejecución de obras." },
+    { cat:"Licitación Pública: Concepto y Principios",
+      q:"¿Qué es el \"procedimiento administrativo\" en el marco de la licitación pública?",
+      t:"Es una secuencia ordenada de etapas para la elección de la oferta más conveniente, que no será necesariamente la más {{económica}}." },
+    { cat:"Licitación Pública: Concepto y Principios",
+      q:"¿Cuál es la naturaleza jurídica de la licitación pública?",
+      t:"Es un conjunto de actos ínter ligados, conexos, destinados a establecer quién ejecutará una obra pública o prestará un servicio público, {{preparatorio}} de la voluntad contractual. No es un {{contrato}} ni viceversa; el contrato surge de la licitación pero no es la licitación." },
+    { cat:"Licitación Pública: Concepto y Principios",
+      q:"¿Cuál es el objeto de la licitación pública?",
+      t:"Su objeto es la {{elección del co-contratante}}; es una fase preliminar de la manifestación de la voluntad de la administración pública en su carácter de {{licitante}}." },
+    { cat:"Licitación Pública: Concepto y Principios",
+      q:"¿Quién es siempre el licitante?",
+      t:"El licitante es siempre un {{Ente Público}}, puede ser estatal o no estatal, interesando que ejerza {{función administrativa}}." },
+    { cat:"Licitación Pública: Concepto y Principios",
+      q:"¿Qué significa que la licitación \"invita a los interesados oferentes\"?",
+      t:"Se invita a los eventuales {{adjudicatarios}} o co-contratantes; es un {{pedido de oferta}}." },
+    { cat:"Licitación Pública: Concepto y Principios",
+      q:"¿A qué deben sujetarse los invitados, y quién elige la oferta más conveniente?",
+      t:"Los invitados deben sujetarse a las bases fijadas en el {{pliego de condiciones}}, y de los oferentes únicamente el {{licitante}} elige o selecciona la oferta más conveniente." },
+    { cat:"Licitación Pública: Concepto y Principios",
+      q:"Mencioná el cuerpo jurídico normativo regulador del procedimiento de licitación pública.",
+      t:"Está regulado por la {{Ley de Obras Públicas}}, la {{Ley de Contabilidad}}, el Reglamento de Contrataciones del Estado y el {{Pliego de Condiciones}} y Bases licitatorias." },
+    { cat:"Licitación Pública: Concepto y Principios",
+      q:"¿Cuáles son los tres principios jurídicos esenciales de la licitación pública?",
+      t:"Los principios esenciales son: {{publicidad}}, {{libre concurrencia}} e {{igualdad de oferentes}}." },
+    { cat:"Licitación Pública: Concepto y Principios",
+      q:"¿Cuál es el principio rector de la licitación pública, y mencioná otros dos principios?",
+      t:"El principio rector es la {{buena fe}}; también rigen la {{competencia}}, la razonabilidad del proyecto, la eficiencia en la contratación, la {{transparencia}} y la difusión de las actuaciones." },
+    { cat:"Licitación Pública: Concepto y Principios",
+      q:"¿Qué afianza el principio de libre concurrencia?",
+      t:"Afianza la posibilidad de {{oposición}} entre oferentes y el deber de adjudicar imparcialmente la mejor oferta sobre la base de una decisión {{discrecional}}." },
+    { cat:"Licitación Pública: Concepto y Principios",
+      q:"¿Qué límites tiene el principio de libre concurrencia?",
+      t:"Excluye a los oferentes jurídicamente {{incapaces}}, exige honorabilidad {{profesional y comercial}} del proponente, y excluye a condenados penalmente y a funcionarios públicos incompatibles por su empleo." },
+    { cat:"Licitación Pública: Concepto y Principios",
+      q:"¿Qué exige el principio de igualdad de oferentes?",
+      t:"Exige que las condiciones sean las {{mismas}} para todos los competidores, y que se dé preferencia a quien hace la oferta más {{conveniente o ventajosa}}." },
+    { cat:"Licitación Pública: Concepto y Principios",
+      q:"¿Qué asegura el principio de publicidad?",
+      t:"Asegura el cumplimiento de los principios de {{concurrencia}} e {{igualdad}}." },
+
+    // ===================== ACTOS Y ETAPAS DE LA LICITACIÓN =====================
+    { cat:"Actos y Etapas de la Licitación",
+      q:"Enumerá al menos las primeras seis fases jurídicas separables de los actos de la licitación pública.",
+      t:"Las fases son: {{llamado}} a licitación pública, {{publicación}} del llamado, venta de pliegos y bases, {{consultas}}, presentación de las ofertas y recepción de las ofertas." },
+    { cat:"Actos y Etapas de la Licitación",
+      q:"¿Qué naturaleza jurídica tiene el llamado a licitación pública, y quién lo inicia?",
+      t:"Es un {{típico acto administrativo}}; el licitante lo inicia de {{oficio}} según el Reglamento de Contrataciones del Estado." },
+    { cat:"Actos y Etapas de la Licitación",
+      q:"Mencioná al menos cuatro requisitos del llamado a licitación pública.",
+      t:"Se requiere: formulación del pedido por {{escrito}} a las autoridades competentes; establecer cantidades, calidades y especies; {{fundamentar}} las razones que justifican la licitación; el {{costo}}; y la existencia de {{crédito presupuestario}} o autorización legislativa genérica para gastar e invertir." },
+    { cat:"Actos y Etapas de la Licitación",
+      q:"¿Qué naturaleza jurídica tiene la publicación del llamado, y en qué se diferencia del llamado mismo?",
+      t:"Es un {{hecho administrativo}}; a menudo se confunde con el llamado a licitación, pero conforman {{dos fases diferentes}}, aunque muy próximas en el tiempo." },
+    { cat:"Actos y Etapas de la Licitación",
+      q:"¿Qué traduce la publicación del llamado y qué efecto jurídico le otorga?",
+      t:"Traduce una actividad material de {{divulgación}} que pretende hacer conocer el llamado y motivar la concurrencia, otorgando parcialmente {{eficacia jurídica}} al llamado (Ley 13.064, arts. 10 y 11)." },
+    { cat:"Actos y Etapas de la Licitación",
+      q:"¿Es el anuncio de la licitación una oferta de contrato?",
+      t:"No, el anuncio no es una oferta de contrato, es un {{pedido de ofertas}} a eventuales interesados; es una {{invitación formal}}." },
+    { cat:"Actos y Etapas de la Licitación",
+      q:"¿Qué datos debe contener la publicación del llamado a licitación?",
+      t:"Debe contener: repartición, tipo de obra, {{especialidad}}, lugar de consulta del pliego, {{valor del pliego}}, fecha de presentación de las propuestas y {{presupuesto oficial}}." },
+    { cat:"Actos y Etapas de la Licitación",
+      q:"¿Cuál es el único medio de publicidad obligatorio según el art. 10 de la Ley 13.064, y mencioná dos facultativos?",
+      t:"El medio obligatorio es el {{Boletín Oficial}}; entre los facultativos se encuentran la {{radio telefonía}}, la televisión, carteles-murales-volantes y {{sitios web}}." },
+    { cat:"Actos y Etapas de la Licitación",
+      q:"¿Cuáles son los tres tipos de requisitos que debe cumplir la oferta?",
+      t:"Los requisitos son: {{subjetivos}} (referidos a quiénes pueden ser oferentes), {{objetivos}} (relativos al objeto y al precio) y {{formales}} (escrita, firmada, clara e incondicionada, secreta)." },
+    { cat:"Actos y Etapas de la Licitación",
+      q:"Mencioná los vicios formales que provocan el rechazo de una oferta.",
+      t:"Provocan el rechazo: la {{falta de firma}}, la escritura a {{lápiz común}}, y las {{tachaduras}} o enmiendas." },
+    { cat:"Actos y Etapas de la Licitación",
+      q:"¿La oferta única impide su adjudicación?",
+      t:"No, la oferta única {{no impide}} su adjudicación, conforme el artículo {{18}} de la Ley 13.064." },
+    { cat:"Actos y Etapas de la Licitación",
+      q:"¿Qué naturaleza tienen las garantías de oferta y de ejecución de contrato, y qué porcentajes representan?",
+      t:"La garantía de oferta es {{precontractual}} y equivale al {{1%}} del presupuesto oficial; la de ejecución de contrato es contractual y va del {{3% al 5%}} del monto de la oferta." },
+    { cat:"Actos y Etapas de la Licitación",
+      q:"Mencioná al menos tres caracteres de las garantías en la licitación pública.",
+      t:"Las garantías son: {{unilaterales}}, {{obligatorias}}, consustanciales y accesorias, {{inembargables}} e independientes, y optativas por las distintas formas." },
+    { cat:"Actos y Etapas de la Licitación",
+      q:"¿Cuál es la naturaleza jurídica de las garantías y cuál es el plazo para reclamar su devolución?",
+      t:"Su naturaleza jurídica es la de un {{contrato comercial de depósito}}; el plazo del reclamo de devolución es de {{un año}}." },
+    { cat:"Actos y Etapas de la Licitación",
+      q:"Mencioná las formas que puede adoptar la garantía de oferta.",
+      t:"Puede constituirse mediante {{depósito en efectivo}}, {{pagaré}}, {{aval bancario}} o {{seguro de caución}}." },
+    { cat:"Actos y Etapas de la Licitación",
+      q:"¿Qué naturaleza jurídica tiene el acto de recepción de las ofertas, y qué momento fija?",
+      t:"Es un {{mero trámite}}, un simple acto de la administración que en principio no produce efectos jurídicos directos e inmediatos; fija el momento a partir del cual la Administración pierde la facultad de {{modificar el anuncio}}." },
+    { cat:"Actos y Etapas de la Licitación",
+      q:"¿Qué naturaleza jurídica tiene la apertura de ofertas, y qué se labra en esa etapa?",
+      t:"Es un {{típico acto administrativo}}; es la etapa procesal en la que se da conocimiento público de las ofertas, y se labra el {{acta de apertura}}, no siendo obligatoria la firma de los asistentes." },
+    { cat:"Actos y Etapas de la Licitación",
+      q:"¿Qué naturaleza tiene la preadjudicación y qué situación jurídica tiene el preadjudicado?",
+      t:"Es un {{simple acto}} de la administración que necesita aprobación para producir efectos jurídicos directos; sus dictámenes o recomendaciones no son {{vinculantes}}; el preadjudicado tiene la situación jurídica de titular de un {{interés legítimo}}, sin que se cree derecho alguno a su favor." },
+    { cat:"Actos y Etapas de la Licitación",
+      q:"Definí el acto de adjudicación.",
+      t:"Es el acto por el cual el licitante {{determina, reconoce, declara y acepta}} la propuesta más conveniente, poniendo fin al procedimiento precontractual; es una declaración {{unilateral}} y constituye un típico acto administrativo." },
+    { cat:"Actos y Etapas de la Licitación",
+      q:"Mencioná los cuatro criterios de selección utilizados en la adjudicación.",
+      t:"Los criterios son: {{objetivos o cuantitativos}} (precio, plazo, capital de la empresa), {{subjetivos o cualitativos}} (experiencia, especialidad), {{básicos}} (conveniencia de oferta) y {{accesorios}} (preferencia por productos nacionales)." },
+
+    // ===================== PLIEGOS DE LICITACIÓN =====================
+    { cat:"Pliegos de Licitación",
+      q:"¿Cuáles son los dos grandes tipos de pliegos de licitación?",
+      t:"Los pliegos pueden ser de contenido {{legal o jurídico}} (Pliego General y Particular de Bases y Condiciones) o de {{condiciones técnicas}} (Pliego General y Particular de Especificaciones Técnicas)." },
+    { cat:"Pliegos de Licitación",
+      q:"¿Qué es el Pliego General de Bases y Condiciones?",
+      t:"Es el {{programa contractual}}, el conjunto de cláusulas formuladas {{unilateralmente}} por la administración; los particulares no intervienen y solo toman conocimiento cuando son {{publicados}}." },
+    { cat:"Pliegos de Licitación",
+      q:"¿Qué contenido tiene el Pliego General de Bases y Condiciones?",
+      t:"Contiene el suministro, obra o servicio de que se trata; los {{derechos y obligaciones}} de las partes; y las condiciones jurídicas, técnicas y económicas, como los sistemas de {{ejecución}} y de {{contratación}}, el plazo de mantenimiento de la oferta, el monto y las garantías." },
+    { cat:"Pliegos de Licitación",
+      q:"¿A qué se refiere el Pliego Particular de Bases y Condiciones?",
+      t:"Se refiere a las características {{particulares}} de la cosa licitada, conteniendo normas complementarias del pliego general exigidas por las {{peculiaridades}} de la prestación demandada." },
+    { cat:"Pliegos de Licitación",
+      q:"Mencioná al menos cuatro contenidos del Pliego Particular de Bases y Condiciones.",
+      t:"Contiene el organismo contratante, los criterios de {{evaluación y selección}} de ofertas, el lugar de entrega de los bienes, la forma de {{pago}} del precio, el {{presupuesto oficial}} y la fecha y hora de apertura de sobres." },
+    { cat:"Pliegos de Licitación",
+      q:"¿A qué se refiere el Pliego General de Especificaciones Técnicas?",
+      t:"Se refiere a la descripción de los distintos {{rubros e ítems}} que participan en la ejecución de las obras según la {{especialidad}} del ente licitante." },
+    { cat:"Pliegos de Licitación",
+      q:"¿En qué se diferencia el Pliego Particular de Especificaciones Técnicas del general?",
+      t:"Se refiere a la descripción de rubros e ítems de la ejecución de la obra, pero ya en particular para la {{obra específica}} que se desea contratar." },
+    { cat:"Pliegos de Licitación",
+      q:"Mencioná al menos tres efectos jurídicos de los pliegos.",
+      t:"Generan {{obligatoriedad}} para el oferente de observar estrictamente sus prescripciones, sin poder modificarlos o alterarlos; provocan el rechazo por {{inadmisible}} de las ofertas que no se ajustan a sus requisitos; y son {{impugnables}} por el oferente y por terceros." },
+
+    // ===================== RESULTADO Y CONTRATO DE OBRA PÚBLICA =====================
+    { cat:"Resultado y Contrato de Obra Pública",
+      q:"¿Qué ocurre cuando la licitación pública resulta desierta?",
+      t:"La licitación desierta {{abre la instancia}} de la contratación directa." },
+    { cat:"Resultado y Contrato de Obra Pública",
+      q:"¿Qué diferencia hay entre la licitación fracasada por inadmisibilidad de oferta y la fracasada por inconveniencia de oferta?",
+      t:"La fracasada por inadmisibilidad de oferta abre la contratación directa igual que la desierta; en cambio, la fracasada por {{inconveniencia}} de oferta no abre esa vía, considerándose que {{no hubo licitación}}." },
+    { cat:"Resultado y Contrato de Obra Pública",
+      q:"¿Qué ocurre cuando la licitación es anulada?",
+      t:"Es anulada por vicios de {{sustanciación}} o por pliegos de imposible y/o ilegal ejecución; las cosas vuelven a su estado anterior, considerándose que {{no hubo licitación}}." },
+    { cat:"Resultado y Contrato de Obra Pública",
+      q:"Definí el Contrato de Obra Pública.",
+      t:"Es el acuerdo común celebrado entre la Administración Nacional, Provincial o Municipal y una Entidad Privada, para la construcción, {{reparación}} y conservación, mediante un {{precio en dinero}}, de una obra mueble o inmueble de {{utilidad pública}}." },
+    { cat:"Resultado y Contrato de Obra Pública",
+      q:"¿De qué otro contrato participa el Contrato de Obras Públicas, y qué significa que sea \"consensual\"?",
+      t:"Participa de los caracteres generales del contrato de {{obra}}; es consensual porque tiene lugar por el solo {{consentimiento}} de las partes, sin formalidades especiales, debiendo ser {{expreso}}." },
+    { cat:"Resultado y Contrato de Obra Pública",
+      q:"Mencioná al menos cuatro caracteres del Contrato de Obra Pública.",
+      t:"Es {{bilateral o sinalagmático}}, {{oneroso}}, {{conmutativo y no aleatorio}}, de fin de utilidad pública, {{formal}} y de {{adhesión}}." },
+    { cat:"Resultado y Contrato de Obra Pública",
+      q:"¿Es cierto que toda obra pública se ha ejecutado mediante contrato de obra pública?",
+      t:"No; hay obras públicas realizadas por el estado en forma {{directa}}, obras realizadas por contratos de {{CCOP}}, y obras realizadas por particulares luego transferidas al dominio {{público o privado}} del estado." },
+    { cat:"Resultado y Contrato de Obra Pública",
+      q:"¿Cuál es el objeto del Contrato de Obra Pública?",
+      t:"Pueden ser {{bienes inmuebles}}; bienes muebles como esculturas, maquinarias de especial construcción y {{embarcaciones}}; y objetos inmateriales como proyectos constructivos y {{planos}}." },
+    { cat:"Resultado y Contrato de Obra Pública",
+      q:"¿Cuáles son los cuatro elementos del contrato de obra?",
+      t:"Los elementos son: {{la contrata}}, {{los pliegos}}, el cómputo métrico y {{presupuesto}}, y los {{planos}}." },
+    { cat:"Resultado y Contrato de Obra Pública",
+      q:"Mencioná al menos cuatro contenidos de \"la contrata\".",
+      t:"Contiene el encabezamiento y objeto, el {{precio}} y condiciones de pago, la iniciación, ejecución y terminación, la {{dirección y vigilancia}} de la obra, los trabajos imprevistos y adicionales, y la {{responsabilidad del constructor}}." },
+    { cat:"Resultado y Contrato de Obra Pública",
+      q:"Mencioná al menos cuatro elementos del proyecto de obra pública.",
+      t:"Los elementos del proyecto son: {{planos generales}}, planos complementarios, {{pliegos}}, memoria descriptiva, {{cómputo métrico}} y presupuesto detallado." },
+    { cat:"Resultado y Contrato de Obra Pública",
+      q:"Describí la pirámide contractual de la obra pública, de mayor a menor jerarquía.",
+      t:"La pirámide contractual, de mayor a menor jerarquía, se compone de: Ley General sobre contrataciones administrativas, {{Ley de Obras Públicas}}, Ley de Contabilidad, {{decretos reglamentarios}}, pliegos generales, pliegos particulares y el {{contrato administrativo}}." },
+
+    // ===================== RESCISIÓN, CERTIFICADOS Y FRAUDE =====================
+    { cat:"Rescisión, Certificados y Fraude",
+      q:"¿Cuáles son las tres causas generales de rescisión del contrato de obra pública?",
+      t:"El contrato puede rescindirse: A) de {{común acuerdo}}; B) por causas imputables al {{contratista}}; y C) por causas imputables a la {{Administración}}." },
+    { cat:"Rescisión, Certificados y Fraude",
+      q:"Mencioná las causas de rescisión de común acuerdo.",
+      t:"Pueden ser: {{caso fortuito}}, {{fuerza mayor}}, dificultades presupuestarias, o {{culpa concurrente}} de las partes." },
+    { cat:"Rescisión, Certificados y Fraude",
+      q:"Mencioná al menos tres causas de rescisión imputables al contratista.",
+      t:"Procede cuando el contratista se haga culpable de {{fraude}} o grave negligencia; cuando proceda a la ejecución con {{lentitud}}; cuando se exceda del {{plazo}} para la iniciación de las obras; o cuando transfiera su contrato o subcontrate sin {{autorización}} de la Administración." },
+    { cat:"Rescisión, Certificados y Fraude",
+      q:"¿Cuándo se considera abandono de obra a los fines de la rescisión por causa imputable al contratista?",
+      t:"Cuando el contratista abandone las obras o interrumpa los trabajos por un plazo mayor de {{ocho días}} en tres ocasiones, o cuando el abandono o interrupción sean continuados por el término de {{un mes}}." },
+    { cat:"Rescisión, Certificados y Fraude",
+      q:"¿En qué porcentaje puede la Administración alterar el monto del contrato antes de que proceda la rescisión imputable a ella?",
+      t:"Procede cuando la Administración altere el monto del contrato en un {{20%}} en más o en menos." },
+    { cat:"Rescisión, Certificados y Fraude",
+      q:"¿Por cuánto tiempo debe la Administración suspender la ejecución de las obras para que proceda la rescisión por su causa?",
+      t:"Procede cuando la Administración suspenda por más de {{tres meses}} la ejecución de las obras." },
+    { cat:"Rescisión, Certificados y Fraude",
+      q:"¿Qué ocurre si el contratista debe suspender las obras por falta de cumplimiento de la Administración?",
+      t:"Procede la rescisión cuando el contratista se vea obligado a suspender las obras por más de tres meses, o a reducir el ritmo previsto en más de un {{50%}}, como consecuencia de la falta de cumplimiento en término, por parte de la Administración, de la entrega de {{elementos o materiales}}." },
+    { cat:"Rescisión, Certificados y Fraude",
+      q:"¿Qué plazo de tolerancia tiene la Administración para entregar los terrenos y realizar el replanteo de la obra?",
+      t:"La Administración debe entregar los terrenos y realizar el replanteo dentro del plazo fijado en los pliegos especiales, más una tolerancia de {{treinta días}}." },
+    { cat:"Rescisión, Certificados y Fraude",
+      q:"¿Qué es el certificado de obra?",
+      t:"Es todo documento con finalidad de pago, o crédito documentado; es un {{acto administrativo}} que, revistiendo forma de instrumento público, prueba la existencia de un crédito parcial o definitivo a favor de un {{contratista}} de Obra Pública." },
+    { cat:"Rescisión, Certificados y Fraude",
+      q:"¿Qué es el certificado parcial y qué es el certificado por acopio de materiales?",
+      t:"El certificado parcial corresponde a la obra {{ejecutada}} durante un período determinado; el certificado por acopio de materiales es el reconocimiento de los materiales {{adquiridos}} por el contratista para incorporar a la obra." },
+    { cat:"Rescisión, Certificados y Fraude",
+      q:"¿Qué es el certificado por variación de costos, y en qué teoría se basa?",
+      t:"Es el reconocimiento del {{encarecimiento}} de la obra por una circunstancia económica, basado en la teoría de la {{imprevisión}}." },
+    { cat:"Rescisión, Certificados y Fraude",
+      q:"¿En qué consiste el certificado final?",
+      t:"Consiste en el reajuste de las {{diferencias}} en más o en menos que hayan surgido a lo largo de la obra." },
+    { cat:"Rescisión, Certificados y Fraude",
+      q:"¿Cuándo se está en presencia de una licitación y adjudicación irrita?",
+      t:"Cuando el procedimiento público o privado de selección de oferentes es {{fraudulento}}." },
+    { cat:"Rescisión, Certificados y Fraude",
+      q:"Mencioná al menos cuatro supuestos de simulación y fraude licitatorio.",
+      t:"Entre otros: una convocatoria pública o privada que nunca se realizó, {{ofertas apócrifas}}, invitación a oferentes no cursada, personas que figuran como adquirientes de pliegos que nunca los compraron, {{falsificación de documentación}}, y contratación a precio {{monopólico}} superior al de mercado para favorecer a un contratista." },
+  ];
+
+  function parseTemplate(t){
+    const parts = t.split(/\{\{(.*?)\}\}/g);
+    const segments = [];
+    const blanks = [];
+    for(let i=0;i<parts.length;i++){
+      if(i % 2 === 0){
+        segments.push(parts[i]);
+      } else {
+        blanks.push(parts[i].split('/').map(s=>s.trim()));
+      }
+    }
+    return { segments, blanks };
+  }
+
+  const DATA = RAW.map((d,i)=>{
+    const parsed = parseTemplate(d.t);
+    return { id:i, cat:d.cat, q:d.q, segments:parsed.segments, blanks:parsed.blanks };
+  });
+
+  const CATS = ["Todas", ...Array.from(new Set(DATA.map(d=>d.cat)))];
+
+  const status = {};        // id -> 'correct' | 'incorrect'
+  const attempts = {};       // id -> array of input strings
+  const autofilled = {};     // id -> boolean (currently showing answers)
+  const preAutofill = {};    // id -> snapshot of {value, cls}[] taken before autofilling
+
+  let currentCat = "Todas";
+  let order = DATA.map(d=>d.id);
+  let pos = 0;
+  let flipped = false;
+
+  const el = {
+    chips: document.getElementById('chips'),
+    card: document.getElementById('card'),
+    frontFace: document.getElementById('frontFace'),
+    questionText: document.getElementById('questionText'),
+    fillText: document.getElementById('fillText'),
+    tag: document.getElementById('tag'),
+    counter: document.getElementById('counter'),
+    resultLine: document.getElementById('resultLine'),
+    prevBtn: document.getElementById('prevBtn'),
+    nextBtn: document.getElementById('nextBtn'),
+    flipBtn: document.getElementById('flipBtn'),
+    validateBtn: document.getElementById('validateBtn'),
+    retryBtn: document.getElementById('retryBtn'),
+    autofillBtn: document.getElementById('autofillBtn'),
+    shuffleBtn: document.getElementById('shuffleBtn'),
+    orderBtn: document.getElementById('orderBtn'),
+    resetBtn: document.getElementById('resetBtn'),
+    progressLabel: document.getElementById('progressLabel'),
+    progressPercent: document.getElementById('progressPercent'),
+    segKnow: document.getElementById('segKnow'),
+    segReview: document.getElementById('segReview'),
+  };
+
+  function normalize(s){
+    return (s || "").toString().trim().toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .replace(/[^\w\s%]/g,'')
+      .replace(/\s+/g,' ');
+  }
+
+  function currentIds(){
+    if(currentCat === "Todas") return order;
+    return order.filter(id => DATA[id].cat === currentCat);
+  }
+
+  function renderChips(){
+    el.chips.innerHTML = "";
+    CATS.forEach(cat=>{
+      const count = cat === "Todas" ? DATA.length : DATA.filter(d=>d.cat===cat).length;
+      const chip = document.createElement('div');
+      chip.className = 'chip' + (cat===currentCat ? ' active' : '');
+      chip.innerHTML = cat + '<span class="n">' + count + '</span>';
+      chip.addEventListener('click', ()=>{
+        currentCat = cat;
+        pos = 0;
+        flipped = false;
+        renderChips();
+        renderCard();
+      });
+      el.chips.appendChild(chip);
+    });
+  }
+
+  function buildFillText(d){
+    el.fillText.innerHTML = "";
+    const saved = attempts[d.id] || [];
+    d.segments.forEach((seg, i)=>{
+      if(seg.length){
+        const span = document.createElement('span');
+        span.className = 'txt';
+        span.textContent = seg;
+        el.fillText.appendChild(span);
+      }
+      if(i < d.blanks.length){
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'blank-input';
+        input.autocomplete = 'off';
+        input.autocapitalize = 'off';
+        input.spellcheck = false;
+        input.dataset.index = i;
+        input.value = saved[i] || '';
+        input.style.width = Math.max(6, input.value.length + 2) + 'ch';
+        input.addEventListener('click', (e)=> e.stopPropagation());
+        input.addEventListener('input', ()=>{
+          input.classList.remove('correct','incorrect','autofilled');
+          input.style.width = Math.max(6, input.value.length + 2) + 'ch';
+          attempts[d.id] = attempts[d.id] || [];
+          attempts[d.id][i] = input.value;
+        });
+        input.addEventListener('keydown', (e)=>{
+          if(e.key === 'Enter'){
+            e.preventDefault();
+            const inputs = Array.from(el.fillText.querySelectorAll('.blank-input'));
+            const idx = inputs.indexOf(input);
+            if(idx < inputs.length - 1){
+              inputs[idx+1].focus();
+            } else {
+              validate();
+            }
+          }
+        });
+        el.fillText.appendChild(input);
+      }
+    });
+  }
+
+  function renderCard(){
+    const ids = currentIds();
+    if(ids.length === 0){
+      el.tag.textContent = "—";
+      el.counter.textContent = "0 / 0";
+      el.questionText.textContent = "No hay tarjetas en esta categoría.";
+      el.fillText.textContent = "";
+      el.resultLine.textContent = "";
+      updateProgress();
+      return;
+    }
+    if(pos >= ids.length) pos = 0;
+    if(pos < 0) pos = ids.length - 1;
+
+    const id = ids[pos];
+    const d = DATA[id];
+
+    el.card.classList.toggle('flipped', flipped);
+    el.flipBtn.textContent = flipped ? '← Pregunta' : 'Completar →';
+    el.tag.textContent = d.cat;
+    el.counter.textContent = (pos+1) + " / " + ids.length;
+    el.questionText.textContent = d.q;
+
+    buildFillText(d);
+
+    el.resultLine.textContent = "";
+    el.resultLine.className = "result-line";
+
+    // Reset autofill toggle visuals when landing on a card
+    el.autofillBtn.textContent = '👁 Ver respuestas';
+    el.autofillBtn.classList.remove('active');
+
+    if(status[id]){
+      revalidateColorsOnly(d);
+    }
+
+    updateProgress();
+  }
+
+  function revalidateColorsOnly(d){
+    const inputs = Array.from(el.fillText.querySelectorAll('.blank-input'));
+    let correctCount = 0;
+    inputs.forEach((input, i)=>{
+      const val = normalize(input.value);
+      const ok = d.blanks[i].some(ans => normalize(ans) === val);
+      input.classList.toggle('correct', ok);
+      input.classList.toggle('incorrect', !ok);
+      if(ok) correctCount++;
+    });
+    showResult(correctCount, d.blanks.length);
+  }
+
+  function showResult(correct, total){
+    el.resultLine.textContent = correct + " de " + total + " correctas";
+    el.resultLine.className = "result-line " + (correct === total ? "ok" : "bad");
+  }
+
+  function validate(){
+    const ids = currentIds();
+    if(ids.length === 0) return;
+    const id = ids[pos];
+    const d = DATA[id];
+    const inputs = Array.from(el.fillText.querySelectorAll('.blank-input'));
+    let correctCount = 0;
+    inputs.forEach((input, i)=>{
+      const val = normalize(input.value);
+      const ok = d.blanks[i].some(ans => normalize(ans) === val);
+      input.classList.toggle('correct', ok);
+      input.classList.toggle('incorrect', !ok);
+      if(ok) correctCount++;
+    });
+    status[id] = (correctCount === d.blanks.length) ? 'correct' : 'incorrect';
+    showResult(correctCount, d.blanks.length);
+    updateProgress();
+  }
+
+  function retry(){
+    const ids = currentIds();
+    if(ids.length === 0) return;
+    const id = ids[pos];
+    delete attempts[id];
+    delete status[id];
+    delete autofilled[id];
+    delete preAutofill[id];
+    renderCard();
+    const firstInput = el.fillText.querySelector('.blank-input');
+    if(firstInput) firstInput.focus();
+  }
+
+  // Toggle: 1st press fills every blank with the correct answer (without touching
+  // progress tracking). 2nd press restores the exact values/colors the user had
+  // typed before pressing the button.
+  function toggleAutofill(){
+    const ids = currentIds();
+    if(ids.length === 0) return;
+    const id = ids[pos];
+    const d = DATA[id];
+    const inputs = Array.from(el.fillText.querySelectorAll('.blank-input'));
+    if(inputs.length === 0) return;
+
+    if(!autofilled[id]){
+      preAutofill[id] = inputs.map(inp => ({ value: inp.value, cls: inp.className }));
+      inputs.forEach((inp, i)=>{
+        inp.value = d.blanks[i][0];
+        inp.classList.remove('correct','incorrect');
+        inp.classList.add('autofilled');
+        inp.style.width = Math.max(6, inp.value.length + 2) + 'ch';
+      });
+      autofilled[id] = true;
+      el.autofillBtn.textContent = '↺ Ocultar';
+      el.autofillBtn.classList.add('active');
+    } else {
+      const snap = preAutofill[id] || [];
+      inputs.forEach((inp, i)=>{
+        const s = snap[i] || { value:'', cls:'blank-input' };
+        inp.value = s.value;
+        inp.className = s.cls;
+        inp.style.width = Math.max(6, inp.value.length + 2) + 'ch';
+      });
+      autofilled[id] = false;
+      delete preAutofill[id];
+      el.autofillBtn.textContent = '👁 Ver respuestas';
+      el.autofillBtn.classList.remove('active');
+    }
+  }
+
+  function updateProgress(){
+    const total = DATA.length;
+    const correct = DATA.filter(d=>status[d.id]==='correct').length;
+    const incorrect = DATA.filter(d=>status[d.id]==='incorrect').length;
+    const none = total - correct - incorrect;
+    el.progressLabel.textContent = correct + " correctas · " + incorrect + " con errores · " + none + " sin intentar";
+    const pct = total ? Math.round((correct/total)*100) : 0;
+    el.progressPercent.textContent = pct + "%";
+    el.segKnow.style.width = (total ? (correct/total*100) : 0) + "%";
+    el.segReview.style.width = (total ? (incorrect/total*100) : 0) + "%";
+  }
+
+  function flip(){
+    flipped = !flipped;
+    el.card.classList.toggle('flipped', flipped);
+    el.flipBtn.textContent = flipped ? '← Pregunta' : 'Completar →';
+    if(flipped){
+      setTimeout(()=>{
+        const firstInput = el.fillText.querySelector('.blank-input');
+        if(firstInput) firstInput.focus({preventScroll:true});
+      }, 260);
+    }
+  }
+
+  function go(delta){
+    const ids = currentIds();
+    if(ids.length === 0) return;
+    pos = (pos + delta + ids.length) % ids.length;
+    flipped = false;
+    renderCard();
+  }
+
+  function shuffleArray(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+
+  el.frontFace.addEventListener('click', ()=>{ if(!flipped) flip(); });
+  el.flipBtn.addEventListener('click', flip);
+  el.prevBtn.addEventListener('click', ()=>go(-1));
+  el.nextBtn.addEventListener('click', ()=>go(1));
+  el.validateBtn.addEventListener('click', validate);
+  el.retryBtn.addEventListener('click', retry);
+  el.autofillBtn.addEventListener('click', toggleAutofill);
+
+  el.shuffleBtn.addEventListener('click', ()=>{
+    order = shuffleArray(DATA.map(d=>d.id));
+    pos = 0; flipped = false;
+    renderCard();
+  });
+  el.orderBtn.addEventListener('click', ()=>{
+    order = DATA.map(d=>d.id);
+    pos = 0; flipped = false;
+    renderCard();
+  });
+  el.resetBtn.addEventListener('click', ()=>{
+    Object.keys(status).forEach(k=>delete status[k]);
+    Object.keys(attempts).forEach(k=>delete attempts[k]);
+    Object.keys(autofilled).forEach(k=>delete autofilled[k]);
+    Object.keys(preAutofill).forEach(k=>delete preAutofill[k]);
+    renderCard();
+  });
+
+  document.addEventListener('keydown', (e)=>{
+    const isTyping = document.activeElement && document.activeElement.classList && document.activeElement.classList.contains('blank-input');
+    if(isTyping) return;
+    if(e.key === 'ArrowRight'){ go(1); }
+    else if(e.key === 'ArrowLeft'){ go(-1); }
+    else if(e.key === ' '){ e.preventDefault(); flip(); }
+  });
+
+  renderChips();
+  renderCard();
+
+})();
+</script>
+
+</body>
+</html>

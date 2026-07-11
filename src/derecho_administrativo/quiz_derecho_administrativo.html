@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Cuestionario de Derecho Administrativo — Pregunta y Completar</title>
+<style>
+  :root{
+    --navy: #1B3B6F;
+    --navy-dark: #12294B;
+    --gold: #B8860B;
+    --white: #FFFFFF;
+    --card: #F3F6FA;
+    --card2: #EEF1F6;
+    --red: #B03A2E;
+    --red-bg: #FBEDEB;
+    --green: #2E7D4F;
+    --green-bg: #EAF5EE;
+    --gold-bg: #FBF3E3;
+    --text: #26313F;
+    --subtext: #5A6B7A;
+    --line: #DCE3EC;
+    --font-head: Cambria, "Times New Roman", serif;
+    --font-body: Calibri, "Segoe UI", Arial, sans-serif;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+
+  html,body{
+    margin:0; padding:0;
+    background: var(--white);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height:100%;
+  }
+
+  body{
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+  }
+
+  /* ================= BACK LINK ================= */
+  .back-wrap{ padding: 16px 16px 0; }
+  .back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    text-decoration:none;
+    color: var(--navy);
+    font-size:12.5px;
+    font-weight:700;
+    background: var(--card);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding: 7px 13px;
+    min-height:34px;
+    transition: background .15s ease;
+  }
+  .back-link:hover{ background: var(--card2); }
+
+  /* ================= HEADER ================= */
+  .topbar{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding: 14px 16px 10px;
+  }
+  .icon-badge{
+    flex:0 0 auto;
+    width:44px; height:44px;
+    border-radius:50%;
+    background: var(--gold-bg);
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px;
+    color: var(--gold);
+  }
+  .heading .eyebrow{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.6px;
+    color: var(--gold);
+    text-transform:uppercase;
+    line-height:1.3;
+  }
+  .heading h1{
+    margin:2px 0 0;
+    font-family: var(--font-head);
+    font-weight:700;
+    font-size: 20px;
+    color: var(--navy);
+    line-height:1.15;
+  }
+
+  /* ================= CATEGORY CHIPS ================= */
+  .chips-wrap{
+    overflow-x:auto;
+    padding: 4px 16px 12px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .chips-wrap::-webkit-scrollbar{ display:none; }
+  .chips{
+    display:flex;
+    gap:8px;
+    width:max-content;
+  }
+  .chip{
+    flex:0 0 auto;
+    padding: 8px 14px;
+    border-radius: 20px;
+    background: var(--card);
+    border:1px solid var(--line);
+    font-size: 12.5px;
+    font-weight:700;
+    color: var(--navy);
+    white-space:nowrap;
+    cursor:pointer;
+    min-height:36px;
+    display:flex;
+    align-items:center;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .chip .n{
+    margin-left:6px;
+    font-weight:700;
+    color: var(--gold);
+    font-size:11px;
+  }
+  .chip.active{
+    background: var(--navy);
+    color: var(--white);
+    border-color: var(--navy);
+  }
+  .chip.active .n{ color: #E8D9A9; }
+
+  /* ================= STAGE ================= */
+  .stage{
+    flex:1;
+    padding: 4px 16px 8px;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .stage-meta{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
+  }
+  .tag{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+    color: var(--gold);
+    background: var(--gold-bg);
+    border-radius: 20px;
+    padding: 5px 12px;
+  }
+  .counter{
+    font-size:12.5px;
+    font-weight:700;
+    color: var(--subtext);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ================= SHEET (una hoja = un tema) ================= */
+  .sheet-title{
+    font-family: var(--font-head);
+    font-weight:700;
+    font-size: 22px;
+    color: var(--navy-dark);
+    line-height:1.2;
+    margin: 0 0 4px;
+  }
+  .sheet-sub{
+    font-size:12.5px;
+    color: var(--subtext);
+    margin: 0 0 16px;
+  }
+
+  .q-block{
+    background: var(--card);
+    border:1px solid var(--line);
+    border-radius: 16px;
+    padding: 16px 16px 14px;
+    margin-bottom: 14px;
+    box-shadow: 0 6px 16px rgba(27,59,111,0.07);
+  }
+  .q-head{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    margin-bottom: 12px;
+  }
+  .q-num{
+    flex:0 0 auto;
+    width:26px; height:26px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:12.5px;
+    font-weight:700;
+    color: var(--white);
+    background: var(--navy);
+  }
+  .q-text{
+    font-family: var(--font-head);
+    font-size: 16.5px;
+    line-height:1.4;
+    color: var(--navy-dark);
+    font-weight:700;
+  }
+
+  .answer-label{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.4px;
+    text-transform:uppercase;
+    color: var(--gold);
+    margin: 0 0 6px 36px;
+  }
+
+  .fill-text{
+    font-family: var(--font-head);
+    font-size: 15.5px;
+    line-height:2.05;
+    color: var(--navy-dark);
+    display:flex;
+    flex-wrap:wrap;
+    align-items:baseline;
+    gap: 0 2px;
+    margin: 0 0 0 36px;
+  }
+  .fill-text .txt{ white-space:pre-wrap; }
+
+  .blank-input{
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    font-weight:700;
+    color: var(--navy);
+    border: none;
+    border-bottom: 2px solid var(--gold);
+    background: var(--gold-bg);
+    border-radius: 6px 6px 2px 2px;
+    padding: 3px 7px;
+    margin: 2px 1px;
+    min-width: 58px;
+    max-width: 100%;
+    text-align:center;
+    outline:none;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .blank-input:focus{
+    background: #FDF1D8;
+    border-color: var(--navy);
+  }
+  .blank-input.correct{
+    background: var(--green-bg);
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .blank-input.incorrect{
+    background: var(--red-bg);
+    border-color: var(--red);
+    color: var(--red);
+  }
+  .blank-input.autofilled{
+    background: var(--gold-bg);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .result-line{
+    min-height: 18px;
+    margin: 10px 0 0 36px;
+    font-size:12.5px;
+    font-weight:700;
+  }
+  .result-line.ok{ color: var(--green); }
+  .result-line.bad{ color: var(--red); }
+
+  /* ================= PAGE ACTIONS ================= */
+  .page-actions{
+    display:flex;
+    gap:8px;
+    margin: 6px 0 4px;
+    flex-wrap:wrap;
+  }
+  .btn{
+    flex:1;
+    min-width: 130px;
+    min-height:44px;
+    border-radius: 12px;
+    font-family: var(--font-body);
+    font-weight:700;
+    font-size:13.5px;
+    border:1px solid transparent;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    transition: transform .1s ease, background .15s ease;
+  }
+  .btn:active{ transform: translateY(1px); }
+  .btn:focus-visible{ outline:3px solid var(--gold); outline-offset:2px; }
+  .btn-validate{ background: var(--navy); color: var(--white); }
+  .btn-validate:active{ background: var(--navy-dark); }
+  .btn-retry{ background: var(--card2); color: var(--navy); border-color: var(--line); }
+  .btn-autofill{ background: var(--gold-bg); color: var(--gold); border-color: var(--gold); }
+
+  .page-score{
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--card2);
+    font-size:13px;
+    font-weight:700;
+    color: var(--navy);
+    text-align:center;
+  }
+  .page-score.ok{ background: var(--green-bg); color: var(--green); }
+
+  footer.note{
+    text-align:center;
+    font-size:10.5px;
+    color: var(--subtext);
+    padding: 10px 24px 4px;
+  }
+
+  /* ================= BOTTOM NAV (fixed, mobile) ================= */
+  .bottom-nav{
+    position:fixed;
+    left:0; right:0; bottom:0;
+    background: var(--white);
+    border-top: 1px solid var(--line);
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    display:flex;
+    align-items:center;
+    gap:10px;
+    box-shadow: 0 -6px 18px rgba(27,59,111,0.08);
+  }
+  .nav-btn{
+    min-height:48px;
+    border-radius: 12px;
+    border:1px solid var(--line);
+    background: var(--card);
+    color: var(--navy);
+    font-size:14px;
+    font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+    padding: 0 16px;
+    flex:0 0 auto;
+    cursor:pointer;
+    gap:6px;
+  }
+  .nav-btn-main{
+    flex:1;
+    background: var(--navy);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size:14.5px;
+    letter-spacing:0.3px;
+  }
+  .nav-btn-main:active{ background: var(--navy-dark); }
+  .nav-btn:active{ background: var(--card2); }
+  .nav-btn:disabled{ opacity:.4; cursor:default; }
+
+  /* ================= DESKTOP / TABLET ENHANCEMENT ================= */
+  @media (min-width: 640px){
+    body{ align-items:center; }
+    .back-wrap, .topbar, .chips-wrap, .stage, footer.note{
+      width:100%;
+      max-width: 640px;
+      align-self:center;
+      margin: 0 auto;
+    }
+    .icon-badge{ width:52px; height:52px; font-size:24px; }
+    .heading h1{ font-size:25px; }
+    .sheet-title{ font-size:26px; }
+    .q-text{ font-size:18px; }
+    .fill-text{ font-size:17px; }
+    .bottom-nav{
+      max-width: 640px;
+      left:50%;
+      transform: translateX(-50%);
+      border-radius: 16px 16px 0 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .chip{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="back-wrap">
+    <a class="back-link" href="./index.html">← Volver al panel</a>
+  </div>
+
+  <header class="topbar">
+    <div class="icon-badge">📝</div>
+    <div class="heading">
+      <div class="eyebrow">Legislación y Ética Profesional</div>
+      <h1>Cuestionario de Derecho Administrativo</h1>
+    </div>
+  </header>
+
+  <div class="chips-wrap">
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <main class="stage">
+    <div class="stage-meta">
+      <span class="tag" id="tag">—</span>
+      <span class="counter" id="counter">0 / 0</span>
+    </div>
+
+    <h2 class="sheet-title" id="sheetTitle">Cargando…</h2>
+    <p class="sheet-sub" id="sheetSub"></p>
+
+    <div id="questions"></div>
+
+    <div class="page-actions">
+      <button class="btn btn-validate" id="validateBtn">Validar hoja</button>
+      <button class="btn btn-autofill" id="autofillBtn">👁 Ver respuestas</button>
+      <button class="btn btn-retry" id="retryBtn">↺ Reiniciar hoja</button>
+    </div>
+
+    <div class="page-score" id="pageScore" style="display:none;"></div>
+  </main>
+
+  <footer class="note">
+    El progreso se guarda solo durante esta sesión.
+  </footer>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn" id="prevBtn">‹ Anterior</button>
+    <button class="nav-btn nav-btn-main" id="nextBtn">Siguiente página →</button>
+  </nav>
+
+<script>
+(function(){
+
+  // "t" usa {{respuesta}} o {{respuesta1/respuesta2}} para alternativas válidas en los espacios.
+  const RAW = [
+    // ---------- CONCEPTO Y OBJETO ----------
+    { cat:"Concepto y Objeto",
+      q:"¿Cómo se define el Derecho Administrativo?",
+      t:"El derecho administrativo es el {{complejo de normas y principios}} que regulan la {{organización}} y {{comportamiento}} de la Administración Pública; Las {{relaciones}} de la Administración Pública con los {{administrados}} y las relaciones de los distintos {{órganos}} entre sí de la AP, con el fin de {{satisfacer}} y {{lograr}} las finalidades del {{interés público}} hacia la que debe tender la {{administracion}}." },
+    { cat:"Concepto y Objeto",
+      q:"¿Cuál es la finalidad última hacia la que debe tender la Administración?",
+      t:"Debe tender a satisfacer y lograr las finalidades del {{interés público}}." },
+    { cat:"Concepto y Objeto",
+      q:"¿Cuál es el objeto del Derecho Administrativo?",
+      t:"El objeto del Derecho Administrativo es la {{Administración Pública}}, y la AP es la {{actividad permanente}} del Estado la {{satisfacción}} de las necesidades de un {{grupo social}}." },
+
+    // ---------- VOLUNTAD ADMINISTRATIVA ----------
+    { cat:"Voluntad Administrativa",
+      q:"¿A través de qué se expresa la Administración Pública?",
+      t:"Se expresa a través de los {{instrumentos}}, {{mecanismos}} y {{procedimientos}} de que dispone por imperio de la ley, en particular la {{Ley 19549}} de Procedimientos Administrativos." },
+    { cat:"Voluntad Administrativa",
+      q:"Enumerá las cinco formas de manifestación del Estado (voluntad administrativa).",
+      t:"Son: {{simples actos administrativos}}, {{actos administrativos}}, {{hechos administrativos}}, {{reglamentos administrativos}} y {{contratos administrativos}}." },
+
+    // ---------- ACTO ADMINISTRATIVO: CONCEPTO ----------
+    { cat:"Acto Administrativo: Concepto",
+      q:"Definición de Acto Administrativo según Gordillo.",
+      t:"Es la {{declaración unilateral}} realizada en ejercicio de la {{función administrativa}} que produce efectos jurídicos {{individuales}} en forma {{inmediata}}." },
+    { cat:"Acto Administrativo: Concepto",
+      q:"¿Qué tres formas puede adoptar la declaración del Acto Administrativo?",
+      t:"Puede ser de {{voluntad}} (orden, permiso, autorización, sanción), de {{conocimiento}} (certifica un acto: nacimiento, casamiento) o de {{opinión o juicio}} (valora una situación: certificado de estudios)." },
+    { cat:"Acto Administrativo: Concepto",
+      q:"¿Qué significa que el Acto Administrativo sea \"unilateral\"?",
+      t:"Depende de la voluntad de un {{solo sujeto}}, la {{Administración Pública}}; si no lo fuera, estaríamos frente a un {{acto jurídico convencional}}." },
+    { cat:"Acto Administrativo: Concepto",
+      q:"¿Qué implica que sea \"realizada en ejercicio de la función administrativa\"?",
+      t:"Significa que el Acto Administrativo emana de cualquier {{órgano del estado}} en ejercicio de esa función." },
+    { cat:"Acto Administrativo: Concepto",
+      q:"¿Qué implica que el Acto Administrativo \"produzca efectos jurídicos\"?",
+      t:"Significa que no está {{destinado}} a producir efectos sino que {{los produce}}, y {{son jurídicos}} porque se {{excluyen}} los {{simples actos}}; pueden ser respecto a {{particulares}}, {{funcionarios}} o {{entes administrativos}}." },
+    { cat:"Acto Administrativo: Concepto",
+      q:"¿Qué significa que los efectos del Acto Administrativo sean \"individuales\"?",
+      t:"Son efectos jurídicos subjetivos concretos de alcance puramente {{individual}}; ahí está la diferencia con el {{reglamento}}, que tiene alcance {{general}}." },
+    { cat:"Acto Administrativo: Concepto",
+      q:"¿Qué significa que los efectos se produzcan \"en forma inmediata\"?",
+      t:"Los efectos jurídicos son {{directos}}, surgen del {{mismo acto}} y los produce respecto del {{administrado}}." },
+
+    // ---------- ELEMENTOS DEL ACTO ADMINISTRATIVO ----------
+    { cat:"Elementos del AA",
+      q:"Enumerá los ocho elementos esenciales del Acto Administrativo.",
+      t:"Son: {{órgano competente}}, {{voluntad administrativa}}, {{objeto}}, {{motivo o causa}}, {{finalidad}}, {{procedimiento}}, {{forma}} y {{competencia}}." },
+    { cat:"Elementos del AA",
+      q:"Como elementos esenciales, ¿qué representan el \"Objeto\" y el \"Motivo o Causa\"?",
+      t:"El objeto es el {{efecto a conseguir}}; el motivo o causa es el {{antecedente}} que precede al acto." },
+    { cat:"Elementos del AA",
+      q:"¿Qué representan la \"Finalidad\" y el \"Procedimiento\" como elementos esenciales del AA?",
+      t:"La finalidad es {{alcanzar un objetivo dado}}; el procedimiento se materializa en el {{expediente}}." },
+    { cat:"Elementos del AA",
+      q:"¿Qué formas puede adoptar el elemento \"Forma\" del Acto Administrativo?",
+      t:"Puede ser {{escrita}}, {{oral}} o por {{signos}}." },
+    { cat:"Elementos del AA",
+      q:"¿En qué tres aspectos se desagrega el elemento \"Competencia\"?",
+      t:"En razón de la {{materia}} (sanidad, educación, policía), el {{territorio}} (nacional, provincial, municipal) y el {{grado}} (ministro, director, jefe de departamento)." },
+    { cat:"Elementos del AA",
+      q:"Enumerá los elementos accidentales del Acto Administrativo.",
+      t:"Son: {{condición}}, {{modo}} y {{término}}." },
+    { cat:"Elementos del AA",
+      q:"¿Qué es la \"Condición\" como elemento accidental del AA?",
+      t:"Es aquella de la que depende la {{eficacia jurídica}} del acto, sujeta a un {{suceso futuro e incierto}}." },
+    { cat:"Elementos del AA",
+      q:"¿Qué son el \"Modo\" y el \"Término\" como elementos accidentales del AA?",
+      t:"El modo impone {{coactivamente}} una {{carga especial}}; el término hace que el acto se {{extinga}} al {{término de un plazo determinado}}." },
+
+    // ---------- CARACTERES Y CLASES ----------
+    { cat:"Caracteres y Clases",
+      q:"Enumerá los tres caracteres de los Actos Administrativos.",
+      t:"Son: {{presunción de legitimidad}}, {{ejecutoriedad}} (o fuerza ejecutiva) y {{estabilidad}}." },
+    { cat:"Caracteres y Clases",
+      q:"¿Qué implica la \"Presunción de Legitimidad\" del AA?",
+      t:"Que todo acto emanado de la autoridad administrativa no puede ser {{discutido}} en su {{legitimidad}}, sino con posterioridad y por medio de los {{recursos}} establecidos que presente todo aquel que se considere con derecho a ello." },
+    { cat:"Caracteres y Clases",
+      q:"¿Qué implica la \"Ejecutoriedad\" del AA?",
+      t:"Que el acto {{ejecutivo}} es el que debe {{cumplirse}}; la {{administración misma}} y por sus {{propios medios}} hace efectivo o pone en práctica el AA." },
+    { cat:"Caracteres y Clases",
+      q:"¿Qué implica la \"Estabilidad\" del AA?",
+      t:"Que, luego de su {{pronunciamiento}}, su {{validez}} se establece en el {{tiempo}}." },
+    { cat:"Caracteres y Clases",
+      q:"¿Qué son los Simples Actos Administrativos?",
+      t:"Son aquellas actuaciones de la AP que {{no producen efecto jurídico alguno}}, al menos de modo directo (Dromi). Ejemplos: {{felicitación}}, {{invitación}}, {{comunicación}}, propuesta de designación, {{informe técnico}}." },
+    { cat:"Caracteres y Clases",
+      q:"¿Qué son los Hechos Administrativos?",
+      t:"Son actuaciones {{técnicas y materiales}} productoras de efectos jurídicos {{directos e indirectos}}, tales como la {{publicación}} del llamado a licitación." },
+    { cat:"Caracteres y Clases",
+      q:"¿Qué son los Reglamentos y en qué se diferencian del Acto Administrativo?",
+      t:"Es toda {{declaración unilateral}} en ejercicio de la {{función administrativa}} que {{produce}} efectos jurídicos {{generales}} en forma {{directa}}. Son de {{mayor jerarquía}} que el Acto Administrativo. Ejemplos: {{Decretos}}, {{Resoluciones}}, {{Ordenanzas}}, {{Pliegos}}." },
+
+    // ---------- ACTOS ADMINISTRATIVOS ESPECIALES ----------
+    { cat:"AA Especiales",
+      q:"Enumerá los diez Actos Administrativos Especiales.",
+      t:"Son: {{autorización}}, {{aprobación}}, {{concesión}}, {{permiso}}, {{dispensa}}, {{admisión}}, {{renuncia}}, {{orden}}, {{registro, certificación y notificación}} y {{sanción administrativa}}." },
+    { cat:"AA Especiales",
+      q:"¿Qué es la Autorización y qué es la Aprobación como AA especiales?",
+      t:"Cuando hablamos de \"autorización\" decimos que son {{actuaciones}} por las que se les {{permite}} a los particulares el {{ejercicio de una actividad}}, siempre verificando la {{legalidad}} de la misma. Cuando hablamos de \"aprobación\" decimos que son los {{actos}} mediante el cual una {{autoridad superior}} da su consentimiento para que un {{acto}} de una {{autoridad inferior}} pueda producir sus {{efectos}}." },
+    { cat:"AA Especiales",
+      q:"¿Qué es la Concesión y qué es el Permiso como AA especiales?",
+      t:"Cuando hablamos de \"concesión\" decimos que otorga un {{derecho o poder}} que no se poseía. Esta puede ser {{unilateral}} o {{bilateral}}. Cuando hablamos de \"permiso\" decimos que es el {{acto}} mediante el cual la Administracion autoriza {{ejercer un derecho prohibido}} por el orden jurídico." },
+    { cat:"AA Especiales",
+      q:"¿Qué es la Dispensa y qué es la Admisión como AA especiales?",
+      t:"Cuando hablamos de \"dispensa\" decimos que es cuando la AP {{descarta aplicar}} una norma general. Cuando hablamos de \"admisión\" decimos que es el proceso mediante el cual se {{incorpora a una persona}} a la {{actividad pública}}." },
+    { cat:"AA Especiales",
+      q:"¿Qué es la Renuncia y qué es la Orden como AA especiales?",
+      t:"Cuando hablamos de \"renuncia\" decimos que es el {{acto}} mediante el cual la administración {{extingue unilateralmente}} una obligación. Cuando hablamos de \"orden\" decimos que es una {{imposición}} a los {{administrados}} o {{funcionarios}}." },
+    { cat:"AA Especiales",
+      q:"¿Qué caracteriza a la Sanción Administrativa como AA especial?",
+      t:"Las sanciones administrativas son de carácter {{disciplinario}}." },
+
+    // ---------- CONTRATOS ADMINISTRATIVOS ----------
+    { cat:"Contratos Administrativos",
+      q:"Definición de Contrato Administrativo.",
+      t:"Son declaraciones {{bilaterales}} de voluntad que producen {{efectos jurídicos}} entre {{dos sujetos}}, uno de los cuales está en {{ejercicio}} de la {{función administrativa}}." },
+    { cat:"Contratos Administrativos",
+      q:"¿Cuáles son las partes de un Contrato Administrativo?",
+      t:"Las partes son el {{Estado}} y el {{particular}} (llamado \"contratista del Estado\")." },
+    { cat:"Contratos Administrativos",
+      q:"Ejemplos de Contratos Administrativos.",
+      t:"Ejemplos: contrato de {{suministro}}, {{servicios públicos}}, {{obras públicas}} y {{empleo público}}." },
+    { cat:"Contratos Administrativos",
+      q:"¿Cuál es el Objeto de los Contratos Administrativos?",
+      t:"El objeto son {{obras}}, {{servicios públicos}} o {{empleo público}}." },
+    { cat:"Contratos Administrativos",
+      q:"¿Quiénes son los Sujetos del Contrato Administrativo?",
+      t:"Una parte es un {{organismo estatal}} en ejercicio de la {{función administrativa}}, y otra parte es una persona {{humana o jurídica}} (\"{{contratista}}\")." },
+    { cat:"Contratos Administrativos",
+      q:"¿A qué Regulación está sujeto el Contrato Administrativo?",
+      t:"Está sujeto al {{derecho administrativo}} ({{derecho público}})." },
+    { cat:"Contratos Administrativos",
+      q:"¿Qué significa el Formalismo del Contrato Administrativo?",
+      t:"Su {{validez}} y {{eficacia}} depende de las formalidades exigidas por el derecho administrativo y de los {{procedimientos de contratación}}." },
+    { cat:"Contratos Administrativos",
+      q:"¿Qué implica la Desigualdad Jurídica en el Contrato Administrativo?",
+      t:"Que las partes no son iguales: la administración tiene {{superioridad jurídica}} respecto del contratista particular." },
+    { cat:"Contratos Administrativos",
+      q:"Mencioná al menos cuatro prerrogativas de la AP frente a su contratista.",
+      t:"Puede {{adaptar el contrato}} a las necesidades públicas, {{ejecutarlo por sí o por 3°}} en caso de incumplimiento o mora, {{dejarlo sin efecto unilateralmente}} en caso de incumplimiento, {{dejar sin efecto}} un procedimiento de selección, {{aumentar o disminuir}} las cantidades contratadas, y ejercer {{poder de control, inspección y dirección}}." },
+    { cat:"Contratos Administrativos",
+      q:"¿Qué son las Cláusulas Exorbitantes?",
+      t:"Son las cláusulas {{inusuales}} en el derecho común, o {{ilícitas}} si se incluyen en un contrato civil, porque rompen el principio de {{igualdad}} de los contratantes y la {{libertad contractual}} que rige la contratación civil." },
+    { cat:"Contratos Administrativos",
+      q:"¿Qué puede hacer la AP en virtud de las Cláusulas Exorbitantes?",
+      t:"Puede ejercer sobre su contratista un control de {{alcance excepcional}}: {{modificar unilateralmente}} el contrato, {{imponer sanciones}}, etc." },
+    { cat:"Contratos Administrativos",
+      q:"¿Cuáles son los tres derechos/obligaciones a cargo del co-contratante?",
+      t:"Son: {{intuitu personae}}, {{intransferibilidad}} (prohibición de cesión sin autorización expresa) y prohibición de {{subcontratación}} sin autorización expresa." },
+    { cat:"Contratos Administrativos",
+      q:"¿Cuáles son las etapas para llegar a la formación del Contrato Administrativo?",
+      t:"Se recorre la {{preparación}} del contrato, la redacción del {{precontrato}}, el {{procedimiento de selección}} del contratista, hasta la {{firma del contrato definitivo}} con el contratista seleccionado." },
+    { cat:"Contratos Administrativos",
+      q:"Enumerá los procedimientos de selección del contratista.",
+      t:"Son: {{licitación pública}}, {{licitación privada}}, {{concurso público}}, {{concurso privado}}, {{contratación directa}} y {{subasta o remate público}}." },
+    { cat:"Contratos Administrativos",
+      q:"¿Cómo se define el contrato en el Derecho Privado?",
+      t:"Es el acuerdo de voluntades destinado a reglar sus derechos y obligaciones y supone la {{igualdad jurídica}} de las partes, que están en libertad para discutir de {{común acuerdo}} las condiciones contractuales." },
+    { cat:"Contratos Administrativos",
+      q:"¿Cómo se define el contrato en el Derecho Público?",
+      t:"Presupone que una de las partes es la {{Administración Pública}}; aunque teóricamente existe igualdad jurídica, es esta la que {{establece las condiciones}} en las que el contrato ha de celebrarse." },
+    { cat:"Contratos Administrativos",
+      q:"Compará el Interés y la Igualdad entre partes en contratos civiles vs administrativos.",
+      t:"En los civiles hay interés {{privado}} e igualdad entre partes; en los administrativos hay interés {{público}} y {{desigualdad jurídica}} (cláusulas exorbitantes, prerrogativas de poder público)." },
+    { cat:"Contratos Administrativos",
+      q:"Compará la Autonomía de la voluntad, la Formalidad y el Fuero en contratos civiles vs administrativos.",
+      t:"En los civiles la autonomía de la voluntad es plena y son {{informales}}, con fuero {{civil}}; en los administrativos la autonomía está {{acotada, condicionada}}, son {{formales}}, con fuero civil o {{contencioso}}." },
+
+    // ---------- ORGANIZACIÓN Y RECURSOS ----------
+    { cat:"Organización y Recursos",
+      q:"¿En qué se divide la actividad del Estado que centraliza, según el tipo de servicios?",
+      t:"Se divide en servicios {{indivisibles}} (defensa, seguridad, justicia) y servicios {{divisibles}} (educación, salud)." },
+    { cat:"Organización y Recursos",
+      q:"¿Qué es la Descentralización?",
+      t:"Ocurre cuando la actividad del Estado es desarrollada por organismos dotados de cierta {{competencia}}, con poderes de {{iniciativa y decisión}}; tienen {{personería jurídica}} y {{patrimonio propio}} que no integran el presupuesto nacional, y {{autarquía administrativa}}." },
+    { cat:"Organización y Recursos",
+      q:"¿Cómo deben crearse los entes descentralizados y qué ejemplos nacionales se dan?",
+      t:"Deben ser creados por {{ley}} y no por decisión del PE. Ejemplos: {{Anses}}, {{Afip}}, {{Administración de Parques Nacionales}}, {{Lotería}}, Instituto de vivienda." },
+    { cat:"Organización y Recursos",
+      q:"Dá ejemplos de entes descentralizados en la Provincia de Córdoba.",
+      t:"Ejemplos: {{EPEC}}, {{ERSEP}}, {{A.Pro.S.S}} y {{TOCSE}}." },
+    { cat:"Organización y Recursos",
+      q:"¿Qué es la Desconcentración?",
+      t:"Se compone de órganos que {{no tienen personalidad jurídica propia}}; hay una sola persona jurídica que es un ente (el Estado Nacional), compuesta por órganos que no tienen capacidad para {{adquirir derechos}} o {{contraer obligaciones}}." },
+    { cat:"Organización y Recursos",
+      q:"Dá ejemplos de órganos desconcentrados.",
+      t:"Ejemplos: {{ministerios}}, {{secretarías}}, el {{Instituto Nacional de Estadística y Censos}}, el {{Archivo Nacional de la Memoria}}, la {{Procuración del Tesoro}}, el {{Museo Esma}}, la {{Policía Federal}} y la {{Prefectura Naval}}." },
+    { cat:"Organización y Recursos",
+      q:"¿Qué es un Recurso Administrativo?",
+      t:"Es un medio de {{impugnar}} la decisión de una autoridad administrativa, con el objeto de obtener en sede administrativa su {{reforma}} o {{extinción}}; la objeción puede responder a su {{injusticia}}, {{inconveniencia}} o {{ilegitimidad}}." },
+    { cat:"Organización y Recursos",
+      q:"Enumerá los tres tipos de Recursos Administrativos.",
+      t:"Son: {{reconsideración}}, {{jerárquico}} y de {{alzada}}." },
+    { cat:"Organización y Recursos",
+      q:"¿Ante quién se interpone el Recurso de Reconsideración y con qué finalidad?",
+      t:"Se interpone ante el {{mismo órgano}} que dictó el acto, para que lo {{revoque}} o {{modifique}}; se hace por escrito y fundadamente, y se usa cuando hay un {{error material}} o muy evidente." },
+    { cat:"Organización y Recursos",
+      q:"¿Ante quién se interpone el Recurso Jerárquico y qué requiere?",
+      t:"Se interpone ante el {{superior jerárquico}} del autor del acto, es un recurso {{vertical}}; debe ir acompañado del {{patrocinio de un letrado}}. Con este recurso se {{agota la vía administrativa}}." },
+    { cat:"Organización y Recursos",
+      q:"¿Cuándo procede el Recurso de Alzada?",
+      t:"Procede solo cuando el AA impugnado proviene de la {{máxima autoridad}} de un ente descentralizado nacional ({{Anses}}, {{Afip}}, {{Aduana}}); este órgano lo eleva al {{jefe de ministros}}." },
+    { cat:"Organización y Recursos",
+      q:"En el esquema de Recursos Administrativos, ¿a dónde se dirige la acción cuando se agota la vía en órganos desconcentrados?",
+      t:"Corresponde el {{Contencioso Administrativo}} ante los {{Tribunales Provinciales}}." },
+    { cat:"Organización y Recursos",
+      q:"¿A dónde se dirige la acción cuando se agota la vía administrativa en órganos descentralizados?",
+      t:"Corresponde el {{Contencioso Administrativo}} ante los {{Tribunales Federales}}, mediante {{acción judicial}}." },
+  ];
+
+  function parseTemplate(t){
+    const parts = t.split(/\{\{(.*?)\}\}/g);
+    const segments = [];
+    const blanks = [];
+    for(let i=0;i<parts.length;i++){
+      if(i % 2 === 0){
+        segments.push(parts[i]);
+      } else {
+        blanks.push(parts[i].split('/').map(s=>s.trim()));
+      }
+    }
+    return { segments, blanks };
+  }
+
+  const DATA = RAW.map((d,i)=>{
+    const parsed = parseTemplate(d.t);
+    return { id:i, cat:d.cat, q:d.q, segments:parsed.segments, blanks:parsed.blanks };
+  });
+
+  // Un "tema" = una hoja. Se conserva el orden de aparición de las categorías.
+  const TOPICS = Array.from(new Set(DATA.map(d=>d.cat)));
+
+  const attempts = {};      // id -> array of input strings
+  const autofillState = {}; // topicIndex -> boolean
+  const autofillSnapshot = {}; // id -> {values:[], classes:[]}
+
+  let currentTopic = 0;
+
+  const el = {
+    chips: document.getElementById('chips'),
+    tag: document.getElementById('tag'),
+    counter: document.getElementById('counter'),
+    sheetTitle: document.getElementById('sheetTitle'),
+    sheetSub: document.getElementById('sheetSub'),
+    questions: document.getElementById('questions'),
+    validateBtn: document.getElementById('validateBtn'),
+    autofillBtn: document.getElementById('autofillBtn'),
+    retryBtn: document.getElementById('retryBtn'),
+    pageScore: document.getElementById('pageScore'),
+    prevBtn: document.getElementById('prevBtn'),
+    nextBtn: document.getElementById('nextBtn'),
+  };
+
+  function normalize(s){
+    return (s || "").toString().trim().toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g,'')
+      .replace(/[^\w\s%]/g,'')
+      .replace(/\s+/g,' ');
+  }
+
+  function topicItems(topicIndex){
+    const cat = TOPICS[topicIndex];
+    return DATA.filter(d=>d.cat===cat);
+  }
+
+  function renderChips(){
+    el.chips.innerHTML = "";
+    TOPICS.forEach((cat, idx)=>{
+      const count = DATA.filter(d=>d.cat===cat).length;
+      const chip = document.createElement('div');
+      chip.className = 'chip' + (idx===currentTopic ? ' active' : '');
+      chip.innerHTML = cat + '<span class="n">' + count + '</span>';
+      chip.addEventListener('click', ()=>{
+        goToTopic(idx);
+      });
+      el.chips.appendChild(chip);
+    });
+  }
+
+  function buildFillText(container, d){
+    container.innerHTML = "";
+    const saved = attempts[d.id] || [];
+    d.segments.forEach((seg, i)=>{
+      if(seg.length){
+        const span = document.createElement('span');
+        span.className = 'txt';
+        span.textContent = seg;
+        container.appendChild(span);
+      }
+      if(i < d.blanks.length){
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'blank-input';
+        input.autocomplete = 'off';
+        input.autocapitalize = 'off';
+        input.spellcheck = false;
+        input.dataset.index = i;
+        input.value = saved[i] || '';
+        input.style.width = Math.max(6, input.value.length + 2) + 'ch';
+        input.addEventListener('input', ()=>{
+          input.classList.remove('correct','incorrect','autofilled');
+          input.style.width = Math.max(6, input.value.length + 2) + 'ch';
+          attempts[d.id] = attempts[d.id] || [];
+          attempts[d.id][i] = input.value;
+        });
+        input.addEventListener('keydown', (e)=>{
+          if(e.key === 'Enter'){
+            e.preventDefault();
+            const inputs = Array.from(el.questions.querySelectorAll('.blank-input'));
+            const idx = inputs.indexOf(input);
+            if(idx < inputs.length - 1) inputs[idx+1].focus();
+          }
+        });
+        container.appendChild(input);
+      }
+    });
+  }
+
+  function renderSheet(){
+    const cat = TOPICS[currentTopic];
+    const items = topicItems(currentTopic);
+
+    el.tag.textContent = "Tema " + (currentTopic+1);
+    el.counter.textContent = "Hoja " + (currentTopic+1) + " / " + TOPICS.length;
+    el.sheetTitle.textContent = cat;
+    el.sheetSub.textContent = items.length + (items.length === 1 ? " pregunta" : " preguntas") + " para completar";
+
+    el.questions.innerHTML = "";
+    items.forEach((d, n)=>{
+      const block = document.createElement('div');
+      block.className = 'q-block';
+      block.dataset.id = d.id;
+
+      const head = document.createElement('div');
+      head.className = 'q-head';
+      const num = document.createElement('div');
+      num.className = 'q-num';
+      num.textContent = (n+1);
+      const qt = document.createElement('div');
+      qt.className = 'q-text';
+      qt.textContent = d.q;
+      head.appendChild(num);
+      head.appendChild(qt);
+
+      const label = document.createElement('div');
+      label.className = 'answer-label';
+      label.textContent = 'Completá';
+
+      const fill = document.createElement('p');
+      fill.className = 'fill-text';
+      buildFillText(fill, d);
+
+      const result = document.createElement('div');
+      result.className = 'result-line';
+
+      block.appendChild(head);
+      block.appendChild(label);
+      block.appendChild(fill);
+      block.appendChild(result);
+      el.questions.appendChild(block);
+    });
+
+    autofillState[currentTopic] = false;
+    el.autofillBtn.textContent = '👁 Ver respuestas';
+    el.pageScore.style.display = 'none';
+
+    el.prevBtn.disabled = currentTopic === 0;
+    el.nextBtn.disabled = currentTopic === TOPICS.length - 1;
+    el.nextBtn.textContent = currentTopic === TOPICS.length - 1 ? 'Última hoja' : 'Siguiente página →';
+
+    renderChips();
+    window.scrollTo({top:0, behavior:'auto'});
+  }
+
+  function validatePage(){
+    const items = topicItems(currentTopic);
+    let totalBlanks = 0, totalCorrect = 0;
+
+    el.questions.querySelectorAll('.q-block').forEach(block=>{
+      const id = parseInt(block.dataset.id, 10);
+      const d = DATA[id];
+      const inputs = Array.from(block.querySelectorAll('.blank-input'));
+      let correctCount = 0;
+      inputs.forEach((input, i)=>{
+        const val = normalize(input.value);
+        const ok = d.blanks[i].some(ans => normalize(ans) === val);
+        input.classList.remove('autofilled');
+        input.classList.toggle('correct', ok);
+        input.classList.toggle('incorrect', !ok);
+        if(ok) correctCount++;
+      });
+      totalBlanks += d.blanks.length;
+      totalCorrect += correctCount;
+      const result = block.querySelector('.result-line');
+      result.textContent = correctCount + " de " + d.blanks.length + " correctas";
+      result.className = "result-line " + (correctCount === d.blanks.length ? "ok" : "bad");
+    });
+
+    const allOk = totalCorrect === totalBlanks;
+    el.pageScore.style.display = 'block';
+    el.pageScore.className = 'page-score' + (allOk ? ' ok' : '');
+    el.pageScore.textContent = allOk
+      ? "¡Perfecto! " + totalCorrect + " de " + totalBlanks + " en esta hoja"
+      : "Total de la hoja: " + totalCorrect + " de " + totalBlanks + " correctas";
+  }
+
+  function toggleAutofill(){
+    const showing = autofillState[currentTopic];
+    el.questions.querySelectorAll('.q-block').forEach(block=>{
+      const id = parseInt(block.dataset.id, 10);
+      const d = DATA[id];
+      const inputs = Array.from(block.querySelectorAll('.blank-input'));
+      if(!showing){
+        autofillSnapshot[id] = {
+          values: inputs.map(inp => inp.value),
+          classes: inputs.map(inp =>
+            inp.classList.contains('correct') ? 'correct' :
+            (inp.classList.contains('incorrect') ? 'incorrect' : ''))
+        };
+        inputs.forEach((inp,i)=>{
+          inp.value = d.blanks[i][0];
+          inp.classList.remove('correct','incorrect');
+          inp.classList.add('autofilled');
+          inp.style.width = Math.max(6, inp.value.length + 2) + 'ch';
+        });
+      } else {
+        const snap = autofillSnapshot[id] || { values:[], classes:[] };
+        inputs.forEach((inp,i)=>{
+          inp.value = snap.values[i] || '';
+          inp.classList.remove('autofilled','correct','incorrect');
+          if(snap.classes[i]) inp.classList.add(snap.classes[i]);
+          inp.style.width = Math.max(6, inp.value.length + 2) + 'ch';
+        });
+        delete autofillSnapshot[id];
+      }
+    });
+
+    autofillState[currentTopic] = !showing;
+    el.autofillBtn.textContent = showing ? '👁 Ver respuestas' : '🙈 Ocultar respuestas';
+    if(!showing){
+      el.pageScore.style.display = 'block';
+      el.pageScore.className = 'page-score';
+      el.pageScore.textContent = "Respuestas mostradas — no cuenta como intento";
+    } else {
+      el.pageScore.style.display = 'none';
+    }
+  }
+
+  function retryPage(){
+    topicItems(currentTopic).forEach(d=>{
+      delete attempts[d.id];
+      delete autofillSnapshot[d.id];
+    });
+    renderSheet();
+    const firstInput = el.questions.querySelector('.blank-input');
+    if(firstInput) firstInput.focus();
+  }
+
+  function goToTopic(idx){
+    if(idx < 0 || idx >= TOPICS.length) return;
+    currentTopic = idx;
+    renderSheet();
+  }
+
+  el.validateBtn.addEventListener('click', validatePage);
+  el.autofillBtn.addEventListener('click', toggleAutofill);
+  el.retryBtn.addEventListener('click', retryPage);
+  el.prevBtn.addEventListener('click', ()=>goToTopic(currentTopic-1));
+  el.nextBtn.addEventListener('click', ()=>goToTopic(currentTopic+1));
+
+  renderSheet();
+
+})();
+</script>
+
+</body>
+</html>

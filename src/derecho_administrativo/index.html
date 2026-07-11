@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Panel de Estudio — Legislación y Ética Profesional</title>
+<title>Derecho Administrativo — Panel de Estudio</title>
 <style>
   :root{
     --navy: #1B3B6F;
@@ -43,12 +43,33 @@
     padding-bottom: calc(24px + env(safe-area-inset-bottom));
   }
 
+  /* ================= BACK LINK ================= */
+  .back-wrap{
+    padding: 16px 16px 0;
+  }
+  .back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    text-decoration:none;
+    color: var(--navy);
+    font-size:12.5px;
+    font-weight:700;
+    background: var(--card);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding: 7px 13px;
+    min-height:34px;
+    transition: background .15s ease;
+  }
+  .back-link:hover{ background: var(--card2); }
+
   /* ================= HEADER ================= */
   .topbar{
     display:flex;
     align-items:center;
     gap:12px;
-    padding: 22px 16px 12px;
+    padding: 14px 16px 12px;
   }
   .icon-badge{
     flex:0 0 auto;
@@ -278,29 +299,27 @@
     border-color: rgba(108,63,168,0.38);
   }
 
-  /* ================= CARPETA (agrupa varias fichas) ================= */
-  .tool-card.folder{
-    background: var(--gold-bg);
-    border-color: rgba(184,134,11,0.35);
-    box-shadow: 0 6px 16px rgba(184,134,11,0.12);
+  /* ================= CUESTIONARIO (no es card, es hoja de repaso) ================= */
+  .tool-card.quiz{
+    background: var(--green-bg);
+    border-color: rgba(46,125,79,0.35);
+    box-shadow: 0 6px 16px rgba(46,125,79,0.12);
+    border-style: dashed;
   }
-  .tool-card.folder:hover{
-    box-shadow: 0 10px 22px rgba(184,134,11,0.20);
-    border-color: rgba(184,134,11,0.55);
+  .tool-card.quiz:hover{
+    box-shadow: 0 10px 22px rgba(46,125,79,0.20);
+    border-color: rgba(46,125,79,0.60);
   }
-  .tool-card.folder .tool-icon{
-    background: var(--gold);
+  .tool-card.quiz .tool-icon{
+    background: var(--green);
+    border-radius: 50%;
   }
-  .tool-card.folder .tool-title{
-    color: var(--gold);
-  }
-  .tool-card.folder .tool-arrow{
-    color: var(--gold);
-    opacity:.8;
-  }
-  .tool-card.folder .tool-type{
+  .tool-card.quiz .tool-title{ color: var(--green); }
+  .tool-card.quiz .tool-arrow{ color: var(--green); }
+  .tool-card.quiz .tool-type{
+    color: var(--green);
     background: #fff;
-    border: 1px solid rgba(184,134,11,0.35);
+    border: 1px solid rgba(46,125,79,0.35);
   }
 
   .empty-msg{
@@ -320,7 +339,7 @@
   /* ================= DESKTOP / TABLET ENHANCEMENT ================= */
   @media (min-width: 640px){
     body{ align-items:center; }
-    .topbar, .search-wrap, .chips-wrap, .stage, footer.note{
+    .back-wrap, .topbar, .search-wrap, .chips-wrap, .stage, footer.note{
       width:100%;
       max-width: 640px;
       align-self:center;
@@ -332,17 +351,21 @@
   }
 
   @media (prefers-reduced-motion: reduce){
-    .chip, .tool-card{ transition:none !important; }
+    .chip, .tool-card, .back-link{ transition:none !important; }
   }
 </style>
 </head>
 <body>
 
+  <div class="back-wrap">
+    <a class="back-link" href="../../index.html">← Volver al panel</a>
+  </div>
+
   <header class="topbar">
-    <div class="icon-badge">⚖</div>
+    <div class="icon-badge">📁</div>
     <div class="heading">
       <div class="eyebrow">Legislación y Ética Profesional</div>
-      <h1>Panel de Estudio</h1>
+      <h1>Derecho Administrativo</h1>
     </div>
   </header>
 
@@ -363,125 +386,54 @@
   </main>
 
   <footer class="note">
-    Fichero de Estudio · Legislación y Ética Profesional
+    Fichero de Estudio · Derecho Administrativo
   </footer>
 
 <script>
 (function(){
 
   // ============================================================================
-  // LISTA DE FICHAS — cargala a mano acá cada vez que agregues un archivo a /src
+  // LISTA DE FICHAS DE ESTA CARPETA — cargala a mano acá cada vez que agregues
+  // un archivo a src/derecho_administrativo/
   // ============================================================================
-  //  - file:  nombre exacto del archivo dentro de la carpeta src/
+  //  - file:  nombre exacto del archivo dentro de esta misma carpeta
   //  - title: título que se muestra en la tarjeta
   //  - sub:   subtítulo/descripción corta (opcional, podés dejarlo vacío "")
-  //  - type:  categoría que se muestra como chip. Usá valores consistentes
-  //           (ej: "Fichero", "Quiz", "Mapa Conceptual") para que se agrupen bien
+  //  - type:  categoría que se muestra como chip
   //  - icon:  un emoji para el ícono de la tarjeta
+  //  - level: (opcional) "Avanzado" pinta la ficha de rojo
+  //  - tone:  (opcional) "violet" + level "Experto" para la ficha más compleja
   //
-  //  Para agregar una ficha nueva, copiá un bloque { ... } y completá los datos.
-  //  El link final que arma la página es:  src/ + file
-  //
-  //  Para agregar una CARPETA, apuntá "file" al index de la subcarpeta
-  //  (ej: "derecho_administrativo/index.html") y usá tone: "folder".
+  //  El link final que arma la página es:  ./ + file
   // ============================================================================
   const TOOLS = [
     {
-      file:  "derecho_administrativo/index.html",
+      file:  "fichero_derecho_administrativo.html",
       title: "Derecho Administrativo",
-      sub:   "Carpeta · 2 fichas de estudio agrupadas por tema",
-      type:  "Carpeta",
-      icon:  "📁",
-      tone:  "folder"
-    },
-
-    {
-      file:  "fichero_introduccion.html",
-      title: "Introducción",
-      sub:   "Ficha de estudio · Conceptos introductorios y marco general",
-      type:  "Fichero",
-      icon:  "🗂️"
-    },
-
-    {
-      file:  "fichero_contratos.html",
-      title: "Contratos",
       sub:   "Ficha de estudio · Conceptos generales y apuntes de repaso",
       type:  "Fichero",
       icon:  "🗂️"
     },
 
     {
-      file:  "fichero_cosas.html",
-      title: "Cosas",
-      sub:   "Ficha de estudio · Conceptos generales y apuntes de repaso",
+      file:  "fichero_obra_publica.html",
+      title: "Obra Pública",
+      sub:   "Ficha de estudio · Régimen, contrato y ejecución de la obra pública",
       type:  "Fichero",
       icon:  "🗂️"
     },
 
     {
-      file:  "fichero_expropiacion.html",   // <-- EDITAR si el nombre cambia al subirlo al repo
-      title: "Expropiación",
-      sub:   "27 tarjetas · Marco legal, sujetos, indemnización y vías procesales",
-      type:  "Fichero",
-      icon:  "🗂️"
+      file:  "quiz_derecho_administrativo.html",
+      title: "Cuestionario de Derecho Administrativo",
+      sub:   "Una hoja por tema · Preguntas con respuestas para completar",
+      type:  "Cuestionario",
+      icon:  "📝",
+      tone:  "quiz"
     },
-
-    {
-      file:  "fichero_expropiacion_v2.html",
-      title: "Expropiación",
-      sub:   "Nivel avanzado · Más texto para completar",
-      type:  "Fichero",
-      icon:  "🗂️",
-      level: "Avanzado"   // <-- marca la ficha como de mayor dificultad
-    },
-
-    {
-      file:  "fichero_pericias.html",
-      title: "Pericias",
-      sub:   "Ficha de estudio · Conceptos generales y apuntes de repaso",
-      type:  "Fichero",
-      icon:  "🗂️"
-    },
-
-    {
-      file:  "fichero_fideicomiso.html",
-      title: "Fideicomiso",
-      sub:   "Ficha de estudio · Estructura, partes y funcionamiento",
-      type:  "Fichero",
-      icon:  "🗂️"
-    },
-
-    {
-      file:  "fichero_fideicomiso_v2.html",
-      title: "Fideicomiso",
-      sub:   "Nivel avanzado · Más texto para completar",
-      type:  "Fichero",
-      icon:  "🗂️",
-      level: "Avanzado"   // <-- marca la ficha como de mayor dificultad
-    },
-
-    {
-      file:  "fichero_fideicomiso_v3.html",
-      title: "Fideicomiso",
-      sub:   "Nivel experto · La ficha más completa y compleja de todo el panel",
-      type:  "Fichero",
-      icon:  "🧠",
-      level: "Experto",
-      tone:  "violet"   // <-- estilo violeta: distingue el v3 del resto (incluidos los v2)
-    },
-
-    // --- Ejemplo de cómo agregar la siguiente ficha (descomentar y completar) ---
-    // {
-    //   file:  "NOMBRE_DEL_ARCHIVO.html",
-    //   title: "Título a mostrar",
-    //   sub:   "Descripción corta",
-    //   type:  "Quiz",
-    //   icon:  "❓"
-    // },
   ];
 
-  const SRC_FOLDER = 'src'; //SRC FOLDER
+  const SRC_FOLDER = '.'; //SRC FOLDER
 
   const el = {
     grid: document.getElementById('grid'),
@@ -523,9 +475,7 @@
 
     filtered.forEach(t=>{
       const a = document.createElement('a');
-      const toneClass = t.tone === 'violet' ? ' expert'
-                      : t.tone === 'folder' ? ' folder'
-                      : t.level ? ' hard' : '';
+      const toneClass = t.tone === 'quiz' ? ' quiz' : (t.tone === 'violet' ? ' expert' : (t.level ? ' hard' : ''));
       a.className = 'tool-card' + toneClass;
       a.href = SRC_FOLDER + '/' + t.file;   // <-- hipervínculo armado a partir de "file"
       const levelIcon = t.tone === 'violet' ? '★ ' : '⚡ ';
