@@ -303,6 +303,74 @@
     border: 1px solid rgba(184,134,11,0.35);
   }
 
+  /* ================= CUESTIONARIO (quiz del motor) ================= */
+  .tool-card.quiz{
+    background: var(--green-bg);
+    border-color: rgba(46,125,79,0.35);
+    box-shadow: 0 6px 16px rgba(46,125,79,0.12);
+    border-style: dashed;
+  }
+  .tool-card.quiz:hover{
+    box-shadow: 0 10px 22px rgba(46,125,79,0.20);
+    border-color: rgba(46,125,79,0.60);
+  }
+  .tool-card.quiz .tool-icon{
+    background: var(--green);
+    border-radius: 50%;
+  }
+  .tool-card.quiz .tool-title{ color: var(--green); }
+  .tool-card.quiz .tool-arrow{ color: var(--green); }
+  .tool-card.quiz .tool-type{
+    color: var(--green);
+    background: #fff;
+    border: 1px solid rgba(46,125,79,0.35);
+  }
+
+  /* ================= CUESTIONARIO INTENSIVO (más para completar) ================= */
+  .tool-card.quiz-plus{
+    background: var(--violet-bg);
+    border-color: rgba(108,63,168,0.38);
+    box-shadow: 0 6px 16px rgba(108,63,168,0.14);
+    border-style: dashed;
+  }
+  .tool-card.quiz-plus:hover{
+    box-shadow: 0 10px 22px rgba(108,63,168,0.24);
+    border-color: rgba(108,63,168,0.60);
+  }
+  .tool-card.quiz-plus .tool-icon{
+    background: linear-gradient(135deg, var(--violet) 0%, #4E2C85 100%);
+    border-radius: 50%;
+  }
+  .tool-card.quiz-plus .tool-title{ color: var(--violet); }
+  .tool-card.quiz-plus .tool-arrow{ color: var(--violet); }
+  .tool-card.quiz-plus .tool-type{
+    color: var(--violet);
+    background: #fff;
+    border: 1px solid rgba(108,63,168,0.38);
+  }
+  .tool-card.quiz-plus .tool-beta{
+    color: var(--violet);
+    background: var(--violet-bg);
+    border-color: rgba(108,63,168,0.45);
+  }
+
+  /* Badge "Beta" — marca una ficha nueva / en pruebas */
+  .tool-beta{
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+    color: var(--gold);
+    background: var(--gold-bg);
+    border: 1px solid rgba(184,134,11,0.45);
+    border-radius: 20px;
+    padding: 3px 9px;
+    flex:0 0 auto;
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+  }
+
   .empty-msg{
     text-align:center;
     color: var(--subtext);
@@ -401,6 +469,26 @@
       sub:   "Ficha de estudio · Conceptos introductorios y marco general",
       type:  "Fichero",
       icon:  "🗂️"
+    },
+
+    {
+      file:  "quiz/quiz.html?tema=introduccion",
+      title: "Cuestionario de Introducción",
+      sub:   "54 preguntas · Mismas consignas del fichero, para completar por tema",
+      type:  "Cuestionario",
+      icon:  "📘",
+      tone:  "quiz",
+      badge: "Beta"
+    },
+
+    {
+      file:  "quiz/quiz.html?tema=introduccion_intensivo",
+      title: "Introducción · Intensivo",
+      sub:   "Mismas preguntas, muchos más espacios para completar en cada respuesta",
+      type:  "Cuestionario",
+      icon:  "🧩",
+      tone:  "quiz-plus",
+      badge: "Intensivo",
     },
 
     {
@@ -525,6 +613,8 @@
       const a = document.createElement('a');
       const toneClass = t.tone === 'violet' ? ' expert'
                       : t.tone === 'folder' ? ' folder'
+                      : t.tone === 'quiz' ? ' quiz'
+                      : t.tone === 'quiz-plus' ? ' quiz-plus'
                       : t.level ? ' hard' : '';
       a.className = 'tool-card' + toneClass;
       a.href = SRC_FOLDER + '/' + t.file;   // <-- hipervínculo armado a partir de "file"
@@ -532,10 +622,13 @@
       const levelBadge = t.level
         ? '<span class="tool-level">' + levelIcon + t.level + '</span>'
         : '';
+      const betaBadge = t.badge
+        ? '<span class="tool-beta">🧪 ' + t.badge + '</span>'
+        : '';
       a.innerHTML =
         '<div class="tool-icon">' + t.icon + '</div>' +
         '<div class="tool-body">' +
-          '<div class="tool-top-row"><span class="tool-type">' + t.type + '</span>' + levelBadge + '</div>' +
+          '<div class="tool-top-row"><span class="tool-type">' + t.type + '</span>' + levelBadge + betaBadge + '</div>' +
           '<div class="tool-title">' + t.title + '</div>' +
           '<div class="tool-sub">' + (t.sub || t.file) + '</div>' +
         '</div>' +

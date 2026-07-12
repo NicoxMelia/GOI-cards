@@ -322,6 +322,23 @@
     border: 1px solid rgba(46,125,79,0.35);
   }
 
+  /* Badge "Beta" — marca una ficha nueva / en pruebas */
+  .tool-beta{
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+    color: var(--gold);
+    background: var(--gold-bg);
+    border: 1px solid rgba(184,134,11,0.45);
+    border-radius: 20px;
+    padding: 3px 9px;
+    flex:0 0 auto;
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+  }
+
   .empty-msg{
     text-align:center;
     color: var(--subtext);
@@ -423,13 +440,33 @@
       icon:  "🗂️"
     },
 
-    {
+    /*{
       file:  "quiz_derecho_administrativo.html",
       title: "Cuestionario de Derecho Administrativo",
       sub:   "Una hoja por tema · Preguntas con respuestas para completar",
       type:  "Cuestionario",
       icon:  "📝",
       tone:  "quiz"
+    },*/
+
+    {
+      file:  "../quiz/quiz.html?tema=derecho_administrativo",
+      title: "Cuestionario de Derecho Administrativo",
+      sub:   "Motor nuevo · Misma prueba servida por el sistema de quizzes reutilizable",
+      type:  "Cuestionario",
+      icon:  "📝",
+      tone:  "quiz",
+      badge: "Beta"
+    },
+
+    {
+      file:  "../quiz/quiz.html?tema=obra_publica",
+      title: "Cuestionario de Obra Pública",
+      sub:   "98 preguntas · Mismas consignas del fichero, para completar por tema",
+      type:  "Cuestionario",
+      icon:  "🏗️",
+      tone:  "quiz",
+      badge: "Beta"
     },
   ];
 
@@ -482,10 +519,13 @@
       const levelBadge = t.level
         ? '<span class="tool-level">' + levelIcon + t.level + '</span>'
         : '';
+      const betaBadge = t.badge
+        ? '<span class="tool-beta">🧪 ' + t.badge + '</span>'
+        : '';
       a.innerHTML =
         '<div class="tool-icon">' + t.icon + '</div>' +
         '<div class="tool-body">' +
-          '<div class="tool-top-row"><span class="tool-type">' + t.type + '</span>' + levelBadge + '</div>' +
+          '<div class="tool-top-row"><span class="tool-type">' + t.type + '</span>' + levelBadge + betaBadge + '</div>' +
           '<div class="tool-title">' + t.title + '</div>' +
           '<div class="tool-sub">' + (t.sub || t.file) + '</div>' +
         '</div>' +
