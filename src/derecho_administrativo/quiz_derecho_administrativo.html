@@ -314,6 +314,33 @@
   .result-line.ok{ color: var(--green); }
   .result-line.bad{ color: var(--red); }
 
+  /* ===== Botón "Ver respuesta" por pregunta ===== */
+  .q-actions{
+    margin: 12px 0 0 36px;
+  }
+  .q-reveal{
+    background: var(--gold-bg);
+    color: var(--gold);
+    border:1px solid var(--gold);
+    border-radius: 20px;
+    font-family: var(--font-body);
+    font-weight:700;
+    font-size:12px;
+    padding: 7px 14px;
+    min-height:34px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    transition: background .15s ease;
+  }
+  .q-reveal:active{ background: #FBECCB; }
+  .q-reveal.showing{
+    background: var(--navy);
+    color: var(--white);
+    border-color: var(--navy);
+  }
+
   /* ================= PAGE ACTIONS ================= */
   .page-actions{
     display:flex;
@@ -342,7 +369,6 @@
   .btn-validate{ background: var(--navy); color: var(--white); }
   .btn-validate:active{ background: var(--navy-dark); }
   .btn-retry{ background: var(--card2); color: var(--navy); border-color: var(--line); }
-  .btn-autofill{ background: var(--gold-bg); color: var(--gold); border-color: var(--gold); }
 
   .page-score{
     margin-top: 12px;
@@ -362,21 +388,6 @@
     color: var(--subtext);
     padding: 10px 24px 4px;
   }
-  .reset-all{
-    margin-top: 8px;
-    background: var(--card);
-    border:1px solid var(--line);
-    border-radius: 20px;
-    padding: 7px 14px;
-    font-family: var(--font-body);
-    font-size: 11.5px;
-    font-weight:700;
-    color: var(--red);
-    cursor:pointer;
-    min-height:34px;
-  }
-  .reset-all:active{ background: var(--card2); }
-
   /* ================= BOTTOM NAV (fixed, mobile) ================= */
   .bottom-nav{
     position:fixed;
@@ -473,7 +484,6 @@
 
     <div class="page-actions">
       <button class="btn btn-validate" id="validateBtn">Validar hoja</button>
-      <button class="btn btn-autofill" id="autofillBtn">👁 Ver respuestas</button>
       <button class="btn btn-retry" id="retryBtn">↺ Reiniciar hoja</button>
     </div>
 
@@ -482,7 +492,6 @@
 
   <footer class="note">
     Al validar, las preguntas se marcan 🔴 muchos errores · 🟡 pocos errores · 🟢 perfecta. Todo se reinicia al recargar la página.
-    <div><button class="reset-all" id="resetAllBtn">🗑 Borrar todas las marcas</button></div>
   </footer>
 
   <nav class="bottom-nav">
@@ -727,8 +736,7 @@
   const TOPICS = Array.from(new Set(DATA.map(d=>d.cat)));
 
   const attempts = {};      // id -> array of input strings
-  const autofillState = {}; // topicIndex -> boolean
-  const autofillSnapshot = {}; // id -> {values:[], classes:[]}
+  const autofillSnapshot = {}; // id -> {values:[], classes:[]}  (presencia = respuesta visible)
 
   // Marcado de preguntas en la sesión actual (id -> 'red'|'yellow'|'green').
   // No se guarda en el dispositivo: al recargar la página se reinicia todo.
@@ -744,12 +752,10 @@
     sheetSub: document.getElementById('sheetSub'),
     questions: document.getElementById('questions'),
     validateBtn: document.getElementById('validateBtn'),
-    autofillBtn: document.getElementById('autofillBtn'),
     retryBtn: document.getElementById('retryBtn'),
     pageScore: document.getElementById('pageScore'),
     prevBtn: document.getElementById('prevBtn'),
     nextBtn: document.getElementById('nextBtn'),
-    resetAllBtn: document.getElementById('resetAllBtn'),
   };
 
   function normalize(s){
@@ -862,15 +868,22 @@
       const result = document.createElement('div');
       result.className = 'result-line';
 
+      const actions = document.createElement('div');
+      actions.className = 'q-actions';
+      const revealBtn = document.createElement('button');
+      revealBtn.className = 'q-reveal';
+      revealBtn.textContent = '👁 Ver respuesta';
+      revealBtn.addEventListener('click', ()=> toggleAutofillQuestion(d.id, block, revealBtn));
+      actions.appendChild(revealBtn);
+
       block.appendChild(head);
       block.appendChild(label);
       block.appendChild(fill);
       block.appendChild(result);
+      block.appendChild(actions);
       el.questions.appendChild(block);
     });
 
-    autofillState[currentTopic] = false;
-    el.autofillBtn.textContent = '👁 Ver respuestas';
     el.pageScore.style.display = 'none';
 
     el.prevBtn.disabled = currentTopic === 0;
@@ -923,45 +936,36 @@
       : "Total de la hoja: " + totalCorrect + " de " + totalBlanks + " correctas";
   }
 
-  function toggleAutofill(){
-    const showing = autofillState[currentTopic];
-    el.questions.querySelectorAll('.q-block').forEach(block=>{
-      const id = parseInt(block.dataset.id, 10);
-      const d = DATA[id];
-      const inputs = Array.from(block.querySelectorAll('.blank-input'));
-      if(!showing){
-        autofillSnapshot[id] = {
-          values: inputs.map(inp => inp.value),
-          classes: inputs.map(inp =>
-            inp.classList.contains('correct') ? 'correct' :
-            (inp.classList.contains('incorrect') ? 'incorrect' : ''))
-        };
-        inputs.forEach((inp,i)=>{
-          inp.value = d.blanks[i][0];
-          inp.classList.remove('correct','incorrect');
-          inp.classList.add('autofilled');
-          inp.style.width = Math.max(6, inp.value.length + 2) + 'ch';
-        });
-      } else {
-        const snap = autofillSnapshot[id] || { values:[], classes:[] };
-        inputs.forEach((inp,i)=>{
-          inp.value = snap.values[i] || '';
-          inp.classList.remove('autofilled','correct','incorrect');
-          if(snap.classes[i]) inp.classList.add(snap.classes[i]);
-          inp.style.width = Math.max(6, inp.value.length + 2) + 'ch';
-        });
-        delete autofillSnapshot[id];
-      }
-    });
-
-    autofillState[currentTopic] = !showing;
-    el.autofillBtn.textContent = showing ? '👁 Ver respuestas' : '🙈 Ocultar respuestas';
+  function toggleAutofillQuestion(id, block, btn){
+    const d = DATA[id];
+    const inputs = Array.from(block.querySelectorAll('.blank-input'));
+    const showing = !!autofillSnapshot[id];
     if(!showing){
-      el.pageScore.style.display = 'block';
-      el.pageScore.className = 'page-score';
-      el.pageScore.textContent = "Respuestas mostradas — no cuenta como intento";
+      autofillSnapshot[id] = {
+        values: inputs.map(inp => inp.value),
+        classes: inputs.map(inp =>
+          inp.classList.contains('correct') ? 'correct' :
+          (inp.classList.contains('incorrect') ? 'incorrect' : ''))
+      };
+      inputs.forEach((inp,i)=>{
+        inp.value = d.blanks[i][0];
+        inp.classList.remove('correct','incorrect');
+        inp.classList.add('autofilled');
+        inp.style.width = Math.max(6, inp.value.length + 2) + 'ch';
+      });
+      btn.textContent = '🙈 Ocultar respuesta';
+      btn.classList.add('showing');
     } else {
-      el.pageScore.style.display = 'none';
+      const snap = autofillSnapshot[id] || { values:[], classes:[] };
+      inputs.forEach((inp,i)=>{
+        inp.value = snap.values[i] || '';
+        inp.classList.remove('autofilled','correct','incorrect');
+        if(snap.classes[i]) inp.classList.add(snap.classes[i]);
+        inp.style.width = Math.max(6, inp.value.length + 2) + 'ch';
+      });
+      delete autofillSnapshot[id];
+      btn.textContent = '👁 Ver respuesta';
+      btn.classList.remove('showing');
     }
   }
 
@@ -976,14 +980,6 @@
     if(firstInput) firstInput.focus();
   }
 
-  function resetAll(){
-    if(!confirm('¿Borrar todas las marcas del quiz?')) return;
-    for(const id in qStatus) delete qStatus[id];
-    for(const id in attempts) delete attempts[id];
-    for(const id in autofillSnapshot) delete autofillSnapshot[id];
-    renderSheet();
-  }
-
   function goToTopic(idx){
     if(idx < 0 || idx >= TOPICS.length) return;
     currentTopic = idx;
@@ -991,9 +987,7 @@
   }
 
   el.validateBtn.addEventListener('click', validatePage);
-  el.autofillBtn.addEventListener('click', toggleAutofill);
   el.retryBtn.addEventListener('click', retryPage);
-  el.resetAllBtn.addEventListener('click', resetAll);
   el.prevBtn.addEventListener('click', ()=>goToTopic(currentTopic-1));
   el.nextBtn.addEventListener('click', ()=>goToTopic(currentTopic+1));
 
