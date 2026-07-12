@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Cuestionario — Escribir de memoria</title>
+<style>
+  :root{
+    --navy: #1B3B6F;
+    --navy-dark: #12294B;
+    --gold: #B8860B;
+    --white: #FFFFFF;
+    --card: #F3F6FA;
+    --card2: #EEF1F6;
+    --red: #B03A2E;
+    --red-bg: #FBEDEB;
+    --green: #2E7D4F;
+    --green-bg: #EAF5EE;
+    --gold-bg: #FBF3E3;
+    --text: #26313F;
+    --subtext: #5A6B7A;
+    --line: #DCE3EC;
+    --font-head: Cambria, "Times New Roman", serif;
+    --font-body: Calibri, "Segoe UI", Arial, sans-serif;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+
+  html,body{
+    margin:0; padding:0;
+    background: var(--white);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height:100%;
+  }
+
+  body{
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+  }
+
+  /* ================= BACK LINK ================= */
+  .back-wrap{ padding: 16px 16px 0; }
+  .back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    text-decoration:none;
+    color: var(--navy);
+    font-size:12.5px;
+    font-weight:700;
+    background: var(--card);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding: 7px 13px;
+    min-height:34px;
+    transition: background .15s ease;
+  }
+  .back-link:hover{ background: var(--card2); }
+
+  /* ================= HEADER ================= */
+  .topbar{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding: 14px 16px 10px;
+  }
+  .icon-badge{
+    flex:0 0 auto;
+    width:44px; height:44px;
+    border-radius:50%;
+    background: var(--gold-bg);
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px;
+    color: var(--gold);
+  }
+  .heading .eyebrow{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.6px;
+    color: var(--gold);
+    text-transform:uppercase;
+    line-height:1.3;
+  }
+  .heading h1{
+    margin:2px 0 0;
+    font-family: var(--font-head);
+    font-weight:700;
+    font-size: 20px;
+    color: var(--navy);
+    line-height:1.15;
+  }
+
+  /* ================= CATEGORY CHIPS ================= */
+  .chips-wrap{
+    overflow-x:auto;
+    padding: 4px 16px 12px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .chips-wrap::-webkit-scrollbar{ display:none; }
+  .chips{
+    display:flex;
+    gap:8px;
+    width:max-content;
+  }
+  .chip{
+    flex:0 0 auto;
+    padding: 8px 14px;
+    border-radius: 20px;
+    background: var(--card);
+    border:1px solid var(--line);
+    font-size: 12.5px;
+    font-weight:700;
+    color: var(--navy);
+    white-space:nowrap;
+    cursor:pointer;
+    min-height:36px;
+    display:flex;
+    align-items:center;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .chip .n{
+    margin-left:6px;
+    font-weight:700;
+    color: var(--gold);
+    font-size:11px;
+  }
+  .chip.active{
+    background: var(--navy);
+    color: var(--white);
+    border-color: var(--navy);
+  }
+  .chip.active .n{ color: #E8D9A9; }
+
+  /* ================= STAGE ================= */
+  .stage{
+    flex:1;
+    padding: 4px 16px 8px;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .stage-meta{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
+  }
+  .tag{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+    color: var(--gold);
+    background: var(--gold-bg);
+    border-radius: 20px;
+    padding: 5px 12px;
+  }
+  .counter{
+    font-size:12.5px;
+    font-weight:700;
+    color: var(--subtext);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ================= SHEET (una hoja = un tema) ================= */
+  .sheet-title{
+    font-family: var(--font-head);
+    font-weight:700;
+    font-size: 22px;
+    color: var(--navy-dark);
+    line-height:1.2;
+    margin: 0 0 4px;
+  }
+  .sheet-sub{
+    font-size:12.5px;
+    color: var(--subtext);
+    margin: 0 0 16px;
+  }
+
+  .q-block{
+    background: var(--card);
+    border:1px solid var(--line);
+    border-radius: 16px;
+    padding: 16px 16px 14px;
+    margin-bottom: 14px;
+    box-shadow: 0 6px 16px rgba(27,59,111,0.07);
+    transition: background .2s ease, border-color .2s ease;
+  }
+  /* ===== Marcado persistente de preguntas ===== */
+  .q-block.status-red{
+    border-color: var(--red);
+    border-left-width: 5px;
+    background: var(--red-bg);
+    box-shadow: 0 6px 16px rgba(176,58,46,0.13);
+  }
+  .q-block.status-red .q-num{ background: var(--red); }
+  .q-block.status-yellow{
+    border-color: var(--gold);
+    border-left-width: 5px;
+    background: var(--gold-bg);
+    box-shadow: 0 6px 16px rgba(184,134,11,0.13);
+  }
+  .q-block.status-yellow .q-num{ background: var(--gold); }
+  .q-block.status-green{
+    border-color: var(--green);
+    border-left-width: 5px;
+    background: var(--green-bg);
+    box-shadow: 0 6px 16px rgba(46,125,79,0.13);
+  }
+  .q-block.status-green .q-num{ background: var(--green); }
+
+  .chip .dot{
+    display:inline-block;
+    width:8px; height:8px;
+    border-radius:50%;
+    margin-left:6px;
+    vertical-align:middle;
+  }
+  .chip .dot.red{ background: var(--red); }
+  .chip .dot.yellow{ background: var(--gold); }
+  .chip .dot.green{ background: var(--green); }
+  .q-head{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    margin-bottom: 12px;
+  }
+  .q-num{
+    flex:0 0 auto;
+    width:26px; height:26px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:12.5px;
+    font-weight:700;
+    color: var(--white);
+    background: var(--navy);
+  }
+  .q-text{
+    font-family: var(--font-head);
+    font-size: 16.5px;
+    line-height:1.4;
+    color: var(--navy-dark);
+    font-weight:700;
+  }
+
+  .answer-label{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.4px;
+    text-transform:uppercase;
+    color: var(--gold);
+    margin: 0 0 6px 36px;
+  }
+
+  .fill-text{
+    font-family: var(--font-head);
+    font-size: 15.5px;
+    line-height:2.05;
+    color: var(--navy-dark);
+    display:flex;
+    flex-wrap:wrap;
+    align-items:baseline;
+    gap: 0 2px;
+    margin: 0 0 0 36px;
+  }
+  .fill-text .txt{ white-space:pre-wrap; }
+
+  .blank-input{
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    font-weight:700;
+    color: var(--navy);
+    border: none;
+    border-bottom: 2px solid var(--gold);
+    background: var(--gold-bg);
+    border-radius: 6px 6px 2px 2px;
+    padding: 3px 7px;
+    margin: 2px 1px;
+    min-width: 58px;
+    max-width: 100%;
+    text-align:center;
+    outline:none;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .blank-input:focus{
+    background: #FDF1D8;
+    border-color: var(--navy);
+  }
+  .blank-input.correct{
+    background: var(--green-bg);
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .blank-input.incorrect{
+    background: var(--red-bg);
+    border-color: var(--red);
+    color: var(--red);
+  }
+  .blank-input.autofilled{
+    background: var(--gold-bg);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .result-line{
+    min-height: 18px;
+    margin: 10px 0 0 36px;
+    font-size:12.5px;
+    font-weight:700;
+  }
+  .result-line.ok{ color: var(--green); }
+  .result-line.bad{ color: var(--red); }
+
+  /* ===== MODO TEXTO: escribir la respuesta completa ===== */
+  /* Contenedor de bloque (no flex): el campo ocupa todo el ancho disponible */
+  .text-fill{ margin: 0; }
+  .text-fill .txt{ display:block; margin: 0 0 6px 36px; }
+  .answer-slot{ display:block; margin: 0 0 0 36px; }
+  .text-answer{
+    font-family: var(--font-body);
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--navy-dark);
+    width: 100%;
+    border:1px solid var(--gold);
+    background: var(--gold-bg);
+    border-radius: 10px;
+    padding: 10px 12px;
+    outline:none;
+    resize:none;
+    overflow:hidden;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .text-answer:focus{ background:#FDF1D8; border-color: var(--navy); }
+  .text-answer.autofilled{
+    background: var(--gold-bg);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .correction{ margin: 8px 0 0; }
+  .correction-view{
+    font-family: var(--font-head);
+    font-size: 15px;
+    line-height: 2.15;
+    color: var(--navy-dark);
+  }
+  .correction-title{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+    color: var(--subtext);
+    margin-bottom: 4px;
+  }
+  /* Cada palabra de la respuesta escrita */
+  .correction-view .w{
+    padding: 1px 3px;
+    border-radius: 5px;
+    display:inline-block;
+  }
+  .correction-view .w.ok{ color: var(--green); }
+  .correction-view .w.bad{
+    color: var(--red);
+    background: var(--red-bg);
+    text-decoration: underline wavy var(--red);
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  /* Marcador de una palabra que faltó */
+  .correction-view .w.miss{
+    color: var(--red);
+    background: var(--red-bg);
+    border: 1px dashed var(--red);
+    cursor: pointer;
+    letter-spacing: 2px;
+    padding: 0 5px;
+  }
+  .correction-view .w.revealed{ text-decoration: none; }
+  /* La palabra correcta que se revela al hacer click */
+  .exp-hint{
+    margin-left: 5px;
+    color: var(--green);
+    background: var(--green-bg);
+    border-radius: 5px;
+    padding: 0 6px;
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    font-weight: 700;
+  }
+  .exp-hint::before{ content:"→ "; }
+  .exp-hint.sobra{ color: var(--subtext); background: var(--card2); }
+  .exp-hint.sobra::before{ content:""; }
+  .correction-hint{
+    margin: 8px 0 0 36px;
+    font-size: 11px;
+    font-style: italic;
+    color: var(--subtext);
+  }
+
+  /* ===== Botón "Ver respuesta" por pregunta ===== */
+  .q-actions{
+    margin: 12px 0 0 36px;
+  }
+  .q-reveal{
+    background: var(--gold-bg);
+    color: var(--gold);
+    border:1px solid var(--gold);
+    border-radius: 20px;
+    font-family: var(--font-body);
+    font-weight:700;
+    font-size:12px;
+    padding: 7px 14px;
+    min-height:34px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    transition: background .15s ease;
+  }
+  .q-reveal:active{ background: #FBECCB; }
+  .q-reveal.showing{
+    background: var(--navy);
+    color: var(--white);
+    border-color: var(--navy);
+  }
+
+  /* ================= PAGE ACTIONS ================= */
+  .page-actions{
+    display:flex;
+    gap:8px;
+    margin: 6px 0 4px;
+    flex-wrap:wrap;
+  }
+  .btn{
+    flex:1;
+    min-width: 130px;
+    min-height:44px;
+    border-radius: 12px;
+    font-family: var(--font-body);
+    font-weight:700;
+    font-size:13.5px;
+    border:1px solid transparent;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    transition: transform .1s ease, background .15s ease;
+  }
+  .btn:active{ transform: translateY(1px); }
+  .btn:focus-visible{ outline:3px solid var(--gold); outline-offset:2px; }
+  .btn-validate{ background: var(--navy); color: var(--white); }
+  .btn-validate:active{ background: var(--navy-dark); }
+  .btn-retry{ background: var(--card2); color: var(--navy); border-color: var(--line); }
+
+  .page-score{
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--card2);
+    font-size:13px;
+    font-weight:700;
+    color: var(--navy);
+    text-align:center;
+  }
+  .page-score.ok{ background: var(--green-bg); color: var(--green); }
+
+  footer.note{
+    text-align:center;
+    font-size:10.5px;
+    color: var(--subtext);
+    padding: 10px 24px 4px;
+  }
+  /* ================= BOTTOM NAV (fixed, mobile) ================= */
+  .bottom-nav{
+    position:fixed;
+    left:0; right:0; bottom:0;
+    background: var(--white);
+    border-top: 1px solid var(--line);
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    display:flex;
+    align-items:center;
+    gap:10px;
+    box-shadow: 0 -6px 18px rgba(27,59,111,0.08);
+  }
+  .nav-btn{
+    min-height:48px;
+    border-radius: 12px;
+    border:1px solid var(--line);
+    background: var(--card);
+    color: var(--navy);
+    font-size:14px;
+    font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+    padding: 0 16px;
+    flex:0 0 auto;
+    cursor:pointer;
+    gap:6px;
+  }
+  .nav-btn-main{
+    flex:1;
+    background: var(--navy);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size:14.5px;
+    letter-spacing:0.3px;
+  }
+  .nav-btn-main:active{ background: var(--navy-dark); }
+  .nav-btn:active{ background: var(--card2); }
+  .nav-btn:disabled{ opacity:.4; cursor:default; }
+
+  /* ================= DESKTOP / TABLET ENHANCEMENT ================= */
+  @media (min-width: 640px){
+    body{ align-items:center; }
+    .back-wrap, .topbar, .chips-wrap, .stage, footer.note{
+      width:100%;
+      max-width: 640px;
+      align-self:center;
+      margin: 0 auto;
+    }
+    .icon-badge{ width:52px; height:52px; font-size:24px; }
+    .heading h1{ font-size:25px; }
+    .sheet-title{ font-size:26px; }
+    .q-text{ font-size:18px; }
+    .fill-text{ font-size:17px; }
+    .bottom-nav{
+      max-width: 640px;
+      left:50%;
+      transform: translateX(-50%);
+      border-radius: 16px 16px 0 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .chip{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="back-wrap">
+    <a class="back-link" id="backLink" href="../../index.html">← Volver al panel</a>
+  </div>
+
+  <header class="topbar">
+    <div class="icon-badge" id="iconBadge">📝</div>
+    <div class="heading">
+      <div class="eyebrow" id="eyebrow">Legislación y Ética Profesional</div>
+      <h1 id="pageTitle">Cuestionario</h1>
+    </div>
+  </header>
+
+  <div class="chips-wrap">
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <main class="stage">
+    <div class="stage-meta">
+      <span class="tag" id="tag">—</span>
+      <span class="counter" id="counter">0 / 0</span>
+    </div>
+
+    <h2 class="sheet-title" id="sheetTitle">Cargando…</h2>
+    <p class="sheet-sub" id="sheetSub"></p>
+
+    <div id="questions"></div>
+
+    <div class="page-actions">
+      <button class="btn btn-validate" id="validateBtn">Validar hoja</button>
+      <button class="btn btn-retry" id="retryBtn">↺ Reiniciar hoja</button>
+    </div>
+
+    <div class="page-score" id="pageScore" style="display:none;"></div>
+  </main>
+
+  <footer class="note">
+    Escribí la respuesta y validá: las palabras mal puestas quedan subrayadas en rojo. Tocá una palabra incorrecta para ver cuál iba en su lugar. Todo se reinicia al recargar la página.
+  </footer>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn" id="prevBtn">‹ Anterior</button>
+    <button class="nav-btn nav-btn-main" id="nextBtn">Siguiente página →</button>
+  </nav>
+
+<script>
+(function(){
+
+  // Lee el tema desde la URL:  quiz.html?tema=derecho_administrativo
+  const params = new URLSearchParams(location.search);
+  const tema = params.get('tema') || params.get('quiz');
+
+  // Cada archivo data/<tema>.js llama a registerQuiz(...) con sus preguntas.
+  window.registerQuiz = function(config){ initQuiz(config); };
+
+  function showError(msg){
+    const title = document.getElementById('sheetTitle');
+    const sub = document.getElementById('sheetSub');
+    if(title) title.textContent = 'No se pudo cargar el cuestionario';
+    if(sub) sub.textContent = msg;
+    const q = document.getElementById('questions');
+    if(q) q.innerHTML = '';
+  }
+
+  if(!tema){
+    showError('Falta indicar el tema en la URL. Ejemplo: quiz.html?tema=derecho_administrativo');
+  } else {
+    const sc = document.createElement('script');
+    sc.src = 'data/' + encodeURIComponent(tema) + '.js';
+    sc.onerror = function(){ showError('No se encontró el archivo data/' + tema + '.js'); };
+    document.head.appendChild(sc);
+  }
+
+  // ==========================================================================
+  // MOTOR DEL QUIZ — genérico. Las preguntas llegan por registerQuiz(...).
+  // ==========================================================================
+  function initQuiz(QUIZ){
+
+    document.title = (QUIZ.titulo || 'Cuestionario') + ' — Escribir de memoria';
+    if(QUIZ.titulo)  document.getElementById('pageTitle').textContent = QUIZ.titulo;
+    if(QUIZ.eyebrow) document.getElementById('eyebrow').textContent = QUIZ.eyebrow;
+    if(QUIZ.icono)   document.getElementById('iconBadge').textContent = QUIZ.icono;
+    if(QUIZ.volver)  document.getElementById('backLink').setAttribute('href', QUIZ.volver);
+
+    const RAW = QUIZ.preguntas || [];
+
+  function parseTemplate(t){
+    const parts = t.split(/\{\{(.*?)\}\}/g);
+    const segments = [];
+    const blanks = [];
+    for(let i=0;i<parts.length;i++){
+      if(i % 2 === 0){
+        segments.push(parts[i]);
+      } else {
+        blanks.push(parts[i].split('/').map(s=>s.trim()));
+      }
+    }
+    return { segments, blanks };
+  }
+
+  const DATA = RAW.map((d,i)=>{
+    const parsed = parseTemplate(d.t);
+    return { id:i, cat:d.cat, q:d.q, segments:parsed.segments, blanks:parsed.blanks };
+  });
+
+  // Un "tema" = una hoja. Se conserva el orden de aparición de las categorías.
+  const TOPICS = Array.from(new Set(DATA.map(d=>d.cat)));
+
+  const attempts = {};      // id -> array of input strings
+  const autofillSnapshot = {}; // id -> {values:[], classes:[]}  (presencia = respuesta visible)
+
+  // Marcado de preguntas en la sesión actual (id -> 'red'|'yellow'|'green').
+  // No se guarda en el dispositivo: al recargar la página se reinicia todo.
+  const qStatus = {};
+
+  let currentTopic = 0;
+
+  const el = {
+    chips: document.getElementById('chips'),
+    tag: document.getElementById('tag'),
+    counter: document.getElementById('counter'),
+    sheetTitle: document.getElementById('sheetTitle'),
+    sheetSub: document.getElementById('sheetSub'),
+    questions: document.getElementById('questions'),
+    validateBtn: document.getElementById('validateBtn'),
+    retryBtn: document.getElementById('retryBtn'),
+    pageScore: document.getElementById('pageScore'),
+    prevBtn: document.getElementById('prevBtn'),
+    nextBtn: document.getElementById('nextBtn'),
+  };
+
+  function normalize(s){
+    return (s || "").toString().trim().toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g,'')
+      .replace(/[^\w\s%]/g,'')
+      .replace(/\s+/g,' ');
+  }
+
+  function topicItems(topicIndex){
+    const cat = TOPICS[topicIndex];
+    return DATA.filter(d=>d.cat===cat);
+  }
+
+  function renderChips(){
+    el.chips.innerHTML = "";
+    TOPICS.forEach((cat, idx)=>{
+      const catItems = DATA.filter(d=>d.cat===cat);
+      const count = catItems.length;
+      const statuses = catItems.map(d=>qStatus[d.id]).filter(Boolean);
+      let mark = '';
+      if(statuses.includes('red')) mark = 'red';
+      else if(statuses.includes('yellow')) mark = 'yellow';
+      else if(statuses.length && statuses.every(s=>s==='green')) mark = 'green';
+      const chip = document.createElement('div');
+      chip.className = 'chip' + (idx===currentTopic ? ' active' : '');
+      chip.innerHTML = cat + '<span class="n">' + count + '</span>'
+        + (mark ? '<span class="dot ' + mark + '"></span>' : '');
+      chip.addEventListener('click', ()=>{
+        goToTopic(idx);
+      });
+      el.chips.appendChild(chip);
+    });
+  }
+
+  function autoGrow(ta){
+    ta.style.height = 'auto';
+    ta.style.height = ta.scrollHeight + 'px';
+  }
+
+  // ---- Comparación palabra por palabra (alineación por LCS) ----
+  function tokenize(s){ return (s || "").trim().split(/\s+/).filter(Boolean); }
+  function normWord(w){
+    return (w || "").toString().toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g,'')
+      .replace(/[^\w%]/g,'');
+  }
+
+  function diffOps(U, E){
+    const n = U.length, m = E.length;
+    const dp = Array.from({length:n+1}, ()=> new Array(m+1).fill(0));
+    for(let i=n-1;i>=0;i--){
+      for(let j=m-1;j>=0;j--){
+        dp[i][j] = (normWord(U[i]) === normWord(E[j]))
+          ? dp[i+1][j+1] + 1
+          : Math.max(dp[i+1][j], dp[i][j+1]);
+      }
+    }
+    const raw = []; let i=0, j=0;
+    while(i<n && j<m){
+      if(normWord(U[i]) === normWord(E[j])){ raw.push({type:'ok', user:U[i], exp:E[j]}); i++; j++; }
+      else if(dp[i+1][j] >= dp[i][j+1]){ raw.push({type:'extra', user:U[i], exp:null}); i++; }
+      else { raw.push({type:'missing', user:null, exp:E[j]}); j++; }
+    }
+    while(i<n){ raw.push({type:'extra', user:U[i], exp:null}); i++; }
+    while(j<m){ raw.push({type:'missing', user:null, exp:E[j]}); j++; }
+    // Fusiona un "sobra" contiguo con un "faltó" en una sustitución (palabra mal puesta)
+    const ops = [];
+    for(let k=0;k<raw.length;k++){
+      const cur = raw[k], nxt = raw[k+1];
+      if(cur && nxt && cur.type==='extra' && nxt.type==='missing'){ ops.push({type:'sub', user:cur.user, exp:nxt.exp}); k++; }
+      else if(cur && nxt && cur.type==='missing' && nxt.type==='extra'){ ops.push({type:'sub', user:nxt.user, exp:cur.exp}); k++; }
+      else ops.push(cur);
+    }
+    return ops;
+  }
+
+  function addReveal(span){
+    span.addEventListener('click', ()=>{
+      if(span.classList.contains('revealed')){
+        span.classList.remove('revealed');
+        const h = span.querySelector('.exp-hint');
+        if(h) h.remove();
+      } else {
+        span.classList.add('revealed');
+        const hint = document.createElement('span');
+        hint.className = 'exp-hint';
+        if(span.dataset.exp){ hint.textContent = span.dataset.exp; }
+        else { hint.textContent = 'sobra'; hint.classList.add('sobra'); }
+        span.appendChild(hint);
+      }
+    });
+  }
+
+  // Dibuja la respuesta escrita marcando errores; devuelve {total, correct}.
+  function renderDiff(container, userText, expectedText){
+    const U = tokenize(userText), E = tokenize(expectedText);
+    const ops = diffOps(U, E);
+    container.innerHTML = "";
+    const title = document.createElement('div');
+    title.className = 'correction-title';
+    title.textContent = 'Tu respuesta corregida';
+    const view = document.createElement('div');
+    view.className = 'correction-view';
+    let correct = 0;
+    ops.forEach(op=>{
+      const s = document.createElement('span');
+      s.className = 'w';
+      if(op.type === 'ok'){
+        correct++;
+        s.classList.add('ok');
+        s.textContent = op.user;
+      } else if(op.type === 'sub'){
+        s.classList.add('bad');
+        s.textContent = op.user;
+        s.dataset.exp = op.exp || '';
+        addReveal(s);
+      } else if(op.type === 'extra'){
+        s.classList.add('bad');
+        s.textContent = op.user;
+        s.dataset.exp = '';
+        addReveal(s);
+      } else { // missing
+        s.classList.add('miss');
+        s.textContent = '•••';
+        s.dataset.exp = op.exp || '';
+        addReveal(s);
+      }
+      view.appendChild(s);
+      view.appendChild(document.createTextNode(' '));
+    });
+    if(ops.length === 0){
+      view.textContent = '(sin respuesta)';
+    }
+    container.appendChild(title);
+    container.appendChild(view);
+    return { total: E.length, correct: correct };
+  }
+
+  function buildFillText(container, d){
+    container.innerHTML = "";
+    const saved = attempts[d.id] || [];
+    d.segments.forEach((seg, i)=>{
+      if(seg.length){
+        const span = document.createElement('span');
+        span.className = 'txt';
+        span.textContent = seg;
+        container.appendChild(span);
+      }
+      if(i < d.blanks.length){
+        const slot = document.createElement('div');
+        slot.className = 'answer-slot';
+
+        const ta = document.createElement('textarea');
+        ta.className = 'text-answer';
+        ta.rows = 1;
+        ta.spellcheck = false;
+        ta.autocapitalize = 'off';
+        ta.dataset.index = i;
+        ta.value = saved[i] || '';
+        ta.placeholder = 'Escribí la respuesta…';
+
+        const corr = document.createElement('div');
+        corr.className = 'correction';
+
+        ta.addEventListener('input', ()=>{
+          ta.classList.remove('autofilled');
+          attempts[d.id] = attempts[d.id] || [];
+          attempts[d.id][i] = ta.value;
+          autoGrow(ta);
+          corr.innerHTML = '';   // la corrección se invalida al editar
+        });
+
+        slot.appendChild(ta);
+        slot.appendChild(corr);
+        container.appendChild(slot);
+      }
+    });
+  }
+
+  function renderSheet(){
+    const cat = TOPICS[currentTopic];
+    const items = topicItems(currentTopic);
+
+    el.tag.textContent = "Tema " + (currentTopic+1);
+    el.counter.textContent = "Hoja " + (currentTopic+1) + " / " + TOPICS.length;
+    el.sheetTitle.textContent = cat;
+    el.sheetSub.textContent = items.length + (items.length === 1 ? " pregunta" : " preguntas") + " para completar";
+
+    el.questions.innerHTML = "";
+    items.forEach((d, n)=>{
+      const block = document.createElement('div');
+      block.className = 'q-block';
+      block.dataset.id = d.id;
+      if(qStatus[d.id]) block.classList.add('status-' + qStatus[d.id]);
+
+      const head = document.createElement('div');
+      head.className = 'q-head';
+      const num = document.createElement('div');
+      num.className = 'q-num';
+      num.textContent = (n+1);
+      const qt = document.createElement('div');
+      qt.className = 'q-text';
+      qt.textContent = d.q;
+      head.appendChild(num);
+      head.appendChild(qt);
+
+      const label = document.createElement('div');
+      label.className = 'answer-label';
+      label.textContent = 'Escribí la respuesta de memoria';
+
+      const fill = document.createElement('div');
+      fill.className = 'text-fill';
+      buildFillText(fill, d);
+
+      const result = document.createElement('div');
+      result.className = 'result-line';
+
+      const actions = document.createElement('div');
+      actions.className = 'q-actions';
+      const revealBtn = document.createElement('button');
+      revealBtn.className = 'q-reveal';
+      revealBtn.textContent = '👁 Ver respuesta';
+      revealBtn.addEventListener('click', ()=> toggleAutofillQuestion(d.id, block, revealBtn));
+      actions.appendChild(revealBtn);
+
+      block.appendChild(head);
+      block.appendChild(label);
+      block.appendChild(fill);
+      block.appendChild(result);
+      block.appendChild(actions);
+      el.questions.appendChild(block);
+    });
+
+    el.pageScore.style.display = 'none';
+
+    el.prevBtn.disabled = currentTopic === 0;
+    el.nextBtn.disabled = currentTopic === TOPICS.length - 1;
+    el.nextBtn.textContent = currentTopic === TOPICS.length - 1 ? 'Última hoja' : 'Siguiente página →';
+
+    // Ajusta la altura de cada campo de texto a su contenido
+    el.questions.querySelectorAll('.text-answer').forEach(autoGrow);
+
+    renderChips();
+    window.scrollTo({top:0, behavior:'auto'});
+  }
+
+  function validatePage(){
+    const items = topicItems(currentTopic);
+    let totalWords = 0, totalCorrect = 0;
+
+    el.questions.querySelectorAll('.q-block').forEach(block=>{
+      const id = parseInt(block.dataset.id, 10);
+      const d = DATA[id];
+      const slots = Array.from(block.querySelectorAll('.answer-slot'));
+      let qExpected = 0, qCorrect = 0;
+      slots.forEach((slot, i)=>{
+        const ta = slot.querySelector('.text-answer');
+        const corr = slot.querySelector('.correction');
+        ta.classList.remove('autofilled');
+        const expected = (d.blanks[i] && d.blanks[i][0]) || '';
+        const res = renderDiff(corr, ta.value, expected);
+        qExpected += res.total;
+        qCorrect += res.correct;
+      });
+      totalWords += qExpected;
+      totalCorrect += qCorrect;
+
+      const result = block.querySelector('.result-line');
+      result.textContent = qCorrect + " de " + qExpected + " palabras correctas";
+      result.className = "result-line " + (qCorrect === qExpected ? "ok" : "bad");
+
+      // Marcado: verde = todas las palabras, amarillo = la mayoría,
+      // rojo = falló más de la mitad ("no la supo").
+      const ratio = qExpected ? qCorrect / qExpected : 1;
+      const status = ratio === 1 ? 'green' : (ratio >= 0.5 ? 'yellow' : 'red');
+      qStatus[d.id] = status;
+      block.classList.remove('status-red','status-yellow','status-green');
+      block.classList.add('status-' + status);
+    });
+
+    renderChips();
+
+    const allOk = totalCorrect === totalWords;
+    el.pageScore.style.display = 'block';
+    el.pageScore.className = 'page-score' + (allOk ? ' ok' : '');
+    el.pageScore.textContent = allOk
+      ? "¡Perfecto! " + totalCorrect + " de " + totalWords + " palabras en esta hoja"
+      : "Total de la hoja: " + totalCorrect + " de " + totalWords + " palabras correctas";
+  }
+
+  function toggleAutofillQuestion(id, block, btn){
+    const d = DATA[id];
+    const slots = Array.from(block.querySelectorAll('.answer-slot'));
+    const showing = !!autofillSnapshot[id];
+    if(!showing){
+      autofillSnapshot[id] = {
+        values: slots.map(s => s.querySelector('.text-answer').value)
+      };
+      slots.forEach((s,i)=>{
+        const ta = s.querySelector('.text-answer');
+        ta.value = (d.blanks[i] && d.blanks[i][0]) || '';
+        ta.classList.add('autofilled');
+        autoGrow(ta);
+        s.querySelector('.correction').innerHTML = '';
+      });
+      btn.textContent = '🙈 Ocultar respuesta';
+      btn.classList.add('showing');
+    } else {
+      const snap = autofillSnapshot[id] || { values:[] };
+      slots.forEach((s,i)=>{
+        const ta = s.querySelector('.text-answer');
+        ta.value = snap.values[i] || '';
+        ta.classList.remove('autofilled');
+        autoGrow(ta);
+      });
+      delete autofillSnapshot[id];
+      btn.textContent = '👁 Ver respuesta';
+      btn.classList.remove('showing');
+    }
+  }
+
+  function retryPage(){
+    topicItems(currentTopic).forEach(d=>{
+      delete attempts[d.id];
+      delete autofillSnapshot[d.id];
+      delete qStatus[d.id];
+    });
+    renderSheet();
+    const firstInput = el.questions.querySelector('.text-answer');
+    if(firstInput) firstInput.focus();
+  }
+
+  function goToTopic(idx){
+    if(idx < 0 || idx >= TOPICS.length) return;
+    currentTopic = idx;
+    renderSheet();
+  }
+
+  el.validateBtn.addEventListener('click', validatePage);
+  el.retryBtn.addEventListener('click', retryPage);
+  el.prevBtn.addEventListener('click', ()=>goToTopic(currentTopic-1));
+  el.nextBtn.addEventListener('click', ()=>goToTopic(currentTopic+1));
+
+    renderSheet();
+  }
+
+})();
+</script>
+
+</body>
+</html>

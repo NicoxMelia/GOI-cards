@@ -354,6 +354,34 @@
     border-color: rgba(108,63,168,0.45);
   }
 
+  /* ================= CUESTIONARIO ESCRITO (respuesta de memoria) ================= */
+  .tool-card.quiz-text{
+    background: #EAF0FA;
+    border-color: rgba(27,59,111,0.30);
+    box-shadow: 0 6px 16px rgba(27,59,111,0.12);
+    border-style: dashed;
+  }
+  .tool-card.quiz-text:hover{
+    box-shadow: 0 10px 22px rgba(27,59,111,0.20);
+    border-color: rgba(27,59,111,0.55);
+  }
+  .tool-card.quiz-text .tool-icon{
+    background: var(--navy);
+    border-radius: 50%;
+  }
+  .tool-card.quiz-text .tool-title{ color: var(--navy); }
+  .tool-card.quiz-text .tool-arrow{ color: var(--navy); }
+  .tool-card.quiz-text .tool-type{
+    color: var(--navy);
+    background: #fff;
+    border: 1px solid rgba(27,59,111,0.30);
+  }
+  .tool-card.quiz-text .tool-beta{
+    color: var(--navy);
+    background: #EAF0FA;
+    border-color: rgba(27,59,111,0.35);
+  }
+
   /* Badge "Beta" — marca una ficha nueva / en pruebas */
   .tool-beta{
     font-size:10px;
@@ -492,6 +520,16 @@
     },
 
     {
+      file:  "quiz/quiz_texto.html?tema=introduccion_texto",
+      title: "Introducción · Escrito",
+      sub:   "Escribís la respuesta completa de memoria; corrige palabra por palabra",
+      type:  "Cuestionario",
+      icon:  "✍️",
+      tone:  "quiz-text",
+      badge: "Escrito"
+    },
+
+    {
       file:  "fichero_contratos.html",
       title: "Contratos",
       sub:   "Ficha de estudio · Conceptos generales y apuntes de repaso",
@@ -615,6 +653,7 @@
                       : t.tone === 'folder' ? ' folder'
                       : t.tone === 'quiz' ? ' quiz'
                       : t.tone === 'quiz-plus' ? ' quiz-plus'
+                      : t.tone === 'quiz-text' ? ' quiz-text'
                       : t.level ? ' hard' : '';
       a.className = 'tool-card' + toneClass;
       a.href = SRC_FOLDER + '/' + t.file;   // <-- hipervínculo armado a partir de "file"
